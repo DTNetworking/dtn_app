@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DTN.iml" filepath="$PROJECT_DIR$/DTN.iml" />
+      <module fileurl="file://C:\Users\Abhishanth Padarthy\AndroidStudioProjects\dtn_app\DTN.iml" filepath="C:\Users\Abhishanth Padarthy\AndroidStudioProjects\dtn_app\DTN.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Abhishanth Padarthy\AndroidStudioProjects\dtn_app\app\app.iml" filepath="C:\Users\Abhishanth Padarthy\AndroidStudioProjects\dtn_app\app\app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dtn_app.iml" filepath="$PROJECT_DIR$/dtn_app.iml" />
     </modules>
   </component>
 </project>

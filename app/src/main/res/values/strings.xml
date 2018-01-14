@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">DTN</string>
     <string name="action_settings">Settings</string>
+    <string name="OneScenarioText">1st Scenario</string>
+    <string name="SecondScenarioText">2nd Scenario</string>
+    <string name="ThirdScenarioText">3rd Scenario</string>
+    <string name="FourthScenarioText">4th Scenario</string>
+    <string name="FifthScenarioText">5th Scenario</string>
+    <string name="SixthScenarioText">6th Scenario</string>
 </resources>
