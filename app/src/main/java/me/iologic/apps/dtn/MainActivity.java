@@ -1,5 +1,6 @@
 package me.iologic.apps.dtn;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -48,5 +49,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openOneScenario(View view) {
+        Intent intent = new Intent(this, OneScenario.class);
+        startActivity(intent);
     }
 }

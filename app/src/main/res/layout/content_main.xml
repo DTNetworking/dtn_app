@@ -24,39 +24,46 @@
             android:id="@+id/OneScenario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@+string/OneScenarioText"
-            android:layout_weight="1" />
+            android:text="@string/OneScenarioText"
+            android:layout_weight="1"
+            android:onClick="openOneScenario"/>
 
         <Button
             android:id="@+id/SecondScenario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@+string/SecondScenarioText"
+            android:text="@string/SecondScenarioText"
             android:layout_weight="1"/>
         <Button
             android:id="@+id/ThirdScenario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@+string/ThirdScenarioText"
+            android:text="@string/ThirdScenarioText"
             android:layout_weight="1"/>
         <Button
             android:id="@+id/FourthScenario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@+string/FourthScenarioText"
+            android:text="@string/FourthScenarioText"
             android:layout_weight="1"/>
         <Button
             android:id="@+id/FifthScenario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@+string/FifthScenarioText"
+            android:text="@string/FifthScenarioText"
             android:layout_weight="1"/>
         <Button
             android:id="@+id/SixthScenario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@+string/SixthScenarioText"
+            android:text="@string/SixthScenarioText"
             android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/copyright"
+            android:textAlignment="center"/>
     </LinearLayout>
 
 

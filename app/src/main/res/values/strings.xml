@@ -7,4 +7,10 @@
     <string name="FourthScenarioText">4th Scenario</string>
     <string name="FifthScenarioText">5th Scenario</string>
     <string name="SixthScenarioText">6th Scenario</string>
+    <string name="title_activity_one_scenario">OneScenario</string>
+    <string name="btConnectFail">No Device Found!</string>
+    <string name="btConnectSuccess">Connected To:</string>
+    <string name="peersNotFound">No Peers Found!</string>
+    <string name="peersInVicinity">Peers In Vicinity:</string>
+    <string name="copyright">© Abhishanth Padarthy | Vineeth Penugonda</string>
 </resources>
