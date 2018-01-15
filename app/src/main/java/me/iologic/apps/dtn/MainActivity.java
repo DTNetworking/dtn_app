@@ -13,6 +13,8 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
+    OneScenario object;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120000);
         startActivity(discoverableIntent);
+
+        object = new OneScenario();
     }
 
     @Override
@@ -60,5 +64,9 @@ public class MainActivity extends AppCompatActivity {
     public void openOneScenario(View view) {
         Intent intent = new Intent(this, OneScenario.class);
         startActivity(intent);
+    }
+
+    public void sendMessage(View view){
+        object.connectDevice();
     }
 }

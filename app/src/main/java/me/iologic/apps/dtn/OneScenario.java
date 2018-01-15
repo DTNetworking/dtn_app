@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,14 +18,30 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class OneScenario extends AppCompatActivity {
 
     static final int REQUEST_ENABLE_BT=1;
     BluetoothAdapter mBluetoothAdapter; // The Only Bluetooth Adapter Used.
     int noOfPeers = 0;
+    BluetoothConnectT serverConnect;
+    BluetoothConnectClientT clientConnect;
+    BluetoothDevice btDeviceConnectedGlobal;
+    ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
+    Handler btClientConnectionStatus;
+    Handler btServerConnectionStatus;
+
+    public static String SERVER_CONNECTION_SUCCESSFUL;
+    public static String SERVER_CONNECTION_FAIL;
+
+    public static String CLIENT_CONNECTION_SUCCESSFUL;
+    public static String CLIENT_CONNECTION_FAIL;
 
     TextView btStatusText;
     TextView peerStatusText;
+
+    boolean toastShown = false; // Client Re-Connection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +61,9 @@ public class OneScenario extends AppCompatActivity {
 
         btStatusText = (TextView) findViewById(R.id.btStatus);
         peerStatusText = (TextView) findViewById(R.id.peerStatus);
+
+        btServerConnectionStatus = new Handler();
+        btClientConnectionStatus = new Handler();
 
         // Register for broadcasts when a device is discovered.
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -103,6 +123,8 @@ public class OneScenario extends AppCompatActivity {
         mBluetoothAdapter.setName(btDeviceName);
         Toast btDeviceNameToast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
         btDeviceNameToast.show();
+
+        serverConnection(); // Let's start the Server
     }
 
     protected void discBluetoothDevices() {
@@ -122,6 +144,7 @@ public class OneScenario extends AppCompatActivity {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                btDevicesFoundList.add(device);
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 String discBDevice = "Found Device: " + deviceName;
@@ -130,10 +153,71 @@ public class OneScenario extends AppCompatActivity {
                 toast.show();
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
                 btStatusText.setText("Discovery Period Finished");
+                connectDevice();
             }
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
         }
     };
+
+    public void connectDevice(){
+
+        String btDeviceName = "DTN-";
+        CLIENT_CONNECTION_FAIL = "Connection Failed!";
+
+        btClientConnectionStatus = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.arg1 == 1)
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
+                    toast.show();
+                } else if(msg.arg1 == -1){
+                    if(toastShown == false) {
+                        Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+
+                    toastShown = true;
+                    // clientConnect.start(); // Keep Trying To Connect If It Fails
+                }
+            }
+        };
+
+        for(BluetoothDevice btDevice : btDevicesFoundList) {
+            if (btDevice.getName().contains(btDeviceName)) {
+                btDeviceConnectedGlobal = btDevice;
+                clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
+                clientConnect.start();
+            }
+
+        }
+
+        CLIENT_CONNECTION_SUCCESSFUL = "Connected To:" + btDeviceConnectedGlobal.getName();
+    }
+
+    private void serverConnection(){
+
+        SERVER_CONNECTION_SUCCESSFUL ="Server is successfully connected!";
+        SERVER_CONNECTION_FAIL = "Server failed to connect";
+
+        btServerConnectionStatus = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.arg1 == 1)
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
+                    toast.show();
+                } else if(msg.arg1 == -1){
+                    Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+                    toast.show();
+                    clientConnect.start(); // Keep Trying To Connect If It Fails
+                }
+            }
+        };
+
+        serverConnect = new BluetoothConnectT(mBluetoothAdapter, btServerConnectionStatus);
+        serverConnect.start();
+    }
 
     @Override
     protected void onDestroy() {
