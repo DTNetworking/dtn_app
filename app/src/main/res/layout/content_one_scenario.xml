@@ -17,7 +17,10 @@
         android:text="@string/btConnectFail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/peerStatus" />
+        app:layout_constraintTop_toBottomOf="@+id/peerStatus"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:maxLines="1"/>
 
     <TextView
         android:id="@+id/peerStatus"
@@ -50,7 +53,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textPersonName"
-            android:tooltipText="Message"
+            android:hint="Enter Your Message Here"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="138dp" />
 
@@ -59,7 +62,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="c"
             android:text="Send" />
 
     </LinearLayout>
@@ -77,6 +79,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
+        <TextView
+            android:id="@+id/messageStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Message Received"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:layout_weight="0.3"
+            android:scrollHorizontally="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:ellipsize="marquee"
+            android:singleLine="true"/>
 
         <TextView
             android:id="@+id/pairingTime"

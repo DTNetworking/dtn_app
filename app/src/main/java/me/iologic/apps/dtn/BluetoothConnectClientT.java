@@ -63,7 +63,7 @@ class BluetoothConnectClientT extends Thread{
             } catch (IOException closeException) {
                 Log.e(TAG, "Could not close the client socket", closeException);
             }
-            return;
+            this.run();
         }
 
         btConnectionStatusMsg.arg1 = 1;

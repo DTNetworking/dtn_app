@@ -14,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class OneScenario extends AppCompatActivity {
 
     TextView btStatusText;
     TextView peerStatusText;
+    TextView messageReceived;
 
     boolean toastShown = false; // Client Re-Connection
 
@@ -61,6 +63,10 @@ public class OneScenario extends AppCompatActivity {
 
         btStatusText = (TextView) findViewById(R.id.btStatus);
         peerStatusText = (TextView) findViewById(R.id.peerStatus);
+        messageReceived = (TextView) findViewById(R.id.messageStatus);
+
+        btStatusText.setSelected(true); // For Horizontal Scrolling
+        messageReceived.setSelected(true); // For Horizontal Scrolling
 
         btServerConnectionStatus = new Handler();
         btClientConnectionStatus = new Handler();
@@ -175,6 +181,7 @@ public class OneScenario extends AppCompatActivity {
                     if(toastShown == false) {
                         Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
+                       // clientConnect.start(); // Keep Trying To Connect If It Fails
                     }
 
                     toastShown = true;
@@ -191,8 +198,11 @@ public class OneScenario extends AppCompatActivity {
             }
 
         }
-
-        CLIENT_CONNECTION_SUCCESSFUL = "Connected To:" + btDeviceConnectedGlobal.getName();
+            if(!(btDeviceConnectedGlobal == null)) {
+                CLIENT_CONNECTION_SUCCESSFUL = "Connected To:" + btDeviceConnectedGlobal.getName();
+            } else {
+                Log.e("DTN", "No Device Found With Name DTN");
+            }
     }
 
     private void serverConnection(){
@@ -210,7 +220,6 @@ public class OneScenario extends AppCompatActivity {
                 } else if(msg.arg1 == -1){
                     Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                     toast.show();
-                    clientConnect.start(); // Keep Trying To Connect If It Fails
                 }
             }
         };
