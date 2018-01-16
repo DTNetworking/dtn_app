@@ -55,7 +55,7 @@ class BluetoothConnectClientT extends Thread{
 
         while((mmSocket.isConnected()!=true) && isAlreadyConnected!=1) {
 
-            Log.i("DTNRunning", "I am running. " + isAlreadyConnected);
+           // Log.i("DTNRunning", "I am running. " + isAlreadyConnected);
 
             try {
                 // Connect to the remote device through the socket. This call blocks

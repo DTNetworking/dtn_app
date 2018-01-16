@@ -41,6 +41,8 @@ public class OneScenario extends AppCompatActivity {
     Handler btServerConnectionStatus;
     Bundle bundle;
 
+    FileServices useFile;
+
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
     private static String SERVER_CONNECTION_FAIL;
@@ -55,6 +57,7 @@ public class OneScenario extends AppCompatActivity {
     TextView messageReceived;
     TextView currentStatusText;
     TextView peerConnectTime;
+    TextView bandwidthText;
     EditText EditMessageBox;
     Button sendMsgBtn;
 
@@ -83,6 +86,7 @@ public class OneScenario extends AppCompatActivity {
         sendMsgBtn = (Button) findViewById(R.id.sendMsg);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
+        bandwidthText = (TextView) findViewById(R.id.bandwidth);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
@@ -95,6 +99,8 @@ public class OneScenario extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter);
+
+        useFile = new FileServices(getApplicationContext());
 
         startBluetooth();
         sendMessage();
@@ -199,9 +205,20 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     currentStatusText.setText("CLIENT");
-                    peerConnectTime.setText((long)(msg.arg2/1000) + " sec");
+                    peerConnectTime.setText((long)msg.arg2 + " msec");
+
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
+
+                    // Check Bandwidth
+                    useFile.createTempFile(Constants.testFileName);
+                    useFile.fillTempFile(Constants.testFileName);
+                    streamData.checkBandwidth(useFile);
+                    float bandwidth = (useFile.getFileSize()/streamData.getTotalBandwidthDuration());
+
+                    Log.i(Constants.TAG, (String)(useFile.getFileSize()+ " Time: " + streamData.getTotalBandwidthDuration()));
+                    bandwidthText.setText(bandwidth + " Kbps");
+
                     streamData.start();
                 } else if(msg.arg1 == -1) {
                     if (toastShown == false) {
@@ -243,7 +260,10 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     currentStatusText.setText("SERVER");
-                    peerConnectTime.setText((long)(msg.arg2/1000) + " sec");
+                    peerConnectTime.setText((long)msg.arg2 + " msec");
+
+                    bandwidthText.setVisibility(View.GONE);
+
                     SocketGlobal = serverConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
                     streamData.start();
@@ -272,6 +292,7 @@ public class OneScenario extends AppCompatActivity {
                 byte[] writeBuf = (byte[]) msg.obj;
                 String writeMessage = new String(writeBuf);
                 messageReceived.setText(writeMessage);
+                streamData.flushOutStream();
             }
         }
     };

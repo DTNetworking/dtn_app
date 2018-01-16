@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by vinee on 15-01-2018.
@@ -24,6 +25,8 @@ class BluetoothBytesT extends Thread {
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
     private byte[] mmBuffer; // mmBuffer store for the stream
+
+    long sendingStartTime, sendingEndTime, duration;
 
     private Handler mHandler;
 
@@ -52,7 +55,7 @@ class BluetoothBytesT extends Thread {
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
 
-        mHandler = handler;
+            mHandler = handler;
     }
 
     public void run() { // For Reading Messages
@@ -82,11 +85,18 @@ class BluetoothBytesT extends Thread {
 
             mmBuffer = bytes;
 
-            mmOutStream.write(bytes);
+            sendingStartTime = System.nanoTime();
+                mmOutStream.write(mmBuffer);
+            sendingEndTime = System.nanoTime();
+
+            duration = sendingEndTime - sendingStartTime;
+
+            Log.i(Constants.TAG, "Time Calculated:" + sendingEndTime + "And " + sendingStartTime + "And " + duration);
+
 
             // Share the sent message with the UI activity.
             Message writtenMsg = mHandler.obtainMessage(
-                    Constants.MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
+                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int)(duration/1000000), mmBuffer);
             writtenMsg.sendToTarget();
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error occurred when sending data", e);
@@ -100,6 +110,23 @@ class BluetoothBytesT extends Thread {
             writeErrorMsg.setData(bundle);
             mHandler.sendMessage(writeErrorMsg);
         }
+    }
+
+    public void flushOutStream(){
+        try {
+            mmOutStream.flush();
+        } catch (IOException e){
+            Log.e(Constants.TAG, "Could not flush out stream", e);
+        }
+    }
+
+    public void checkBandwidth(FileServices fileService){
+        String fileData = fileService.readTempFile(Constants.testFileName);
+        this.write(fileData.getBytes());
+    }
+
+    public long getTotalBandwidthDuration(){
+        return (TimeUnit.NANOSECONDS.toSeconds(duration));
     }
 
     // Call this method from the main activity to shut down the connection.

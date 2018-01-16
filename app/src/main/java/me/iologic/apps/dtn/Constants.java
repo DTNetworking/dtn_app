@@ -6,6 +6,7 @@ package me.iologic.apps.dtn;
 
 public class Constants {
     public static final String TAG = "DTNLogs";
+    public static final String testFileName = "testFile";
 
     // Defines several constants used when transmitting messages between the
     // service and the UI.
