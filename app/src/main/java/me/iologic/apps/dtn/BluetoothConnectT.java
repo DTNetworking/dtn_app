@@ -21,6 +21,8 @@ class BluetoothConnectT extends Thread {
     public static final String TAG = "DTNLogs";
     public static final String NAME = "DTNApp";
 
+    long pairingStartTime, pairingEndTime, duration;
+
     Handler btConnectionStatus;
     Message btConnectionStatusMsg;
 
@@ -47,11 +49,19 @@ class BluetoothConnectT extends Thread {
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
             try {
+                pairingStartTime = System.nanoTime();
                 socket = mmServerSocket.accept();
+                if(socket.isConnected()) {
+                    pairingEndTime = System.nanoTime();
+                }
+                duration = (pairingEndTime - pairingStartTime);
+
                 ClientSocket = socket;
                 btConnectionStatusMsg = Message.obtain();
                 btConnectionStatusMsg.arg1 = 1;
+                btConnectionStatusMsg.arg2 = (int)(duration/1000000);
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
+
             } catch (IOException e) {
                 Log.e(TAG, "Socket's accept() method failed", e);
                 btConnectionStatusMsg.arg1 = -1;

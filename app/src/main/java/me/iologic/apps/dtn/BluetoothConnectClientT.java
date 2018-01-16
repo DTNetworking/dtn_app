@@ -23,6 +23,9 @@ class BluetoothConnectClientT extends Thread{
     Handler btConnectionStatus;
     Message btConnectionStatusMsg;
 
+    int isAlreadyConnected = 0;
+    long pairingStartTime, pairingEndTime, duration;
+
     private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
 
     public BluetoothConnectClientT(BluetoothDevice device, BluetoothAdapter getBluetoothAdapter, Handler getBtConnectionStatus) {
@@ -50,28 +53,37 @@ class BluetoothConnectClientT extends Thread{
 
         btConnectionStatusMsg = Message.obtain();
 
-        Log.i("DTNRunning", "I am running again.");
+        while((mmSocket.isConnected()!=true) && isAlreadyConnected!=1) {
 
-        try {
-            // Connect to the remote device through the socket. This call blocks
-            // until it succeeds or throws an exception.
-            mmSocket.connect();
-        } catch (IOException connectException) {
-            btConnectionStatusMsg.arg1 = -1;
-            btConnectionStatus.sendMessage(btConnectionStatusMsg);
-            // Unable to connect; close the socket and return.
+            Log.i("DTNRunning", "I am running. " + isAlreadyConnected);
+
             try {
-                mmSocket.close();
-            } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
+                // Connect to the remote device through the socket. This call blocks
+                // until it succeeds or throws an exception.
+                pairingStartTime = System.nanoTime();
+                mmSocket.connect();
+                pairingEndTime = System.nanoTime();
+                duration = (pairingEndTime - pairingStartTime);
+            } catch (IOException connectException) {
+                btConnectionStatusMsg.arg1 = -1;
+                btConnectionStatus.sendMessage(btConnectionStatusMsg);
+                // Unable to connect; close the socket and return.
+                try {
+                    mmSocket.close();
+                } catch (IOException closeException) {
+                    Log.e(TAG, "Could not close the client socket", closeException);
+                }
+                return;
             }
-            return;
+
+            isAlreadyConnected++;
+
+            btConnectionStatusMsg.arg1 = 1;
+            btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
+
+            btConnectionStatus.sendMessage(btConnectionStatusMsg);
+
         }
-
-        btConnectionStatusMsg.arg1 = 1;
-
-        btConnectionStatus.sendMessage(btConnectionStatusMsg);
-
     }
 
     public BluetoothSocket getClientSocket()

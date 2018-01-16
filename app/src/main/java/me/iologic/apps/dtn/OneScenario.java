@@ -54,6 +54,7 @@ public class OneScenario extends AppCompatActivity {
     TextView peerStatusText;
     TextView messageReceived;
     TextView currentStatusText;
+    TextView peerConnectTime;
     EditText EditMessageBox;
     Button sendMsgBtn;
 
@@ -81,6 +82,7 @@ public class OneScenario extends AppCompatActivity {
         EditMessageBox = (EditText) findViewById(R.id.messageBox);
         sendMsgBtn = (Button) findViewById(R.id.sendMsg);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
+        peerConnectTime = (TextView) findViewById(R.id.pairingTime);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
@@ -149,8 +151,6 @@ public class OneScenario extends AppCompatActivity {
         mBluetoothAdapter.setName(btDeviceName);
         Toast btDeviceNameToast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
         btDeviceNameToast.show();
-
-        serverConnection(); // Let's start the Server
     }
 
     protected void discBluetoothDevices() {
@@ -179,6 +179,7 @@ public class OneScenario extends AppCompatActivity {
                 toast.show();
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
                 btStatusText.setText("Discovery Period Finished");
+                serverConnection(); // Let's start the Server
                 connectDevice();
             }
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
@@ -198,6 +199,7 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     currentStatusText.setText("CLIENT");
+                    peerConnectTime.setText((long)(msg.arg2/1000) + " sec");
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
                     streamData.start();
@@ -206,7 +208,7 @@ public class OneScenario extends AppCompatActivity {
                         Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
                     }
-                        clientConnect.run(); // Keep Trying To Connect If It Fails
+                            clientConnect.run(); // Keep Trying To Connect If It Fails.
 
                     toastShown = true;
                 }
@@ -241,6 +243,7 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     currentStatusText.setText("SERVER");
+                    peerConnectTime.setText((long)(msg.arg2/1000) + " sec");
                     SocketGlobal = serverConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
                     streamData.start();
