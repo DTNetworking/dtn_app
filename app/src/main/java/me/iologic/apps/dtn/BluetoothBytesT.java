@@ -12,6 +12,11 @@ import java.io.OutputStream;
 
 /**
  * Created by vinee on 15-01-2018.
+ *
+ * Documentation:
+ *
+ * No Of Packets To Be Sent =(bytes.length/PACKET_SIZE).
+ *
  */
 
 class BluetoothBytesT extends Thread {
@@ -19,6 +24,9 @@ class BluetoothBytesT extends Thread {
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
     private byte[] mmBuffer; // mmBuffer store for the stream
+
+    private static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
+    private static final int NO_OF_PACKETS = 25;
 
     public static final String TAG = "DTNLogs";
 

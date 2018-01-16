@@ -32,6 +32,7 @@ public class OneScenario extends AppCompatActivity {
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     Handler btClientConnectionStatus;
     Handler btServerConnectionStatus;
+    String getGoodOldName;
 
     public static String SERVER_CONNECTION_SUCCESSFUL;
     public static String SERVER_CONNECTION_FAIL;
@@ -87,6 +88,7 @@ public class OneScenario extends AppCompatActivity {
         btDeviceDiscoverToast.show();
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        getGoodOldName = mBluetoothAdapter.getName();
 
             if (mBluetoothAdapter == null) {
                 btStatusText.setText("Bluetooth Not Found!");
@@ -123,7 +125,7 @@ public class OneScenario extends AppCompatActivity {
 
     }
 
-    public void setBtName(){
+    private void setBtName(){
         String btDeviceName = "DTN-"+ Build.SERIAL;
         String message = "Bluetooth Device Name: " + btDeviceName;
         mBluetoothAdapter.setName(btDeviceName);
@@ -230,8 +232,8 @@ public class OneScenario extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        mBluetoothAdapter.setName(getGoodOldName);
         super.onDestroy();
-
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
     }
