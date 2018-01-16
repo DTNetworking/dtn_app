@@ -50,6 +50,8 @@ class BluetoothConnectClientT extends Thread{
 
         btConnectionStatusMsg = Message.obtain();
 
+        Log.i("DTNRunning", "I am running again.");
+
         try {
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
@@ -63,16 +65,18 @@ class BluetoothConnectClientT extends Thread{
             } catch (IOException closeException) {
                 Log.e(TAG, "Could not close the client socket", closeException);
             }
-            this.run();
+            return;
         }
 
         btConnectionStatusMsg.arg1 = 1;
 
         btConnectionStatus.sendMessage(btConnectionStatusMsg);
 
-        // The connection attempt succeeded. Perform work associated with
-        // the connection in a separate thread.
-        // manageMyConnectedSocket(mmSocket); (TBD)
+    }
+
+    public BluetoothSocket getClientSocket()
+    {
+        return mmSocket;
     }
 
     // Closes the client socket and causes the thread to finish.

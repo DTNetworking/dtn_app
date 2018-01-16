@@ -17,6 +17,7 @@ import java.util.UUID;
 class BluetoothConnectT extends Thread {
 
     private final BluetoothServerSocket mmServerSocket;
+    private BluetoothSocket ClientSocket;
     public static final String TAG = "DTNLogs";
     public static final String NAME = "DTNApp";
 
@@ -42,10 +43,12 @@ class BluetoothConnectT extends Thread {
 
     public void run() {
         BluetoothSocket socket = null;
+        ClientSocket = null;
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
             try {
                 socket = mmServerSocket.accept();
+                ClientSocket = socket;
                 btConnectionStatusMsg = Message.obtain();
                 btConnectionStatusMsg.arg1 = 1;
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
@@ -75,6 +78,11 @@ class BluetoothConnectT extends Thread {
     public BluetoothServerSocket get_mmsocket()
     {
         return mmServerSocket;
+    }
+
+    public BluetoothSocket getClientSocket()
+    {
+        return ClientSocket;
     }
 
     // Closes the connect socket and causes the thread to finish.

@@ -2,6 +2,7 @@ package me.iologic.apps.dtn;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,21 +31,31 @@ public class OneScenario extends AppCompatActivity {
     int noOfPeers = 0;
     BluetoothConnectT serverConnect;
     BluetoothConnectClientT clientConnect;
-    BluetoothDevice btDeviceConnectedGlobal;
+    BluetoothBytesT streamData;
+    BluetoothDevice btDeviceConnectedGlobal; // To get Device Name
+    BluetoothSocket SocketGlobal; // To store socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
-    Handler btClientConnectionStatus;
-    Handler btServerConnectionStatus;
     String getGoodOldName;
 
-    public static String SERVER_CONNECTION_SUCCESSFUL;
-    public static String SERVER_CONNECTION_FAIL;
+    Handler btClientConnectionStatus;
+    Handler btServerConnectionStatus;
+    Bundle bundle;
 
-    public static String CLIENT_CONNECTION_SUCCESSFUL;
-    public static String CLIENT_CONNECTION_FAIL;
+
+    private static String SERVER_CONNECTION_SUCCESSFUL;
+    private static String SERVER_CONNECTION_FAIL;
+
+    private static String CLIENT_CONNECTION_SUCCESSFUL;
+    private static String CLIENT_CONNECTION_FAIL;
+
+    private static String NOT_YET_CONNECTED;
 
     TextView btStatusText;
     TextView peerStatusText;
     TextView messageReceived;
+    TextView currentStatusText;
+    EditText EditMessageBox;
+    Button sendMsgBtn;
 
     boolean toastShown = false; // Client Re-Connection
 
@@ -65,12 +78,16 @@ public class OneScenario extends AppCompatActivity {
         btStatusText = (TextView) findViewById(R.id.btStatus);
         peerStatusText = (TextView) findViewById(R.id.peerStatus);
         messageReceived = (TextView) findViewById(R.id.messageStatus);
+        EditMessageBox = (EditText) findViewById(R.id.messageBox);
+        sendMsgBtn = (Button) findViewById(R.id.sendMsg);
+        currentStatusText = (TextView) findViewById(R.id.currentStatus);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
 
         btServerConnectionStatus = new Handler();
         btClientConnectionStatus = new Handler();
+        bundle = new Bundle();
 
         // Register for broadcasts when a device is discovered.
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -78,6 +95,7 @@ public class OneScenario extends AppCompatActivity {
         registerReceiver(mReceiver, filter);
 
         startBluetooth();
+        sendMessage();
     }
 
     protected void startBluetooth()
@@ -170,7 +188,7 @@ public class OneScenario extends AppCompatActivity {
     public void connectDevice(){
 
         String btDeviceName = "DTN-";
-        CLIENT_CONNECTION_FAIL = "Connection Failed!";
+        CLIENT_CONNECTION_FAIL = "Client Connection Failed!";
 
         btClientConnectionStatus = new Handler() {
             @Override
@@ -179,21 +197,24 @@ public class OneScenario extends AppCompatActivity {
                 {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
-                } else if(msg.arg1 == -1){
-                    if(toastShown == false) {
+                    currentStatusText.setText("CLIENT");
+                    SocketGlobal = clientConnect.getClientSocket();
+                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
+                    streamData.start();
+                } else if(msg.arg1 == -1) {
+                    if (toastShown == false) {
                         Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
-                       // clientConnect.start(); // Keep Trying To Connect If It Fails
                     }
+                        clientConnect.run(); // Keep Trying To Connect If It Fails
 
                     toastShown = true;
-                    // clientConnect.start(); // Keep Trying To Connect If It Fails
                 }
             }
         };
 
         for(BluetoothDevice btDevice : btDevicesFoundList) {
-            if (btDevice.getName().contains(btDeviceName)) {
+            if ((btDevice.getName().contains(btDeviceName)) && (btDevice != null)) {
                 btDeviceConnectedGlobal = btDevice;
                 clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
                 clientConnect.start();
@@ -201,7 +222,7 @@ public class OneScenario extends AppCompatActivity {
 
         }
             if(!(btDeviceConnectedGlobal == null)) {
-                CLIENT_CONNECTION_SUCCESSFUL = "Connected To:" + btDeviceConnectedGlobal.getName();
+                CLIENT_CONNECTION_SUCCESSFUL = "Client Connected To:" + btDeviceConnectedGlobal.getName();
             } else {
                 Log.e("DTN", "No Device Found With Name DTN");
             }
@@ -219,6 +240,10 @@ public class OneScenario extends AppCompatActivity {
                 {
                     Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
+                    currentStatusText.setText("SERVER");
+                    SocketGlobal = serverConnect.getClientSocket();
+                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
+                    streamData.start();
                 } else if(msg.arg1 == -1){
                     Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                     toast.show();
@@ -226,9 +251,47 @@ public class OneScenario extends AppCompatActivity {
             }
         };
 
+
         serverConnect = new BluetoothConnectT(mBluetoothAdapter, btServerConnectionStatus);
         serverConnect.start();
     }
+
+    private final Handler btMessageStatus = new Handler(){
+        @Override
+        public void handleMessage(Message msg)
+        {
+            if(msg.what == Constants.MessageConstants.MESSAGE_WRITE){
+                btStatusText.setText("Message is sent: " + EditMessageBox.getText());
+            } else if(msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
+                String statusMessage = bundle.getString("status");
+                btStatusText.setText(statusMessage);
+            } else if(msg.what == Constants.MessageConstants.MESSAGE_READ){
+                byte[] writeBuf = (byte[]) msg.obj;
+                String writeMessage = new String(writeBuf);
+                messageReceived.setText(writeMessage);
+            }
+        }
+    };
+
+    public void sendMessage(){
+
+        NOT_YET_CONNECTED = "I am not yet connected to any phone";
+
+            sendMsgBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!(SocketGlobal == null)) {
+                        byte[] test = EditMessageBox.getText().toString().getBytes();
+                        streamData.write((EditMessageBox.getText().toString()).getBytes());
+                    } else {
+                    Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+
+    });
+    }
+
 
     @Override
     protected void onDestroy() {

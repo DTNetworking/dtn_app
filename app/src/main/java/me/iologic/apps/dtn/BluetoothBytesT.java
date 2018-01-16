@@ -25,22 +25,13 @@ class BluetoothBytesT extends Thread {
     private final OutputStream mmOutStream;
     private byte[] mmBuffer; // mmBuffer store for the stream
 
+    private Handler mHandler;
+
     private static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
     private static final int NO_OF_PACKETS = 25;
 
-    public static final String TAG = "DTNLogs";
 
-    private Handler mHandler; // handler that gets info from Bluetooth service
-
-    // Defines several constants used when transmitting messages between the
-    // service and the UI.
-    private interface MessageConstants {
-        public static final int MESSAGE_READ = 0;
-        public static final int MESSAGE_WRITE = 1;
-        public static final int MESSAGE_TOAST = 2;
-    }
-
-    public BluetoothBytesT(BluetoothSocket socket){
+    public BluetoothBytesT(BluetoothSocket socket, Handler handler){
         mmSocket = socket;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
@@ -50,16 +41,18 @@ class BluetoothBytesT extends Thread {
         try {
             tmpIn = socket.getInputStream();
         } catch (IOException e) {
-            Log.e(TAG, "Error occurred when creating input stream", e);
+            Log.e(Constants.TAG, "Error occurred when creating input stream", e);
         }
         try {
             tmpOut = socket.getOutputStream();
         } catch (IOException e) {
-            Log.e(TAG, "Error occurred when creating output stream", e);
+            Log.e(Constants.TAG, "Error occurred when creating output stream", e);
         }
 
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
+
+        mHandler = handler;
     }
 
     public void run() { // For Reading Messages
@@ -73,11 +66,11 @@ class BluetoothBytesT extends Thread {
                 numBytes = mmInStream.read(mmBuffer);
                 // Send the obtained bytes to the UI activity.
                 Message readMsg = mHandler.obtainMessage(
-                        MessageConstants.MESSAGE_READ, numBytes, -1,
+                        Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
                         mmBuffer);
                 readMsg.sendToTarget();
             } catch (IOException e) {
-                Log.d(TAG, "Input stream was disconnected", e);
+                Log.d(Constants.TAG, "Input stream was disconnected", e);
                 break;
             }
         }
@@ -86,20 +79,23 @@ class BluetoothBytesT extends Thread {
     // Call this from the main activity to send data to the remote device.
     public void write(byte[] bytes) {
         try {
+
+            mmBuffer = bytes;
+
             mmOutStream.write(bytes);
 
             // Share the sent message with the UI activity.
             Message writtenMsg = mHandler.obtainMessage(
-                    MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
+                    Constants.MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
             writtenMsg.sendToTarget();
         } catch (IOException e) {
-            Log.e(TAG, "Error occurred when sending data", e);
+            Log.e(Constants.TAG, "Error occurred when sending data", e);
 
             // Send a failure message back to the activity.
             Message writeErrorMsg =
-                    mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
+                    mHandler.obtainMessage(Constants.MessageConstants.MESSAGE_TOAST);
             Bundle bundle = new Bundle();
-            bundle.putString("toast",
+            bundle.putString("status",
                     "Couldn't send data to the other device");
             writeErrorMsg.setData(bundle);
             mHandler.sendMessage(writeErrorMsg);
@@ -111,7 +107,7 @@ class BluetoothBytesT extends Thread {
         try {
             mmSocket.close();
         } catch (IOException e) {
-            Log.e(TAG, "Could not close the connect socket", e);
+            Log.e(Constants.TAG, "Could not close the connect socket", e);
         }
     }
 }
