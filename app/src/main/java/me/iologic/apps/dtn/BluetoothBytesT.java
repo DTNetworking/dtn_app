@@ -30,6 +30,7 @@ class BluetoothBytesT extends Thread {
     long sendingStartTime, sendingEndTime, duration;
 
     private Handler mHandler;
+    private boolean bandwidthCheck;
 
 
     public BluetoothBytesT(BluetoothSocket socket, Handler handler){
@@ -54,11 +55,15 @@ class BluetoothBytesT extends Thread {
         mmOutStream = tmpOut;
 
             mHandler = handler;
+
+        bandwidthCheck = true;
     }
+
+
 
     public void run() {
             // Keep listening to the InputStream until an exception occurs.
-            while (true) {
+            while (true && bandwidthCheck) {
                 try {
                     mmBuffer = new byte[1024];
                     int numBytes; // bytes returned from read()
@@ -76,6 +81,20 @@ class BluetoothBytesT extends Thread {
                     }
                 } catch (IOException e) {
                     Log.d(Constants.TAG, "Input stream was disconnected", e);
+                    break;
+                }
+
+                bandwidthCheck = false;
+            }
+
+            while(true && !bandwidthCheck){
+                try{
+                    if(mmInStream.available()>0){
+                        mmBuffer = new byte[1024];
+                        mmInStream.read(mmBuffer);
+                    }
+                } catch (IOException e){
+                    Log.d(Constants.TAG, "Input stream was disconnected from check byte", e);
                     break;
                 }
             }
