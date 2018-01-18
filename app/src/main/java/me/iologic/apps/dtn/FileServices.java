@@ -92,7 +92,7 @@ public class FileServices {
         return ret;
     }
 
-    public float getFileSize(){
+    public double getFileSize(){
         return fileContent.length();
     }
 

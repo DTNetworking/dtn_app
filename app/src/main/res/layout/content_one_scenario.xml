@@ -111,10 +111,10 @@
             android:layout_weight="1"/>
 
         <TextView
-            android:id="@+id/bandwidth"
+            android:id="@+id/speed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/bandwidth"
+            android:text="@string/speed"
             android:textSize="30sp"
             android:textAlignment="center"
             android:layout_weight="1"/>

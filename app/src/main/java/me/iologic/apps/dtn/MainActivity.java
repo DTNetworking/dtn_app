@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Make Device Discoverable
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120000);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0);
         startActivity(discoverableIntent);
 
         object = new OneScenario();

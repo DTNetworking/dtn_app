@@ -43,7 +43,7 @@ public class OneScenario extends AppCompatActivity {
 
     FileServices useFile;
 
-    float FileSentBandwidth;
+    double FileSentBandwidth;
     Handler getDataHandler;
     boolean deviceConnected;
     Handler retryConnectionHandler = new Handler();
@@ -63,7 +63,7 @@ public class OneScenario extends AppCompatActivity {
     TextView messageReceived;
     TextView currentStatusText;
     TextView peerConnectTime;
-    TextView bandwidthText;
+    TextView speedText;
     EditText EditMessageBox;
     Button sendMsgBtn;
 
@@ -92,10 +92,11 @@ public class OneScenario extends AppCompatActivity {
         sendMsgBtn = (Button) findViewById(R.id.sendMsg);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
-        bandwidthText = (TextView) findViewById(R.id.bandwidth);
+        speedText = (TextView) findViewById(R.id.speed);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
+        sendMsgBtn.setEnabled(false);
 
         btServerConnectionStatus = new Handler();
         btClientConnectionStatus = new Handler();
@@ -188,13 +189,15 @@ public class OneScenario extends AppCompatActivity {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                btDevicesFoundList.add(device);
+                if(!device.equals(null)){
+                btDevicesFoundList.add(device);}
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 String discBDevice = "Found Device: " + deviceName;
                 noOfPeers++;
                 Toast toast = Toast.makeText(getApplicationContext(), discBDevice, Toast.LENGTH_SHORT);
                 toast.show();
+                Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
                 btStatusText.setText("Discovery Period Finished");
                 serverConnection(); // Let's start the Server
@@ -223,7 +226,7 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
 
-                    bandwidthText.setText("Calculating Bandwidth");
+                    speedText.setText("Calculating Bandwidth");
 
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
@@ -234,10 +237,11 @@ public class OneScenario extends AppCompatActivity {
                                 useFile.fillTempFile(Constants.testFileName);
                             }
                             streamData.checkBandwidth(useFile);
-                            FileSentBandwidth = (useFile.getFileSize() / (float) streamData.getTotalBandwidthDuration());
+                            FileSentBandwidth = (useFile.getFileSize() / streamData.getTotalBandwidthDuration());
+                            Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
                             getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
                             Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + (float) streamData.getTotalBandwidthDuration()));
+                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " +  streamData.getTotalBandwidthDuration()));
                         }
                     });
 
@@ -248,7 +252,7 @@ public class OneScenario extends AppCompatActivity {
                         public void handleMessage(Message msg) {
                             Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
 
-                            bandwidthText.setText(String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps");
+                            speedText.setText(String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps");
 
                           /*  try {
                                 checkBandwidthT.sleep(1000);
@@ -264,6 +268,7 @@ public class OneScenario extends AppCompatActivity {
                     };
 
                     streamData.start();
+                    sendMsgBtn.setEnabled(true);
 
 
                 } else if (msg.arg1 == -1) {
@@ -293,7 +298,8 @@ public class OneScenario extends AppCompatActivity {
         };
 
         for (BluetoothDevice btDevice : btDevicesFoundList) {
-            if (btDevice != null) {
+            Log.i(Constants.TAG, "BtDevicesfound " + btDevicesFoundList.equals(null));
+            if (!btDevicesFoundList.equals(null)) {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
                     clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
@@ -324,7 +330,8 @@ public class OneScenario extends AppCompatActivity {
                     currentStatusText.setText("SERVER");
                     peerConnectTime.setText((long)msg.arg2 + " msec");
 
-                    bandwidthText.setVisibility(View.GONE);
+                    speedText.setVisibility(View.GONE);
+                    sendMsgBtn.setEnabled(true);
 
                     SocketGlobal = serverConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
@@ -346,11 +353,12 @@ public class OneScenario extends AppCompatActivity {
         public void handleMessage(Message msg)
         {
             if(msg.what == Constants.MessageConstants.MESSAGE_WRITE){
-                btStatusText.setText("Message is sent: " + EditMessageBox.getText());
+                btStatusText.setText("Message is sent");
             } else if(msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
                 String statusMessage = bundle.getString("status");
                 btStatusText.setText(statusMessage);
             } else if(msg.what == Constants.MessageConstants.MESSAGE_READ){
+                btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
                 String writeMessage = new String(writeBuf);
                 if(!(writeMessage.contains("^"))) {

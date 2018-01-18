@@ -10,7 +10,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by vinee on 15-01-2018.
@@ -32,6 +31,7 @@ class BluetoothBytesT extends Thread {
     private Handler mHandler;
     private boolean bandwidthCheck;
 
+    long writingStartTime, readingEndTime, packetDuration;
 
     public BluetoothBytesT(BluetoothSocket socket, Handler handler){
         mmSocket = socket;
@@ -62,12 +62,17 @@ class BluetoothBytesT extends Thread {
 
 
     public void run() {
-            // Keep listening to the InputStream until an exception occurs.
-            while (true && bandwidthCheck) {
+        // Keep listening to the InputStream until an exception occurs.
+        if (bandwidthCheck == true) {
+            while (true) {
                 try {
                     mmBuffer = new byte[1024];
                     int numBytes; // bytes returned from read()
+
+                   // Log.i(Constants.TAG, "Bandwidth Check: " + bandwidthCheck);
+
                     if (mmInStream.available() > 0) {
+                        Log.i(Constants.TAG, "I am inside bandwidth check loop.");
                         // Read from the InputStream.
                         numBytes = mmInStream.read(mmBuffer);
                         // Send the obtained bytes to the UI activity.
@@ -75,7 +80,15 @@ class BluetoothBytesT extends Thread {
                                 Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
                                 mmBuffer);
                         readMsg.sendToTarget();
-                    } else {
+                        bandwidthCheck = false;
+                    }
+
+                 //   Log.i(Constants.TAG, "Now BandwidthCheck" + bandwidthCheck);
+                        if(bandwidthCheck == false){
+                            Log.i(Constants.TAG, "BandwidthCheck broke the loop");
+                            break;
+                        }
+                     else {
 
                         SystemClock.sleep(100);
                     }
@@ -83,22 +96,30 @@ class BluetoothBytesT extends Thread {
                     Log.d(Constants.TAG, "Input stream was disconnected", e);
                     break;
                 }
-
-                bandwidthCheck = false;
             }
 
-            while(true && !bandwidthCheck){
-                try{
-                    if(mmInStream.available()>0){
-                        mmBuffer = new byte[1024];
-                        mmInStream.read(mmBuffer);
+            while (true) {
+                try {
+                    int numMessageBytes;
+                    mmBuffer = new byte[1024];
+                    if (mmInStream.available() > 0) {
+                        Log.i(Constants.TAG, "I am inside reading the message loop." + new String(mmBuffer));
+                        numMessageBytes = mmInStream.read(mmBuffer);
+                        // Send the obtained bytes to the UI activity.
+                        Message readMsg = mHandler.obtainMessage(
+                                Constants.MessageConstants.MESSAGE_READ, numMessageBytes, -1,
+                                mmBuffer);
+                        readMsg.sendToTarget();
+                    } else {
+                        SystemClock.sleep(100);
                     }
-                } catch (IOException e){
+                } catch (IOException e) {
                     Log.d(Constants.TAG, "Input stream was disconnected from check byte", e);
                     break;
                 }
             }
         }
+    }
 
     // Call this from the main activity to send data to the remote device.
     public void write(byte[] bytes) {
@@ -120,7 +141,7 @@ class BluetoothBytesT extends Thread {
 
             // Share the sent message with the UI activity.
             Message writtenMsg = mHandler.obtainMessage(
-                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int)(duration/1000000), mmBuffer);
+                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int)(duration), mmBuffer);
             writtenMsg.sendToTarget();
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error occurred when sending data", e);
@@ -138,32 +159,50 @@ class BluetoothBytesT extends Thread {
 
     public void writePackets(byte[] bytes){
         int i = 0;
-        int initali = 0;
+        int initi = 0;
         int j = 0;
         int m = 0;
         int offset = 0;
         byte[] packet = new byte[2];
         String MessagePacket;
 
-        while(j <= bytes.length){
-            for(j=initali; j<(Constants.MessageConstants.PACKET_SIZE + offset); j++) {
+        Log.i(Constants.TAG, "Bytes length from writePackets(): " + bytes.length);
+
+            for(j=initi; j<(Constants.MessageConstants.PACKET_SIZE + offset); j++) {
                 try {
+                    if(j == bytes.length){
+                        try {
+                            MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
+                            mmOutStream.write(MessagePacket.getBytes());
+                        } catch (IOException WriteE){
+                            Log.i(Constants.TAG, "Write Error: " + WriteE);
+                        }
+                        break;
+                    }
                     packet[m] = bytes[j];
+                    Log.i(Constants.TAG, "Byte Reading from writePackets(): " + new String(packet));
                     i++;
                     m++;
-                    if((i%2) == 0 && (i!=0)) {
-                        initali = i;
+                    if((i%2) == 0 && (i!=0))  {
+                        initi = i;
                         offset = offset + 2;
                         m=0;
 
-                        MessagePacket = new String(packet);
+                        MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
                         mmOutStream.write(MessagePacket.getBytes());
+                        packet = new byte[2]; // Erase old Data
                     }
+
                 } catch (IOException WriteE){
                     Log.i(Constants.TAG, "Write Error: " + WriteE);
             }
             }
         }
+
+
+    public void readPackets(){
+        // Packet reconstruction
+
     }
 
     public void flushOutStream(){
@@ -179,8 +218,9 @@ class BluetoothBytesT extends Thread {
         this.write(fileData.getBytes());
     }
 
-    public long getTotalBandwidthDuration(){
-        return (TimeUnit.NANOSECONDS.toSeconds(duration));
+    public double getTotalBandwidthDuration(){
+        Log.i(Constants.TAG, "Duration:" + duration);
+        return (duration/1E9);
     }
 
     // Call this method from the main activity to shut down the connection.
