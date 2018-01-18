@@ -119,11 +119,27 @@ class BluetoothBytesT extends Thread {
 
     public void writePackets(byte[] bytes){
         int i = 0;
+        int initali = 0;
         int j = 0;
+        int m = 0;
+        int offset = 0;
+        byte[] packet = new byte[2];
+        String MessagePacket;
+
         while(j <= bytes.length){
-            for(j=i; j<Constants.MessageConstants.PACKET_SIZE; j++) {
+            for(j=initali; j<(Constants.MessageConstants.PACKET_SIZE + offset); j++) {
                 try {
-                    mmOutStream.write(bytes[j]);
+                    packet[m] = bytes[j];
+                    i++;
+                    m++;
+                    if((i%2) == 0 && (i!=0)) {
+                        initali = i;
+                        offset = offset + 2;
+                        m=0;
+
+                        MessagePacket = new String(packet);
+                        mmOutStream.write(MessagePacket.getBytes());
+                    }
                 } catch (IOException WriteE){
                     Log.i(Constants.TAG, "Write Error: " + WriteE);
             }
