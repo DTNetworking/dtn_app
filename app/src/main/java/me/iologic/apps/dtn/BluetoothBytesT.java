@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.IOException;
@@ -30,9 +31,6 @@ class BluetoothBytesT extends Thread {
 
     private Handler mHandler;
 
-    private static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
-    private static final int NO_OF_PACKETS = 25;
-
 
     public BluetoothBytesT(BluetoothSocket socket, Handler handler){
         mmSocket = socket;
@@ -58,26 +56,30 @@ class BluetoothBytesT extends Thread {
             mHandler = handler;
     }
 
-    public void run() { // For Reading Messages
-        mmBuffer = new byte[1024];
-        int numBytes; // bytes returned from read()
+    public void run() {
+            // Keep listening to the InputStream until an exception occurs.
+            while (true) {
+                try {
+                    mmBuffer = new byte[1024];
+                    int numBytes; // bytes returned from read()
+                    if (mmInStream.available() > 0) {
+                        // Read from the InputStream.
+                        numBytes = mmInStream.read(mmBuffer);
+                        // Send the obtained bytes to the UI activity.
+                        Message readMsg = mHandler.obtainMessage(
+                                Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
+                                mmBuffer);
+                        readMsg.sendToTarget();
+                    } else {
 
-        // Keep listening to the InputStream until an exception occurs.
-        while (true) {
-            try {
-                // Read from the InputStream.
-                numBytes = mmInStream.read(mmBuffer);
-                // Send the obtained bytes to the UI activity.
-                Message readMsg = mHandler.obtainMessage(
-                        Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
-                        mmBuffer);
-                readMsg.sendToTarget();
-            } catch (IOException e) {
-                Log.d(Constants.TAG, "Input stream was disconnected", e);
-                break;
+                        SystemClock.sleep(100);
+                    }
+                } catch (IOException e) {
+                    Log.d(Constants.TAG, "Input stream was disconnected", e);
+                    break;
+                }
             }
         }
-    }
 
     // Call this from the main activity to send data to the remote device.
     public void write(byte[] bytes) {
@@ -85,13 +87,16 @@ class BluetoothBytesT extends Thread {
 
             mmBuffer = bytes;
 
+            String testMessage = new String(mmBuffer);
+            Log.i(Constants.TAG, "Message Sending: " + testMessage);
+
             sendingStartTime = System.nanoTime();
                 mmOutStream.write(mmBuffer);
             sendingEndTime = System.nanoTime();
 
             duration = sendingEndTime - sendingStartTime;
 
-            Log.i(Constants.TAG, "Time Calculated:" + sendingEndTime + "And " + sendingStartTime + "And " + duration);
+            Log.i(Constants.TAG, "Time Calculated:" + sendingEndTime + " And " + sendingStartTime + " And " + duration);
 
 
             // Share the sent message with the UI activity.
@@ -109,6 +114,20 @@ class BluetoothBytesT extends Thread {
                     "Couldn't send data to the other device");
             writeErrorMsg.setData(bundle);
             mHandler.sendMessage(writeErrorMsg);
+        }
+    }
+
+    public void writePackets(byte[] bytes){
+        int i = 0;
+        int j = 0;
+        while(j <= bytes.length){
+            for(j=i; j<Constants.MessageConstants.PACKET_SIZE; j++) {
+                try {
+                    mmOutStream.write(bytes[j]);
+                } catch (IOException WriteE){
+                    Log.i(Constants.TAG, "Write Error: " + WriteE);
+            }
+            }
         }
     }
 

@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
  * Created by vinee on 16-01-2018.
  */
 
-public class FileServices  {
+public class FileServices {
 
     private File file;
     private FileOutputStream outputStream;
@@ -27,16 +27,28 @@ public class FileServices  {
     {
         ctx = context;
     }
-    public File createTempFile(String ReceivedFileName) {
+
+    public File createTemporaryFile(String ReceivedFileName) {
 
         try {
             String fileName = ReceivedFileName;
-            file = File.createTempFile(fileName, null, ctx.getFilesDir());
+            file = File.createTempFile(fileName, null, ctx.getCacheDir());
         } catch (IOException e) {
             // Error while creating file
         }
         return file;
     }
+
+    public boolean checkFileExists(String ReceivedFileName){
+        File file = new File(ctx.getCacheDir() + File.separator + ReceivedFileName);
+        if(file.exists())
+        {
+            return true;
+        }
+            return false;
+    }
+
+
 
     public void fillTempFile(String fileName)
     {
@@ -87,8 +99,17 @@ public class FileServices  {
     static String createString(long size){
         StringBuilder o=new StringBuilder();
         for(int i=0;i<size;i++){
-            o.append("f");
+            o.append("^");
         }
         return o.toString();
+    }
+
+    public void deleteFile(){
+          if(file.delete() == true)
+          {
+            Log.i(Constants.TAG, "File " + file.getName() + " is deleted.");
+          } else {
+              Log.e(Constants.TAG, "File " + file.getName() + " could not be deleted.");
+          }
     }
 }

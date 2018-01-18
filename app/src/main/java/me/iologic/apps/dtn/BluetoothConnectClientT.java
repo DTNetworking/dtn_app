@@ -3,9 +3,9 @@ package me.iologic.apps.dtn;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.os.Handler;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -23,8 +23,8 @@ class BluetoothConnectClientT extends Thread{
     Handler btConnectionStatus;
     Message btConnectionStatusMsg;
 
-    int isAlreadyConnected = 0;
     long pairingStartTime, pairingEndTime, duration;
+    int retry;
 
     private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
 
@@ -45,6 +45,8 @@ class BluetoothConnectClientT extends Thread{
             Log.e(TAG, "Socket's create() method failed", e);
         }
         mmSocket = tmp;
+
+        retry = 0;
     }
 
     public void run() {
@@ -53,9 +55,9 @@ class BluetoothConnectClientT extends Thread{
 
         btConnectionStatusMsg = Message.obtain();
 
-        while((mmSocket.isConnected()!=true) && isAlreadyConnected!=1) {
-
-           // Log.i("DTNRunning", "I am running. " + isAlreadyConnected);
+           if(retry!=0) {Log.i(Constants.TAG, "I am re-trying to connect to the DTN device. " + android.os.Process.myTid() + " Retry: " + retry);}
+           else { // Log.i(Constants.TAG, "I am connecting to the DTN device for the first time");
+                }
 
             try {
                 // Connect to the remote device through the socket. This call blocks
@@ -67,16 +69,19 @@ class BluetoothConnectClientT extends Thread{
             } catch (IOException connectException) {
                 btConnectionStatusMsg.arg1 = -1;
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
+                //  Log.i(Constants.TAG, "Connect Exception:" + connectException);
+
                 // Unable to connect; close the socket and return.
-                try {
+               try {
                     mmSocket.close();
                 } catch (IOException closeException) {
                     Log.e(TAG, "Could not close the client socket", closeException);
                 }
+
                 return;
             }
 
-            isAlreadyConnected++;
+            retry++;
 
             btConnectionStatusMsg.arg1 = 1;
             btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
@@ -84,7 +89,6 @@ class BluetoothConnectClientT extends Thread{
             btConnectionStatus.sendMessage(btConnectionStatusMsg);
 
         }
-    }
 
     public BluetoothSocket getClientSocket()
     {

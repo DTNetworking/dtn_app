@@ -43,6 +43,10 @@ public class OneScenario extends AppCompatActivity {
 
     FileServices useFile;
 
+    float FileSentBandwidth;
+    Handler getDataHandler;
+    boolean deviceConnected;
+    Handler retryConnectionHandler = new Handler();
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
     private static String SERVER_CONNECTION_FAIL;
@@ -51,6 +55,8 @@ public class OneScenario extends AppCompatActivity {
     private static String CLIENT_CONNECTION_FAIL;
 
     private static String NOT_YET_CONNECTED;
+
+    private StringBuffer mOutStringBuffer;
 
     TextView btStatusText;
     TextView peerStatusText;
@@ -101,6 +107,12 @@ public class OneScenario extends AppCompatActivity {
         registerReceiver(mReceiver, filter);
 
         useFile = new FileServices(getApplicationContext());
+
+        deviceConnected = false;
+        retryConnectionHandler = new Handler();
+
+        // Initialize the buffer for outgoing messages
+        mOutStringBuffer = new StringBuffer("");
 
         startBluetooth();
         sendMessage();
@@ -187,12 +199,14 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Discovery Period Finished");
                 serverConnection(); // Let's start the Server
                 connectDevice();
+            } else if(btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)){
+                deviceConnected = true;
             }
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
         }
     };
 
-    public void connectDevice(){
+    public void connectDevice() {
 
         String btDeviceName = "DTN-";
         CLIENT_CONNECTION_FAIL = "Client Connection Failed!";
@@ -200,51 +214,99 @@ public class OneScenario extends AppCompatActivity {
         btClientConnectionStatus = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if(msg.arg1 == 1)
-                {
+                if (msg.arg1 == 1) {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     currentStatusText.setText("CLIENT");
-                    peerConnectTime.setText((long)msg.arg2 + " msec");
+                    peerConnectTime.setText((long) msg.arg2 + " msec");
 
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
 
-                    // Check Bandwidth
-                    useFile.createTempFile(Constants.testFileName);
-                    useFile.fillTempFile(Constants.testFileName);
-                    streamData.checkBandwidth(useFile);
-                    float bandwidth = (useFile.getFileSize()/streamData.getTotalBandwidthDuration());
+                    bandwidthText.setText("Calculating Bandwidth");
 
-                    Log.i(Constants.TAG, (String)(useFile.getFileSize()+ " Time: " + streamData.getTotalBandwidthDuration()));
-                    bandwidthText.setText(bandwidth + " Kbps");
+                    final Thread checkBandwidthT = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Check Bandwidth
+                            if(!useFile.checkFileExists(Constants.testFileName)) {
+                                useFile.createTemporaryFile(Constants.testFileName);
+                                useFile.fillTempFile(Constants.testFileName);
+                            }
+                            streamData.checkBandwidth(useFile);
+                            FileSentBandwidth = (useFile.getFileSize() / (float) streamData.getTotalBandwidthDuration());
+                            getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+                            Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + (float) streamData.getTotalBandwidthDuration()));
+                        }
+                    });
+
+                    checkBandwidthT.start();
+
+                    getDataHandler = new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+
+                            bandwidthText.setText(String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps");
+
+                          /*  try {
+                                checkBandwidthT.sleep(1000);
+                                checkBandwidthT.run();
+                            } catch (InterruptedException SleepE) {
+                                Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+                            }
+
+                        } */
+
+
+                        }
+                    };
 
                     streamData.start();
-                } else if(msg.arg1 == -1) {
+
+
+                } else if (msg.arg1 == -1) {
                     if (toastShown == false) {
                         Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
                     }
-                            clientConnect.run(); // Keep Trying To Connect If It Fails.
+
+                    if(deviceConnected == false) {
+                        final Runnable r = new Runnable() {
+                            @Override
+                            public void run() {
+                                clientConnect.run(); // Keep Trying To Connect If It Fails.
+                            }
+                        };
+
+
+                        retryConnectionHandler.postDelayed(r, 5000);
+
+                    }
+
+
 
                     toastShown = true;
                 }
             }
         };
 
-        for(BluetoothDevice btDevice : btDevicesFoundList) {
-            if ((btDevice.getName().contains(btDeviceName)) && (btDevice != null)) {
-                btDeviceConnectedGlobal = btDevice;
-                clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
-                clientConnect.start();
-            }
+        for (BluetoothDevice btDevice : btDevicesFoundList) {
+            if (btDevice != null) {
+                if ((btDevice.getName().contains(btDeviceName))) {
+                    btDeviceConnectedGlobal = btDevice;
+                    clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
+                    clientConnect.start();
+                }
 
-        }
-            if(!(btDeviceConnectedGlobal == null)) {
+            }
+            if (!(btDeviceConnectedGlobal == null)) {
                 CLIENT_CONNECTION_SUCCESSFUL = "Client Connected To:" + btDeviceConnectedGlobal.getName();
             } else {
                 Log.e("DTN", "No Device Found With Name DTN");
             }
+        }
     }
 
     private void serverConnection(){
@@ -291,8 +353,10 @@ public class OneScenario extends AppCompatActivity {
             } else if(msg.what == Constants.MessageConstants.MESSAGE_READ){
                 byte[] writeBuf = (byte[]) msg.obj;
                 String writeMessage = new String(writeBuf);
-                messageReceived.setText(writeMessage);
-                streamData.flushOutStream();
+                if(!(writeMessage.contains("^"))) {
+                    Log.i(Constants.TAG, "Message Received: " + writeMessage);
+                    messageReceived.setText(writeMessage);
+                }
             }
         }
     };
@@ -305,8 +369,10 @@ public class OneScenario extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     if (!(SocketGlobal == null)) {
-                        byte[] test = EditMessageBox.getText().toString().getBytes();
                         streamData.write((EditMessageBox.getText().toString()).getBytes());
+                        // Reset out string buffer to zero and clear the edit text field
+                        Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
+                        streamData.flushOutStream();
                     } else {
                     Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();

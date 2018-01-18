@@ -14,5 +14,8 @@ public class Constants {
         public static final int MESSAGE_READ = 0;
         public static final int MESSAGE_WRITE = 1;
         public static final int MESSAGE_TOAST = 2;
+
+        public static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
+        public static final int NO_OF_PACKETS = 25;
     }
 }
