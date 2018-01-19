@@ -15,11 +15,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by vinee on 15-01-2018.
- *
+ * <p>
  * Documentation:
- *
+ * <p>
  * No Of Packets To Be Sent =(bytes.length/PACKET_SIZE).
- *
  */
 
 class BluetoothBytesT extends Thread {
@@ -28,13 +27,13 @@ class BluetoothBytesT extends Thread {
     private final OutputStream mmOutStream;
     private byte[] mmBuffer; // mmBuffer store for the stream
 
-    long sendingStartTime, sendingEndTime, duration;
+    long sendingStartTime, sendingEndTime, duration, ACKStartTime;
 
     private Handler mHandler;
 
     long writingStartTime, readingEndTime, packetDuration;
 
-    public BluetoothBytesT(BluetoothSocket socket, Handler handler){
+    public BluetoothBytesT(BluetoothSocket socket, Handler handler) {
         mmSocket = socket;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
@@ -55,41 +54,42 @@ class BluetoothBytesT extends Thread {
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
 
-            mHandler = handler;
+        mHandler = handler;
     }
 
 
-
     public void run() {
+        boolean isCheckingBandwidth = true;
         // Keep listening to the InputStream until an exception occurs.
-            while (true) {
-                try {
-                    mmBuffer = new byte[1024];
-                    int numBytes; // bytes returned from read()
+        while (true) {
+            try {
+                mmBuffer = new byte[1024];
+                int numBytes; // bytes returned from read()
 
-                   // Log.i(Constants.TAG, "Bandwidth Check: " + bandwidthCheck);
+                // Log.i(Constants.TAG, "Bandwidth Check: " + bandwidthCheck);
 
-                    if (mmInStream.available() > 0) {
-                        // Read from the InputStream.
-                        numBytes = mmInStream.read(mmBuffer);
-                        // Send the obtained bytes to the UI activity.
-                        Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
+                if (mmInStream.available() > 0) {
+                    // Read from the InputStream.
+                    numBytes = mmInStream.read(mmBuffer);
+                    // Send the obtained bytes to the UI activity.
+                  //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
+                    if(isCheckingBandwidth == false) {
                         Message readMsg = mHandler.obtainMessage(
                                 Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
                                 mmBuffer);
                         readMsg.sendToTarget();
                     }
+                    isCheckingBandwidth = false;
+                } else {
 
-                     else {
-
-                        SystemClock.sleep(100);
-                    }
-                } catch (IOException e) {
-                    Log.d(Constants.TAG, "Input stream was disconnected", e);
-                    break;
+                    SystemClock.sleep(100);
                 }
+            } catch (IOException e) {
+                Log.d(Constants.TAG, "Input stream was disconnected", e);
+                break;
             }
         }
+    }
 
     // Call this from the main activity to send data to the remote device.
     public void write(byte[] bytes) {
@@ -101,7 +101,7 @@ class BluetoothBytesT extends Thread {
             Log.i(Constants.TAG, "Message Sending: " + testMessage);
 
             sendingStartTime = System.nanoTime();
-                mmOutStream.write(mmBuffer);
+            mmOutStream.write(mmBuffer);
             sendingEndTime = System.nanoTime();
 
             duration = sendingEndTime - sendingStartTime;
@@ -111,7 +111,7 @@ class BluetoothBytesT extends Thread {
 
             // Share the sent message with the UI activity.
             Message writtenMsg = mHandler.obtainMessage(
-                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int)(duration), mmBuffer);
+                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int) (duration), mmBuffer);
             writtenMsg.sendToTarget();
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error occurred when sending data", e);
@@ -127,7 +127,7 @@ class BluetoothBytesT extends Thread {
         }
     }
 
-    public void writePackets(byte[] bytes){
+    public void writePackets(byte[] bytes) {
         int i = 0;
         int initi = 0;
         int j = 0;
@@ -138,56 +138,63 @@ class BluetoothBytesT extends Thread {
 
         Log.i(Constants.TAG, "Bytes length from writePackets(): " + bytes.length);
 
-            for(j=initi; j<(Constants.MessageConstants.PACKET_SIZE + offset); j++) {
-                try {
-                    if(j == bytes.length){
-                        try {
-                            MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
-                            mmOutStream.write(MessagePacket.getBytes());
-                        } catch (IOException WriteE){
-                            Log.i(Constants.TAG, "Write Error: " + WriteE);
-                        }
-                        break;
-                    }
-                    packet[m] = bytes[j];
-                    Log.i(Constants.TAG, "Byte Reading from writePackets(): " + new String(packet));
-                    i++;
-                    m++;
-                    if((i%2) == 0 && (i!=0))  {
-                        initi = i;
-                        offset = offset + 2;
-                        m=0;
+        ACKStartTime = System.nanoTime(); // Acknowledgement Start Time
 
+        for (j = initi; j < (Constants.MessageConstants.PACKET_SIZE + offset); j++) {
+            try {
+                if (j == bytes.length) {
+                    try {
                         MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
                         mmOutStream.write(MessagePacket.getBytes());
-                        packet = new byte[2]; // Erase old Data
+                    } catch (IOException WriteE) {
+                        Log.i(Constants.TAG, "Write Error: " + WriteE);
                     }
+                    break;
+                }
+                packet[m] = bytes[j];
+                Log.i(Constants.TAG, "Byte Reading from writePackets(): " + new String(packet));
+                i++;
+                m++;
+                if ((i % 2) == 0 && (i != 0)) {
+                    initi = i;
+                    offset = offset + 2;
+                    m = 0;
 
-                } catch (IOException WriteE){
-                    Log.i(Constants.TAG, "Write Error: " + WriteE);
-            }
+                    MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
+                    mmOutStream.write(MessagePacket.getBytes());
+                    packet = new byte[2]; // Erase old Data
+                }
+
+                Message readMsg = mHandler.obtainMessage(
+                        Constants.MessageConstants.MESSAGE_WRITE, -1, -1,
+                        mmBuffer);
+                readMsg.sendToTarget();
+
+            } catch (IOException WriteE) {
+                Log.i(Constants.TAG, "Write Error: " + WriteE);
             }
         }
+    }
 
 
-    public void flushOutStream(){
+    public void flushOutStream() {
         try {
             mmOutStream.flush();
-        } catch (IOException e){
+        } catch (IOException e) {
             Log.e(Constants.TAG, "Could not flush out stream", e);
         }
     }
 
-    public void checkBandwidth(FileServices fileService, File tempFileRead){
+    public void checkBandwidth(FileServices fileService, File tempFileRead) {
         byte[] getData = fileService.readTempFile(tempFileRead);
         write(getData);
         flushOutStream();
     }
 
-    public long getTotalBandwidthDuration(){
+    public long getTotalBandwidthDuration() {
         Log.i(Constants.TAG, "Duration:" + duration);
         Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
-        if(TimeUnit.NANOSECONDS.toSeconds(duration) == 0){
+        if (TimeUnit.NANOSECONDS.toSeconds(duration) == 0) {
             duration = 1;
             Log.i(Constants.TAG, "Sending duration as: " + duration);
             return duration;

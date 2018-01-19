@@ -24,17 +24,20 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class OneScenario extends AppCompatActivity {
 
-    static final int REQUEST_ENABLE_BT=1;
+    static final int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter mBluetoothAdapter; // The Only Bluetooth Adapter Used.
     int noOfPeers = 0;
     BluetoothConnectT serverConnect;
     BluetoothConnectClientT clientConnect;
     BluetoothBytesT streamData;
+    BluetoothACKBytesT ACKData;
     BluetoothDevice btDeviceConnectedGlobal; // To get Device Name
-    BluetoothSocket SocketGlobal; // To store socket
+    BluetoothSocket SocketGlobal; // To store MAIN socket
+    BluetoothSocket ACKSocketGlobal; // To store ACK socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
 
@@ -63,10 +66,12 @@ public class OneScenario extends AppCompatActivity {
     TextView currentStatusText;
     TextView peerConnectTime;
     TextView speedText;
+    TextView delayText;
     EditText EditMessageBox;
     Button sendMsgBtn;
 
     boolean toastShown = false; // Client Re-Connection
+    long ACKEndTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +97,7 @@ public class OneScenario extends AppCompatActivity {
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         speedText = (TextView) findViewById(R.id.speed);
+        delayText = (TextView) findViewById(R.id.delay);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
@@ -115,8 +121,7 @@ public class OneScenario extends AppCompatActivity {
         sendMessage();
     }
 
-    protected void startBluetooth()
-    {
+    protected void startBluetooth() {
         String discMessage = "Discoverability set to ON";
         String btEnabledMessage = "Bluetooth is Enabled";
         Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), discMessage, Toast.LENGTH_SHORT);
@@ -125,43 +130,43 @@ public class OneScenario extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         getGoodOldName = mBluetoothAdapter.getName();
 
-            if (mBluetoothAdapter == null) {
-                btStatusText.setText("Bluetooth Not Found!");
-            } else if (!mBluetoothAdapter.isEnabled()) {
-               // mBluetoothAdapter.enable();
-         //   Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        if (mBluetoothAdapter == null) {
+            btStatusText.setText("Bluetooth Not Found!");
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            // mBluetoothAdapter.enable();
+            //   Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
-          //  startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT); // Calls onActivityResult */
-                setBtName();
+            //  startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT); // Calls onActivityResult */
+            setBtName();
 
-                Toast btDeviceEnableToast = Toast.makeText(getApplicationContext(), btEnabledMessage, Toast.LENGTH_SHORT);
-                btDeviceEnableToast.show();
+            Toast btDeviceEnableToast = Toast.makeText(getApplicationContext(), btEnabledMessage, Toast.LENGTH_SHORT);
+            btDeviceEnableToast.show();
 
-                Handler qBhandler = new Handler();
-                qBhandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        discBluetoothDevices();
-                    }
-                }, 2000);
+            Handler qBhandler = new Handler();
+            qBhandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    discBluetoothDevices();
+                }
+            }, 2000);
 
-            } else if (mBluetoothAdapter.isEnabled()) {
-                btStatusText.setText("Bluetooth is already enabled!");
-                setBtName();
-                Handler qBhandler = new Handler();
-                qBhandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        discBluetoothDevices();
-                    }
-                }, 2000);
+        } else if (mBluetoothAdapter.isEnabled()) {
+            btStatusText.setText("Bluetooth is already enabled!");
+            setBtName();
+            Handler qBhandler = new Handler();
+            qBhandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    discBluetoothDevices();
+                }
+            }, 2000);
 
-            }
+        }
 
     }
 
-    private void setBtName(){
-        String btDeviceName = "DTN-"+ Build.SERIAL;
+    private void setBtName() {
+        String btDeviceName = "DTN-" + Build.SERIAL;
         String message = "Bluetooth Device Name: " + btDeviceName;
         mBluetoothAdapter.setName(btDeviceName);
         Toast btDeviceNameToast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
@@ -169,8 +174,7 @@ public class OneScenario extends AppCompatActivity {
     }
 
     protected void discBluetoothDevices() {
-        if(mBluetoothAdapter.isDiscovering())
-        {
+        if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
         }
         mBluetoothAdapter.startDiscovery();
@@ -185,8 +189,9 @@ public class OneScenario extends AppCompatActivity {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(!device.equals(null)){
-                btDevicesFoundList.add(device);}
+                if (!device.equals(null)) {
+                    btDevicesFoundList.add(device);
+                }
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 String discBDevice = "Found Device: " + deviceName;
@@ -194,11 +199,11 @@ public class OneScenario extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(), discBDevice, Toast.LENGTH_SHORT);
                 toast.show();
                 Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStatusText.setText("Discovery Period Finished");
                 serverConnection(); // Let's start the Server
                 connectDevice();
-            } else if(btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)){
+            } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             }
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
@@ -228,16 +233,16 @@ public class OneScenario extends AppCompatActivity {
                         @Override
                         public void run() {
                             // Check Bandwidth
-                           // if(!useFile.checkFileExists(Constants.testFileName)) {
-                             File tempFile = useFile.createTemporaryFile(Constants.testFileName);
-                             useFile.fillTempFile(tempFile);
-                          //  }
-                            streamData.checkBandwidth(useFile,tempFile);
+                            // if(!useFile.checkFileExists(Constants.testFileName)) {
+                            File tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                            useFile.fillTempFile(tempFile);
+                            //  }
+                            streamData.checkBandwidth(useFile, tempFile);
                             FileSentBandwidth = (useFile.getFileSize() / streamData.getTotalBandwidthDuration());
                             Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
                             getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
                             Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " +  streamData.getTotalBandwidthDuration()));
+                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + streamData.getTotalBandwidthDuration()));
                         }
                     });
 
@@ -267,13 +272,13 @@ public class OneScenario extends AppCompatActivity {
                     sendMsgBtn.setEnabled(true);
 
 
-                } else if (msg.arg1 == -1   ) {
+                } else if (msg.arg1 == -1) {
                     if (toastShown == false) {
                         Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
                     }
 
-                    if(deviceConnected == false) {
+                    if (deviceConnected == false) {
                         final Runnable r = new Runnable() {
                             @Override
                             public void run() {
@@ -282,14 +287,21 @@ public class OneScenario extends AppCompatActivity {
                         };
 
 
-                        retryConnectionHandler.postDelayed(r, 5000);
+                        retryConnectionHandler.postDelayed(r, 5000); // 5000 = 5 Secs. Does it do any good?
 
                     }
 
 
+                } else if (msg.arg1 == 2) {
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                        toast.show();
 
-                    toastShown = true;
+                    ACKSocketGlobal = clientConnect.getACKClientSocket();
+                    ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
+                    ACKData.start();
                 }
+
+                toastShown = true;
             }
         };
 
@@ -311,30 +323,36 @@ public class OneScenario extends AppCompatActivity {
         }
     }
 
-    private void serverConnection(){
+    private void serverConnection() {
 
-        SERVER_CONNECTION_SUCCESSFUL ="Server is successfully connected!";
+        SERVER_CONNECTION_SUCCESSFUL = "Server is successfully connected!";
         SERVER_CONNECTION_FAIL = "Server failed to connect";
 
         btServerConnectionStatus = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if(msg.arg1 == 1)
-                {
+                if (msg.arg1 == 1) {
                     Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     currentStatusText.setText("SERVER");
-                    peerConnectTime.setText((long)msg.arg2 + " msec");
+                    peerConnectTime.setText((long) msg.arg2 + " msec");
 
                     speedText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
 
-                    SocketGlobal = serverConnect.getClientSocket();
+                    SocketGlobal = serverConnect.getServerSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
                     streamData.start();
-                } else if(msg.arg1 == -1){
+                } else if (msg.arg1 == -1) {
                     Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                     toast.show();
+                } else if (msg.arg1 == 2) {
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    ACKSocketGlobal = serverConnect.getACKSocket();
+                    ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
+                    ACKData.start();
                 }
             }
         };
@@ -344,48 +362,62 @@ public class OneScenario extends AppCompatActivity {
         serverConnect.start();
     }
 
-    private final Handler btMessageStatus = new Handler(){
+    private final Handler btMessageStatus = new Handler() {
         @Override
-        public void handleMessage(Message msg)
-        {
-            if(msg.what == Constants.MessageConstants.MESSAGE_WRITE){
+        public void handleMessage(Message msg) {
+            if (msg.what == Constants.MessageConstants.MESSAGE_WRITE) {
                 btStatusText.setText("Message is sent");
-            } else if(msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
+            } else if (msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
                 String statusMessage = bundle.getString("status");
                 btStatusText.setText(statusMessage);
-            } else if((msg.what == Constants.MessageConstants.MESSAGE_READ)){
+            } else if ((msg.what == Constants.MessageConstants.MESSAGE_READ)) {
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
-                    Log.i(Constants.TAG, "Message Received: " + writeMessage);
-                    messageReceived.setText(writeMessage);
+              //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
+                messageReceived.setText(writeMessage);
                 // }
-
-               // isCheckingBandwidth = false;
+                ACKData.write(ByteUtils.longToBytes(System.nanoTime()));
+                // isCheckingBandwidth = false;
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
             }
         }
     };
 
-    public void sendMessage(){
+    private final Handler btACKStatus = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == Constants.MessageConstants.ACK_READ) {
+                byte[] writeBuf = (byte[]) msg.obj;
+                Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
+                long ACKEndTime = ByteUtils.bytesToLong(writeBuf);
+                double TotalRWduration = (TimeUnit.NANOSECONDS.toSeconds(ACKEndTime - streamData.ACKStartTime));
+                delayText.setText(String.format("%.2f", TotalRWduration) + " secs");
+            } else if(msg.what == Constants.MessageConstants.ACK_WRITE) {
+                Log.i(Constants.TAG, "I am sending an ACK.");
+            }
+        }
+    };
+
+    public void sendMessage() {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
-            sendMsgBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!(SocketGlobal == null)) {
-                        streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
-                        Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
-                        streamData.flushOutStream();
-                    } else {
+        sendMsgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!(SocketGlobal == null)) {
+                    streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
+                    Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
+                    streamData.flushOutStream();
+                } else {
                     Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();
                 }
             }
 
-    });
+        });
     }
 
 
@@ -397,7 +429,6 @@ public class OneScenario extends AppCompatActivity {
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
     }
-
 
 
 }
