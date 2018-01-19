@@ -3,13 +3,12 @@ package me.iologic.apps.dtn;
 import android.content.Context;
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 
 /**
  * Created by vinee on 16-01-2018.
@@ -21,7 +20,7 @@ public class FileServices {
     private FileOutputStream outputStream;
     private Context ctx;
 
-    String fileContent;
+    byte[] readData;
 
     public FileServices(Context context)
     {
@@ -32,7 +31,8 @@ public class FileServices {
 
         try {
             String fileName = ReceivedFileName;
-            file = File.createTempFile(fileName, null, ctx.getCacheDir());
+            file = File.createTempFile(fileName, null, ctx.getFilesDir());
+            Log.i(Constants.TAG, "File is created.");
         } catch (IOException e) {
             // Error while creating file
         }
@@ -50,56 +50,47 @@ public class FileServices {
 
 
 
-    public void fillTempFile(String fileName)
+    public void fillTempFile(File ReceivedTempFileObj)
     {
         try {
-            outputStream = ctx.openFileOutput(fileName, Context.MODE_PRIVATE);
-            outputStream.write(createString(1024 * 1024).getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            RandomAccessFile f = new RandomAccessFile(ReceivedTempFileObj, "rw");
+            f.setLength(1024 * 1024);
+        } catch (IOException FileError){
+            Log.i(Constants.TAG, "Could Not Read File");
         }
+
     }
 
-    public String readTempFile(String fileName){
-        String ret = "";
-
+    public byte[] readTempFile(File ReceivedFileObj){
+        byte [] data = new byte[ (int) ReceivedFileObj.length() ];
+        readData = new byte[(int) ReceivedFileObj.length()];
         try {
-            InputStream inputStream = ctx.openFileInput(fileName);
+            FileInputStream fin = new FileInputStream(ReceivedFileObj);
+            int n = 0;
+            while ( (n = fin.read(data, n, data.length - n) ) > 0);
 
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
         }
         catch (FileNotFoundException e) {
-            Log.e(Constants.TAG, "File not found: " + e.toString());
+            Log.e(Constants.TAG, "File not found (from read() file): " + e.toString());
         } catch (IOException e) {
             Log.e(Constants.TAG, "Can not read file: " + e.toString());
         }
 
-        fileContent = ret;
+        readData = data;
 
-        return ret;
+        Log.i(Constants.TAG, "File Size Read:" + readData.length);
+
+        return readData;
     }
 
-    public double getFileSize(){
-        return fileContent.length();
+    public long getFileSize(){
+        return readData.length;
     }
 
     static String createString(long size){
         StringBuilder o=new StringBuilder();
         for(int i=0;i<size;i++){
-            o.append("^");
+            o.append("*");
         }
         return o.toString();
     }

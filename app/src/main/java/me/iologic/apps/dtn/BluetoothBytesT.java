@@ -7,9 +7,11 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by vinee on 15-01-2018.
@@ -29,7 +31,6 @@ class BluetoothBytesT extends Thread {
     long sendingStartTime, sendingEndTime, duration;
 
     private Handler mHandler;
-    private boolean bandwidthCheck;
 
     long writingStartTime, readingEndTime, packetDuration;
 
@@ -55,15 +56,12 @@ class BluetoothBytesT extends Thread {
         mmOutStream = tmpOut;
 
             mHandler = handler;
-
-        bandwidthCheck = true;
     }
 
 
 
     public void run() {
         // Keep listening to the InputStream until an exception occurs.
-        if (bandwidthCheck == true) {
             while (true) {
                 try {
                     mmBuffer = new byte[1024];
@@ -72,22 +70,16 @@ class BluetoothBytesT extends Thread {
                    // Log.i(Constants.TAG, "Bandwidth Check: " + bandwidthCheck);
 
                     if (mmInStream.available() > 0) {
-                        Log.i(Constants.TAG, "I am inside bandwidth check loop.");
                         // Read from the InputStream.
                         numBytes = mmInStream.read(mmBuffer);
                         // Send the obtained bytes to the UI activity.
+                        Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
                         Message readMsg = mHandler.obtainMessage(
                                 Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
                                 mmBuffer);
                         readMsg.sendToTarget();
-                        bandwidthCheck = false;
                     }
 
-                 //   Log.i(Constants.TAG, "Now BandwidthCheck" + bandwidthCheck);
-                        if(bandwidthCheck == false){
-                            Log.i(Constants.TAG, "BandwidthCheck broke the loop");
-                            break;
-                        }
                      else {
 
                         SystemClock.sleep(100);
@@ -97,29 +89,7 @@ class BluetoothBytesT extends Thread {
                     break;
                 }
             }
-
-            while (true) {
-                try {
-                    int numMessageBytes;
-                    mmBuffer = new byte[1024];
-                    if (mmInStream.available() > 0) {
-                        Log.i(Constants.TAG, "I am inside reading the message loop." + new String(mmBuffer));
-                        numMessageBytes = mmInStream.read(mmBuffer);
-                        // Send the obtained bytes to the UI activity.
-                        Message readMsg = mHandler.obtainMessage(
-                                Constants.MessageConstants.MESSAGE_READ, numMessageBytes, -1,
-                                mmBuffer);
-                        readMsg.sendToTarget();
-                    } else {
-                        SystemClock.sleep(100);
-                    }
-                } catch (IOException e) {
-                    Log.d(Constants.TAG, "Input stream was disconnected from check byte", e);
-                    break;
-                }
-            }
         }
-    }
 
     // Call this from the main activity to send data to the remote device.
     public void write(byte[] bytes) {
@@ -200,11 +170,6 @@ class BluetoothBytesT extends Thread {
         }
 
 
-    public void readPackets(){
-        // Packet reconstruction
-
-    }
-
     public void flushOutStream(){
         try {
             mmOutStream.flush();
@@ -213,14 +178,21 @@ class BluetoothBytesT extends Thread {
         }
     }
 
-    public void checkBandwidth(FileServices fileService){
-        String fileData = fileService.readTempFile(Constants.testFileName);
-        this.write(fileData.getBytes());
+    public void checkBandwidth(FileServices fileService, File tempFileRead){
+        byte[] getData = fileService.readTempFile(tempFileRead);
+        write(getData);
+        flushOutStream();
     }
 
-    public double getTotalBandwidthDuration(){
+    public long getTotalBandwidthDuration(){
         Log.i(Constants.TAG, "Duration:" + duration);
-        return (duration/1E9);
+        Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
+        if(TimeUnit.NANOSECONDS.toSeconds(duration) == 0){
+            duration = 1;
+            Log.i(Constants.TAG, "Sending duration as: " + duration);
+            return duration;
+        }
+        return (TimeUnit.NANOSECONDS.toSeconds(duration));
     }
 
     // Call this method from the main activity to shut down the connection.

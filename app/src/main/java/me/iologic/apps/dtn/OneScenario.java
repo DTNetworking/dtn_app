@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class OneScenario extends AppCompatActivity {
@@ -55,8 +56,6 @@ public class OneScenario extends AppCompatActivity {
     private static String CLIENT_CONNECTION_FAIL;
 
     private static String NOT_YET_CONNECTED;
-
-    private StringBuffer mOutStringBuffer;
 
     TextView btStatusText;
     TextView peerStatusText;
@@ -111,9 +110,6 @@ public class OneScenario extends AppCompatActivity {
 
         deviceConnected = false;
         retryConnectionHandler = new Handler();
-
-        // Initialize the buffer for outgoing messages
-        mOutStringBuffer = new StringBuffer("");
 
         startBluetooth();
         sendMessage();
@@ -232,11 +228,11 @@ public class OneScenario extends AppCompatActivity {
                         @Override
                         public void run() {
                             // Check Bandwidth
-                            if(!useFile.checkFileExists(Constants.testFileName)) {
-                                useFile.createTemporaryFile(Constants.testFileName);
-                                useFile.fillTempFile(Constants.testFileName);
-                            }
-                            streamData.checkBandwidth(useFile);
+                           // if(!useFile.checkFileExists(Constants.testFileName)) {
+                             File tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                             useFile.fillTempFile(tempFile);
+                          //  }
+                            streamData.checkBandwidth(useFile,tempFile);
                             FileSentBandwidth = (useFile.getFileSize() / streamData.getTotalBandwidthDuration());
                             Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
                             getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
@@ -271,7 +267,7 @@ public class OneScenario extends AppCompatActivity {
                     sendMsgBtn.setEnabled(true);
 
 
-                } else if (msg.arg1 == -1) {
+                } else if (msg.arg1 == -1   ) {
                     if (toastShown == false) {
                         Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
@@ -357,14 +353,17 @@ public class OneScenario extends AppCompatActivity {
             } else if(msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
                 String statusMessage = bundle.getString("status");
                 btStatusText.setText(statusMessage);
-            } else if(msg.what == Constants.MessageConstants.MESSAGE_READ){
+            } else if((msg.what == Constants.MessageConstants.MESSAGE_READ)){
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
                 String writeMessage = new String(writeBuf);
-                if(!(writeMessage.contains("^"))) {
+                // if(!isCheckingBandwidth) {
                     Log.i(Constants.TAG, "Message Received: " + writeMessage);
                     messageReceived.setText(writeMessage);
-                }
+                // }
+
+               // isCheckingBandwidth = false;
+                Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
             }
         }
     };
@@ -393,6 +392,7 @@ public class OneScenario extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         mBluetoothAdapter.setName(getGoodOldName);
+        mBluetoothAdapter.disable();
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
