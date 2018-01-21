@@ -1,13 +1,12 @@
 package me.iologic.apps.dtn;
 
-import android.os.Bundle;
-import android.widget.TextView;
 import android.os.Handler;
 import android.view.View;
+import android.widget.TextView;
 
 class StopWatch extends Thread {
-    private TextView tempTextView; //Temporary TextView
-//private Button tempBtn; //Temporary Button
+    private TextView delayTV; //Temporary TextView
+    private TextView delayMsTV;
     private Handler mHandler = new Handler();
     private long startTime;
     private long elapsedTime;
@@ -15,6 +14,12 @@ class StopWatch extends Thread {
     private String hours, minutes, seconds, milliseconds;
     private long secs, mins, hrs, msecs;
     private boolean stopped = false;
+
+    public StopWatch(TextView delay, TextView delayms){
+        delayTV = delay;
+        delayMsTV = delayms;
+    }
+
 
     private void updateTimer(float time) {
         secs = (long) (time / 1000);
@@ -68,8 +73,8 @@ class StopWatch extends Thread {
         milliseconds = milliseconds.substring(milliseconds.length() - 3, milliseconds.length() - 2);
 
 		/* Setting the timer text to the elapsed time */
-        ((TextView) findViewById(R.id.timer)).setText(hours + ":" + minutes + ":" + seconds);
-        ((TextView) findViewById(R.id.timerMs)).setText("." + milliseconds);
+        delayTV.setText(hours + ":" + minutes + ":" + seconds);
+        delayMsTV.setText("." + milliseconds);
     }
 
     private Runnable startTimer = new Runnable() {
@@ -98,8 +103,8 @@ class StopWatch extends Thread {
 
     public void reset (View view){
         stopped = false;
-        ((TextView)findViewById(R.id.timer)).setText("00:00:00");
-        ((TextView)findViewById(R.id.timerMs)).setText(".0");
+        delayTV.setText("00:00:00");
+        delayMsTV.setText(".0");
     }
 
 }

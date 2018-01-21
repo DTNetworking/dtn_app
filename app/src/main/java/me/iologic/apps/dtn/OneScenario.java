@@ -67,6 +67,7 @@ public class OneScenario extends AppCompatActivity {
     TextView peerConnectTime;
     TextView speedText;
     TextView delayText;
+    TextView delayMs;
     EditText EditMessageBox;
     Button sendMsgBtn;
 
@@ -98,6 +99,7 @@ public class OneScenario extends AppCompatActivity {
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         speedText = (TextView) findViewById(R.id.speed);
         delayText = (TextView) findViewById(R.id.delay);
+        delayMs = (TextView) findViewById(R.id.delayms);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling

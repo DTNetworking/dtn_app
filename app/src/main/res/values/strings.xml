@@ -14,7 +14,8 @@
     <string name="peersInVicinity">Peers In Vicinity:</string>
     <string name="copyright">© Abhishanth Padarthy | Vineeth Penugonda</string>
     <string name="pairingTime">Pairing Time</string>
-    <string name="delay">Delay</string>
+    <string name="delay">00:00:00</string>
+    <string name="delayms">.0</string>
     <string name="speed">Speed</string>
     <string name="currentStatus">Current Status</string>
     <string name="receivedMessage">Received Message</string>

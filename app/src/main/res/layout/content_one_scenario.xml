@@ -14,14 +14,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
         android:text="@string/btConnectFail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/peerStatus"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:scrollHorizontally="true"
-        android:ellipsize="marquee"
-        android:singleLine="true"/>
+        app:layout_constraintTop_toBottomOf="@+id/peerStatus" />
 
     <TextView
         android:id="@+id/peerStatus"
@@ -53,8 +53,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="textPersonName"
             android:hint="Enter Your Message Here"
+            android:inputType="textPersonName"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="138dp" />
 
@@ -84,49 +84,68 @@
             android:id="@+id/messageStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
             android:text="@string/receivedMessage"
             android:textAlignment="center"
-            android:textSize="16sp"
-            android:layout_weight="0.3"
-            android:scrollHorizontally="true"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:ellipsize="marquee"
-            android:singleLine="true"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/pairingTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/pairingTime"
-            android:textSize="30sp"
             android:textAlignment="center"
-            android:layout_weight="1"/>
-        <TextView
-            android:id="@+id/delay"
+            android:textSize="30sp" />
+
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/delay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/delay"
-            android:textSize="30sp"
-            android:textAlignment="center"
-            android:layout_weight="1"/>
+            android:gravity="right"
+            android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/delayms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/delayms"
+                android:textSize="30sp"/>
+
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/speed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/speed"
-            android:textSize="30sp"
             android:textAlignment="center"
-            android:layout_weight="1"/>
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/currentStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/currentStatus"
-            android:textSize="20sp"
-            android:textAlignment="center"
+            android:layout_marginBottom="16dp"
             android:layout_weight="0"
-            android:layout_marginBottom="16dp"/>
+            android:text="@string/currentStatus"
+            android:textAlignment="center"
+            android:textSize="20sp" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
