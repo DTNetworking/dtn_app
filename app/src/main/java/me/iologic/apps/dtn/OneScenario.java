@@ -245,6 +245,7 @@ public class OneScenario extends AppCompatActivity {
                             getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
                             Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
                             Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + streamData.getTotalBandwidthDuration()));
+                            useFile.deleteFile(); // Clear Storage
                         }
                     });
 
