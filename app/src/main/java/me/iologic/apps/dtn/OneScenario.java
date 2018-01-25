@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class OneScenario extends AppCompatActivity {
 
@@ -74,6 +73,8 @@ public class OneScenario extends AppCompatActivity {
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
 
+    StopWatch stopWatch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +114,8 @@ public class OneScenario extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter);
+
+        stopWatch = new StopWatch(delayText, delayMs);
 
         useFile = new FileServices(getApplicationContext());
 
@@ -227,7 +230,7 @@ public class OneScenario extends AppCompatActivity {
                     peerConnectTime.setText((long) msg.arg2 + " msec");
 
                     SocketGlobal = clientConnect.getClientSocket();
-                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
+                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
                     speedText.setText("Calculating Bandwidth");
 
@@ -344,7 +347,7 @@ public class OneScenario extends AppCompatActivity {
                     sendMsgBtn.setEnabled(true);
 
                     SocketGlobal = serverConnect.getServerSocket();
-                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus);
+                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
                     streamData.start();
                 } else if (msg.arg1 == -1) {
                     Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
@@ -394,9 +397,10 @@ public class OneScenario extends AppCompatActivity {
             if (msg.what == Constants.MessageConstants.ACK_READ) {
                 byte[] writeBuf = (byte[]) msg.obj;
                 Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
-                long ACKEndTime = ByteUtils.bytesToLong(writeBuf);
-                double TotalRWduration = (TimeUnit.NANOSECONDS.toSeconds(ACKEndTime - streamData.ACKStartTime));
-                delayText.setText(String.format("%.2f", TotalRWduration) + " secs");
+                if(writeBuf[0] == 'R') {
+                    Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
+                    stopWatch.stop();
+                }
             } else if(msg.what == Constants.MessageConstants.ACK_WRITE) {
                 Log.i(Constants.TAG, "I am sending an ACK.");
             }

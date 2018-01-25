@@ -33,7 +33,9 @@ class BluetoothBytesT extends Thread {
 
     long writingStartTime, readingEndTime, packetDuration;
 
-    public BluetoothBytesT(BluetoothSocket socket, Handler handler) {
+    StopWatch stopW;
+
+    public BluetoothBytesT(BluetoothSocket socket, Handler handler, StopWatch stpW) {
         mmSocket = socket;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
@@ -55,6 +57,7 @@ class BluetoothBytesT extends Thread {
         mmOutStream = tmpOut;
 
         mHandler = handler;
+        stopW = stpW;
     }
 
 
@@ -138,7 +141,7 @@ class BluetoothBytesT extends Thread {
 
         Log.i(Constants.TAG, "Bytes length from writePackets(): " + bytes.length);
 
-        ACKStartTime = System.nanoTime(); // Acknowledgement Start Time
+        stopW.start();
 
         for (j = initi; j < (Constants.MessageConstants.PACKET_SIZE + offset); j++) {
             try {
