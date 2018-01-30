@@ -19,6 +19,10 @@ public class Constants {
         public static final int ACK_WRITE = 1;
         public static final int ACK_FAIL_TO_SEND = 2;
 
+        public static final int BW_READ = 0;
+        public static final int BW_WRITE = 1;
+        public static final int BW_FAIL_TO_SEND = 2;
+
         public static final String ACK_CONNECT_SERVER_SUCCESS = "Acknowledgement connection is successful as a server ";
         public static final String ACK_CONNECT_CLIENT_SUCCESS = "Acknowledgement connection is successful as a client";
 

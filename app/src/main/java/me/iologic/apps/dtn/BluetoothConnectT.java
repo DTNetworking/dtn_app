@@ -19,7 +19,7 @@ class BluetoothConnectT extends Thread {
     private final BluetoothServerSocket mmServerSocket;
     private final BluetoothServerSocket mmACKServerSocket;
     private final BluetoothServerSocket bandwidthSocket;
-    private BluetoothSocket ClientSocket, AckSocketGlobal;
+    private BluetoothSocket ClientSocket, AckSocketGlobal, BWSocketGlobal;
     public static final String TAG = "DTNLogs";
     public static final String NAME = "DTNApp";
 
@@ -63,8 +63,10 @@ class BluetoothConnectT extends Thread {
     public void run() {
         BluetoothSocket socket = null;
         BluetoothSocket AckSocket = null;
+        BluetoothSocket BWSocket = null;
         ClientSocket = null;
         AckSocketGlobal = null;
+        BWSocketGlobal = null;
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
             try {
@@ -112,6 +114,16 @@ class BluetoothConnectT extends Thread {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "ACKSocket's accept() method failed", e);
             }
+
+            try {
+                BWSocket = bandwidthSocket.accept();
+                BWSocketGlobal = BWSocket;
+
+                btConnectionBWStatusMsg.arg1 = 2;
+                btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
+            }
         }
     }
 
@@ -126,12 +138,16 @@ class BluetoothConnectT extends Thread {
     public BluetoothSocket getACKSocket() {
         return AckSocketGlobal;
     }
+    public BluetoothSocket getBWSocket() {
+        return BWSocketGlobal;
+    }
 
     // Closes the connect socket and causes the thread to finish.
     public void cancel() {
         try {
             mmServerSocket.close();
             mmACKServerSocket.close();
+            bandwidthSocket.close();
         } catch (IOException e) {
             Log.e(TAG, "Could not close the connect socket", e);
         }

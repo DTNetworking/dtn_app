@@ -17,6 +17,7 @@ import java.util.UUID;
 class BluetoothConnectClientT extends Thread {
     private final BluetoothSocket mmSocket;
     private final BluetoothSocket mmACKClientSocket;
+    private final BluetoothSocket mmBWClientSocket;
     private final BluetoothDevice mmDevice;
     BluetoothAdapter mBluetoothAdapter;
 
@@ -24,18 +25,21 @@ class BluetoothConnectClientT extends Thread {
     Handler btConnectionStatus;
     Message btConnectionStatusMsg;
     Message btConnectionACKStatusMsg;
+    Message btConnectionBWStatusMsg;
 
     long pairingStartTime, pairingEndTime, duration;
     int retry;
 
     private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
     private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
+    private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
 
     public BluetoothConnectClientT(BluetoothDevice device, BluetoothAdapter getBluetoothAdapter, Handler getBtConnectionStatus) {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
         BluetoothSocket ACKtmp = null;
+        BluetoothSocket BWtmp = null;
         mmDevice = device;
 
         mBluetoothAdapter = getBluetoothAdapter;
@@ -46,13 +50,16 @@ class BluetoothConnectClientT extends Thread {
             // MY_UUID is the app's UUID string, also used in the server code.
             tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
             ACKtmp = device.createRfcommSocketToServiceRecord(ACK_UUID);
+            BWtmp = device.createRfcommSocketToServiceRecord(BW_UUID);
         } catch (IOException e) {
             Log.e(TAG, "Socket's create() method failed", e);
         }
         mmSocket = tmp;
         mmACKClientSocket = ACKtmp;
+        mmBWClientSocket = BWtmp;
 
         btConnectionACKStatusMsg = Message.obtain();
+        btConnectionBWStatusMsg = Message.obtain();
 
         retry = 0;
     }
@@ -114,8 +121,25 @@ class BluetoothConnectClientT extends Thread {
             return;
         }
 
-        btConnectionACKStatusMsg.arg1 = 2;
-        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+        // BW Part
+        try {
+            mmBWClientSocket.connect();
+        } catch (IOException e) {
+            btConnectionBWStatusMsg.arg1 = -2;
+            btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
+            Log.e(Constants.TAG, "I could not connect to BW Socket on the server side");
+            try {
+                mmBWClientSocket.close();
+            } catch (IOException closeException) {
+                Log.e(TAG, "Could not close the client socket", closeException);
+
+            }
+
+            return;
+        }
+
+        btConnectionBWStatusMsg.arg1 = 2;
+        btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
 
     }
 
@@ -126,12 +150,16 @@ class BluetoothConnectClientT extends Thread {
     public BluetoothSocket getACKClientSocket() {
         return mmACKClientSocket;
     }
+    public BluetoothSocket getBWClientSocket() {
+        return mmBWClientSocket;
+    }
 
     // Closes the client socket and causes the thread to finish.
     public void cancel() {
         try {
             mmSocket.close();
             mmACKClientSocket.close();
+            mmBWClientSocket.close();
         } catch (IOException e) {
             Log.e(TAG, "Could not close the client socket", e);
         }
