@@ -18,6 +18,7 @@ class BluetoothConnectT extends Thread {
 
     private final BluetoothServerSocket mmServerSocket;
     private final BluetoothServerSocket mmACKServerSocket;
+    private final BluetoothServerSocket bandwidthSocket;
     private BluetoothSocket ClientSocket, AckSocketGlobal;
     public static final String TAG = "DTNLogs";
     public static final String NAME = "DTNApp";
@@ -27,9 +28,11 @@ class BluetoothConnectT extends Thread {
     Handler btConnectionStatus;
     Message btConnectionStatusMsg;
     Message btConnectionACKStatusMsg;
+    Message btConnectionBWStatusMsg;
 
     private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
     private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
+    private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
 
     public BluetoothConnectT(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
 
@@ -38,18 +41,23 @@ class BluetoothConnectT extends Thread {
         // because mmServerSocket is final.
         BluetoothServerSocket tmp = null;
         BluetoothServerSocket ACK_tmp = null;
+        BluetoothServerSocket BW_tmp = null;
+
         try {
             // MY_UUID is the app's UUID string, also used by the client code.
             tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
             ACK_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME, ACK_UUID);
+            BW_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME, BW_UUID);
         } catch (IOException e) {
             Log.e(TAG, "Socket's listen() method failed", e);
         }
         mmServerSocket = tmp;
         mmACKServerSocket = ACK_tmp;
+        bandwidthSocket = BW_tmp;
 
         btConnectionStatusMsg = Message.obtain();
         btConnectionACKStatusMsg = Message.obtain();
+        btConnectionBWStatusMsg = Message.obtain();
     }
 
     public void run() {
