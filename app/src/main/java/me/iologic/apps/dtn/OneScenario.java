@@ -264,6 +264,7 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = clientConnect.getClientSocket();
                     BandSocketGlobal = clientConnect.getBWClientSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData.start();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
                     speedText.setText("Calculating Bandwidth");
