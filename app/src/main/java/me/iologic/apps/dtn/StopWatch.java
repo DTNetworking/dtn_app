@@ -72,6 +72,7 @@ class StopWatch extends Thread {
         if (milliseconds.length() <= 1) {
             milliseconds = "00";
         }
+        Log.i(Constants.TAG, "milliseconds 2:" + milliseconds + " Time 2:" + time);
         milliseconds = milliseconds.substring(milliseconds.length() - 3, milliseconds.length() - 2);
 
 		/* Setting the timer text to the elapsed time */
