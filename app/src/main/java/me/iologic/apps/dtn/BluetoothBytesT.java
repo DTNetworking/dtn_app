@@ -7,11 +7,9 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by vinee on 15-01-2018.
@@ -62,27 +60,23 @@ class BluetoothBytesT extends Thread {
 
 
     public void run() {
-        boolean isCheckingBandwidth = true;
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
             try {
                 mmBuffer = new byte[1024];
                 int numBytes; // bytes returned from read()
 
-                // Log.i(Constants.TAG, "Bandwidth Check: " + bandwidthCheck);
+                // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
 
                 if (mmInStream.available() > 0) {
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
                     // Send the obtained bytes to the UI activity.
                   //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
-                    if(isCheckingBandwidth == false) {
                         Message readMsg = mHandler.obtainMessage(
                                 Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
                                 mmBuffer);
                         readMsg.sendToTarget();
-                    }
-                    isCheckingBandwidth = false;
                 } else {
 
                     SystemClock.sleep(100);
@@ -186,23 +180,6 @@ class BluetoothBytesT extends Thread {
         } catch (IOException e) {
             Log.e(Constants.TAG, "Could not flush out stream", e);
         }
-    }
-
-    public void checkBandwidth(FileServices fileService, File tempFileRead) {
-        byte[] getData = fileService.readTempFile(tempFileRead);
-        write(getData);
-        flushOutStream();
-    }
-
-    public long getTotalBandwidthDuration() {
-        Log.i(Constants.TAG, "Duration:" + duration);
-        Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
-        if (TimeUnit.NANOSECONDS.toSeconds(duration) == 0) {
-            duration = 1;
-            Log.i(Constants.TAG, "Sending duration as: " + duration);
-            return duration;
-        }
-        return (TimeUnit.NANOSECONDS.toSeconds(duration));
     }
 
     // Call this method from the main activity to shut down the connection.

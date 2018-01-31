@@ -36,10 +36,12 @@ public class OneScenario extends AppCompatActivity {
     BluetoothConnectT serverConnect;
     BluetoothConnectClientT clientConnect;
     BluetoothBytesT streamData;
+    BandwidthBytesT bandData;
     BluetoothACKBytesT ACKData;
     BluetoothDevice btDeviceConnectedGlobal; // To get Device Name
     BluetoothSocket SocketGlobal; // To store MAIN socket
     BluetoothSocket ACKSocketGlobal; // To store ACK socket
+    BluetoothSocket BandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
 
@@ -251,26 +253,28 @@ public class OneScenario extends AppCompatActivity {
                     peerConnectTime.setText((long) msg.arg2 + " msec");
 
                     SocketGlobal = clientConnect.getClientSocket();
+                    BandSocketGlobal = clientConnect.getBWClientSocket();
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
-                    speedText.setText("Calculating Bandwidth");
+                    speedText.setText("Calculating BandwidthBytesT");
 
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            // Check Bandwidth
+                            // Check BandwidthBytesT
                             if(!useFile.checkFileExists(Constants.testFileName)) {
                             tempFile = useFile.createTemporaryFile(Constants.testFileName);
                             useFile.fillTempFile(tempFile);
                             } else {
                                 tempFile = useFile.returnFile(Constants.testFileName);
                             }
-                            streamData.checkBandwidth(useFile, tempFile);
-                            FileSentBandwidth = (useFile.getFileSize() / streamData.getTotalBandwidthDuration());
+                            bandData.checkBandwidth(useFile, tempFile);
+                            FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
                             Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
                             getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
                             Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + streamData.getTotalBandwidthDuration()));
+                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
                             useFile.deleteFile(); // Clear Storage
                         }
                     });
@@ -430,6 +434,17 @@ public class OneScenario extends AppCompatActivity {
             }
         }
     };
+
+    private final Handler btBandStatus = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == Constants.MessageConstants.BW_READ){
+                // Do Nothing
+            } else if(msg.what ==  Constants.MessageConstants.ACK_WRITE){
+                // Do Nothing
+            }
+        }
+    }
 
     public void sendMessage() {
 

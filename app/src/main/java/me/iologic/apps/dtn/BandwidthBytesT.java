@@ -2,20 +2,22 @@ package me.iologic.apps.dtn;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
-import android.os.Handler;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Abhishanth Padarthy on 30-01-2018.
  */
 
-public class Bandwidth extends Thread {
+public class BandwidthBytesT extends Thread {
 
     private final BluetoothSocket bandwidthSocket;
     private final InputStream bandwidthInStream;
@@ -24,7 +26,9 @@ public class Bandwidth extends Thread {
 
     private Handler bandwidthHandler;
 
-    public Bandwidth(BluetoothSocket socket,Handler handler) {
+    long duration;
+
+    public BandwidthBytesT(BluetoothSocket socket, Handler handler) {
         bandwidthSocket = socket;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
@@ -55,7 +59,7 @@ public class Bandwidth extends Thread {
                 bandwidthBuffer = new byte[1024];
                 int numBytes; // bytes returned from read()
 
-                // Log.i(Constants.TAG, "Bandwidth Check: " + bandwidthCheck);
+                // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
 
                 if (bandwidthInStream.available() > 0) {
                     // Read from the InputStream.
@@ -110,6 +114,23 @@ public class Bandwidth extends Thread {
         } catch (IOException e) {
             Log.e(Constants.TAG, "Could not flush out BW stream", e);
         }
+    }
+
+    public void checkBandwidth(FileServices fileService, File tempFileRead) {
+        byte[] getData = fileService.readTempFile(tempFileRead);
+        write(getData);
+        flushOutStream();
+    }
+
+    public long getTotalBandwidthDuration() {
+        Log.i(Constants.TAG, "Duration:" + duration);
+        Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
+        if (TimeUnit.NANOSECONDS.toSeconds(duration) == 0) {
+            duration = 1;
+            Log.i(Constants.TAG, "Sending duration as: " + duration);
+            return duration;
+        }
+        return (TimeUnit.NANOSECONDS.toSeconds(duration));
     }
 
     public void cancel() {
