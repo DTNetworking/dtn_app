@@ -456,8 +456,9 @@ public class OneScenario extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if(msg.what == Constants.MessageConstants.BW_READ){
-                // Do Nothing
-            } else if(msg.what ==  Constants.MessageConstants.ACK_WRITE){
+                byte[] writeBuf = (byte[]) msg.obj;
+                Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
+            } else if(msg.what ==  Constants.MessageConstants.BW_WRITE){
                 // Do Nothing
             }
         }
