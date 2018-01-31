@@ -85,7 +85,7 @@ class StopWatch extends Thread {
         }
     };
 
-    public void start (View view){
+    public void start (){
         if(stopped){
             startTime = System.currentTimeMillis() - elapsedTime;
         }
@@ -96,7 +96,7 @@ class StopWatch extends Thread {
         mHandler.postDelayed(startTimer, 0);
     }
 
-    public void stop (View view){
+    public void halt (){
         mHandler.removeCallbacks(startTimer);
         stopped = true;
     }

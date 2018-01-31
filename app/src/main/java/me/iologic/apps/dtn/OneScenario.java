@@ -430,7 +430,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
                 if(writeBuf[0] == 'R') {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
-                    stopWatch.stop();
+                    stopWatch.halt();
                 }
             } else if(msg.what == Constants.MessageConstants.ACK_WRITE) {
                 Log.i(Constants.TAG, "I am sending an ACK.");
