@@ -1,7 +1,6 @@
 package me.iologic.apps.dtn;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -46,7 +45,7 @@ public class FileServices {
     }
 
     public File returnFile(String ReceivedFileName){
-        File file = new File(Environment.getDataDirectory(), ReceivedFileName);
+        File file = new File(ctx.getFilesDir(), ReceivedFileName);
         if(file.exists()){
             return file;
         } else {
