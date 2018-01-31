@@ -444,7 +444,7 @@ public class OneScenario extends AppCompatActivity {
                 // Do Nothing
             }
         }
-    }
+    };
 
     public void sendMessage() {
 
