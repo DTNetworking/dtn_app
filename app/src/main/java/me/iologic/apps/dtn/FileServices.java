@@ -30,16 +30,18 @@ public class FileServices {
 
     public File createTemporaryFile(String ReceivedFileName) {
 
-        file = new File(Environment.getDataDirectory(), ReceivedFileName);
+        file = new File(ctx.getFilesDir(), ReceivedFileName);
         return file;
     }
 
     public boolean checkFileExists(String ReceivedFileName){
-        File file = new File(ctx.getCacheDir() + File.separator + ReceivedFileName);
+        File file = new File(ctx.getFilesDir() + File.separator + ReceivedFileName);
         if(file.exists())
         {
+            Log.i(Constants.TAG, "File is found!" + file.getName());
             return true;
         }
+            Log.e(Constants.TAG, "File not found");
             return false;
     }
 

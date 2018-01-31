@@ -257,7 +257,7 @@ public class OneScenario extends AppCompatActivity {
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
-                    speedText.setText("Calculating BandwidthBytesT");
+                    speedText.setText("Calculating Bandwidth");
 
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
