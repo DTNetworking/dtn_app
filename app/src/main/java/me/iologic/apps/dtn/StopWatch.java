@@ -1,6 +1,7 @@
 package me.iologic.apps.dtn;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -64,6 +65,7 @@ class StopWatch extends Thread {
     	 * I included the code in the event that you wanted to include it on your own
     	 */
         milliseconds = String.valueOf((long) time);
+        Log.i(Constants.TAG, "milliseconds:" + milliseconds + " Time:" + time);
         if (milliseconds.length() == 2) {
             milliseconds = "0" + milliseconds;
         }
