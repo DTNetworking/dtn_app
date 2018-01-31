@@ -264,7 +264,6 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = clientConnect.getClientSocket();
                     BandSocketGlobal = clientConnect.getBWClientSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
                     speedText.setText("Calculating Bandwidth");
@@ -397,6 +396,13 @@ public class OneScenario extends AppCompatActivity {
                     ACKSocketGlobal = serverConnect.getACKSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
+                } else if(msg.what == 3){
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    BandSocketGlobal = serverConnect.getBWSocket();
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData.start();
                 }
             }
         };

@@ -23,8 +23,11 @@ public class Constants {
         public static final int BW_WRITE = 11;
         public static final int BW_FAIL_TO_SEND = 12;
 
-        public static final String ACK_CONNECT_SERVER_SUCCESS = "Acknowledgement connection is successful as a server ";
+        public static final String ACK_CONNECT_SERVER_SUCCESS = "Acknowledgement connection is successful as a server";
         public static final String ACK_CONNECT_CLIENT_SUCCESS = "Acknowledgement connection is successful as a client";
+
+        public static final String BW_CONNECT_SERVER_SUCCESS ="Bandwidth connection is successful as a server";
+        public static final String BW_CONNECT_CLIENT_SUCCESS ="Bandwidth connection is successful as a client";
 
         public static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
         public static final int NO_OF_PACKETS = 25;

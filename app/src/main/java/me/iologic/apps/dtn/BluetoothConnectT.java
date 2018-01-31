@@ -119,7 +119,7 @@ class BluetoothConnectT extends Thread {
                 BWSocket = bandwidthSocket.accept();
                 BWSocketGlobal = BWSocket;
 
-                btConnectionBWStatusMsg.arg1 = 2;
+                btConnectionBWStatusMsg.arg1 = 3;
                 btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
