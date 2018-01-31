@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -54,7 +55,6 @@ public class OneScenario extends AppCompatActivity {
 
     double FileSentBandwidth;
     Handler getDataHandler;
-    Handler getBWHandler;
     boolean deviceConnected;
     Handler retryConnectionHandler = new Handler();
 
@@ -256,7 +256,6 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = clientConnect.getClientSocket();
                     BandSocketGlobal = clientConnect.getBWClientSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    getBWHandler.sendEmptyMessage(1);
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
                     speedText.setText("Calculating Bandwidth");
@@ -264,7 +263,8 @@ public class OneScenario extends AppCompatActivity {
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            // Check BandwidthBytesT
+                            // Check Bandwidth
+                            SystemClock.sleep(1000);
                             if(!useFile.checkFileExists(Constants.testFileName)) {
                             tempFile = useFile.createTemporaryFile(Constants.testFileName);
                             useFile.fillTempFile(tempFile);
@@ -281,12 +281,7 @@ public class OneScenario extends AppCompatActivity {
                         }
                     });
 
-                    getBWHandler = new Handler(){
-                        @Override
-                        public void handleMessage(Message msg) {
                             checkBandwidthT.start();
-                        }
-                    };
 
 
                     getDataHandler = new Handler() {
