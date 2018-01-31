@@ -54,6 +54,7 @@ public class OneScenario extends AppCompatActivity {
 
     double FileSentBandwidth;
     Handler getDataHandler;
+    Handler getBWHandler;
     boolean deviceConnected;
     Handler retryConnectionHandler = new Handler();
 
@@ -255,6 +256,7 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = clientConnect.getClientSocket();
                     BandSocketGlobal = clientConnect.getBWClientSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    getBWHandler.sendEmptyMessage(1);
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
                     speedText.setText("Calculating Bandwidth");
@@ -279,7 +281,13 @@ public class OneScenario extends AppCompatActivity {
                         }
                     });
 
-                    checkBandwidthT.start();
+                    getBWHandler = new Handler(){
+                        @Override
+                        public void handleMessage(Message msg) {
+                            checkBandwidthT.start();
+                        }
+                    };
+
 
                     getDataHandler = new Handler() {
                         @Override
