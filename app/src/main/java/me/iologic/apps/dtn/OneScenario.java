@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -13,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,6 +31,7 @@ public class OneScenario extends AppCompatActivity {
 
     static final int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter mBluetoothAdapter; // The Only Bluetooth Adapter Used.
+    boolean connectAsClient = true;
     int noOfPeers = 0;
     BluetoothConnectT serverConnect;
     BluetoothConnectClientT clientConnect;
@@ -45,6 +48,7 @@ public class OneScenario extends AppCompatActivity {
     Bundle bundle;
 
     FileServices useFile;
+    File tempFile;
 
     double FileSentBandwidth;
     Handler getDataHandler;
@@ -122,8 +126,22 @@ public class OneScenario extends AppCompatActivity {
         deviceConnected = false;
         retryConnectionHandler = new Handler();
 
+        Dialog();
         startBluetooth();
         sendMessage();
+    }
+
+    public void Dialog(){
+        new AlertDialog.Builder(this)
+                .setTitle("Choose Server/Client")
+                .setMessage("Do you want to connect as Server or a Client?")
+                .setNegativeButton("Client", null)
+                .setPositiveButton("Server", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        connectAsClient = false;
+                    }
+                }).create().show();
     }
 
     protected void startBluetooth() {
@@ -206,8 +224,11 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStatusText.setText("Discovery Period Finished");
-                serverConnection(); // Let's start the Server
-                connectDevice();
+                if(connectAsClient == false) {
+                    serverConnection(); // Let's start the Server
+                } else {
+                    connectDevice();
+                }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             }
@@ -238,10 +259,12 @@ public class OneScenario extends AppCompatActivity {
                         @Override
                         public void run() {
                             // Check Bandwidth
-                            // if(!useFile.checkFileExists(Constants.testFileName)) {
-                            File tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                            if(!useFile.checkFileExists(Constants.testFileName)) {
+                            tempFile = useFile.createTemporaryFile(Constants.testFileName);
                             useFile.fillTempFile(tempFile);
-                            //  }
+                            } else {
+                                tempFile = useFile.returnFile(Constants.testFileName);
+                            }
                             streamData.checkBandwidth(useFile, tempFile);
                             FileSentBandwidth = (useFile.getFileSize() / streamData.getTotalBandwidthDuration());
                             Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
@@ -379,12 +402,13 @@ public class OneScenario extends AppCompatActivity {
             } else if ((msg.what == Constants.MessageConstants.MESSAGE_READ)) {
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
+                byte[] writeACK = new byte[] {'R'};
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
               //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(writeMessage);
                 // }
-                ACKData.write(ByteUtils.longToBytes(System.nanoTime()));
+                ACKData.write(writeACK);
                 // isCheckingBandwidth = false;
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
             }

@@ -1,6 +1,7 @@
 package me.iologic.apps.dtn;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -29,13 +30,7 @@ public class FileServices {
 
     public File createTemporaryFile(String ReceivedFileName) {
 
-        try {
-            String fileName = ReceivedFileName;
-            file = File.createTempFile(fileName, null, ctx.getFilesDir());
-            Log.i(Constants.TAG, "File is created.");
-        } catch (IOException e) {
-            // Error while creating file
-        }
+        file = new File(Environment.getDataDirectory(), ReceivedFileName);
         return file;
     }
 
@@ -46,6 +41,16 @@ public class FileServices {
             return true;
         }
             return false;
+    }
+
+    public File returnFile(String ReceivedFileName){
+        File file = new File(Environment.getDataDirectory(), ReceivedFileName);
+        if(file.exists()){
+            return file;
+        } else {
+            return null;
+        }
+
     }
 
 

@@ -15,9 +15,9 @@ public class Constants {
         public static final int MESSAGE_WRITE = 1;
         public static final int MESSAGE_TOAST = 2;
 
-        public static final int ACK_READ = 0;
-        public static final int ACK_WRITE = 1;
-        public static final int ACK_FAIL_TO_SEND = 2;
+        public static final int ACK_READ = 5;
+        public static final int ACK_WRITE = 6;
+        public static final int ACK_FAIL_TO_SEND = 7;
 
         public static final int BW_READ = 10;
         public static final int BW_WRITE = 11;
