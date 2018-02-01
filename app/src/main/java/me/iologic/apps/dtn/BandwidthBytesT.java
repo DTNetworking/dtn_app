@@ -25,6 +25,8 @@ public class BandwidthBytesT extends Thread {
     StopWatchBW stopBW;
     float timeToSendFile;
 
+    long sendingStartTime, sendingEndTime, duration;
+
     private Handler bandwidthHandler;
 
     public BandwidthBytesT(BluetoothSocket socket, Handler handler) {
@@ -57,7 +59,7 @@ public class BandwidthBytesT extends Thread {
     public void run() {
         while (true) {
             try {
-                bandwidthBuffer = new byte[1024];
+                bandwidthBuffer = new byte[1024 * 1024];
                 int numBytes; // bytes returned from read()
 
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
@@ -89,10 +91,14 @@ public class BandwidthBytesT extends Thread {
             String testMessage = new String(bandwidthBuffer);
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
-            stopBW.start();
+          //  stopBW.start();
+            sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
             flushOutStream();
-            stopBW.halt();
+            sendingEndTime = System.nanoTime();
+            //stopBW.halt();
+
+            duration = sendingEndTime - sendingStartTime;
 
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
