@@ -74,7 +74,7 @@ public class OneScenario extends AppCompatActivity {
     TextView peerConnectTime;
     TextView speedText;
     TextView delayText;
-    TextView delayMs;
+    TextView checkBandwidthText;
     EditText EditMessageBox;
     Button sendMsgBtn;
 
@@ -108,6 +108,7 @@ public class OneScenario extends AppCompatActivity {
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         speedText = (TextView) findViewById(R.id.speed);
         delayText = (TextView) findViewById(R.id.delay);
+        checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
@@ -307,6 +308,7 @@ public class OneScenario extends AppCompatActivity {
                                 } else {
                                     tempFile = useFile.returnFile(Constants.testFileName);
                                 }
+                                checkBandwidthText.setVisibility(View.VISIBLE);
                                 bandData.checkBandwidth(useFile, tempFile);
                                 FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
                                 Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
@@ -375,7 +377,7 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
 
                     BandSocketGlobal = clientConnect.getBWClientSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus, checkBandwidthText);
                     bandData.start();
                 }
 
@@ -436,7 +438,7 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
 
                     BandSocketGlobal = serverConnect.getBWSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus, checkBandwidthText);
                     bandData.start();
                 }
             }

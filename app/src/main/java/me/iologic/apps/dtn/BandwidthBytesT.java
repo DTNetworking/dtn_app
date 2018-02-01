@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +25,13 @@ public class BandwidthBytesT extends Thread {
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
+    private TextView checkBandwidthText;
 
     long sendingStartTime, sendingEndTime, duration;
 
     private Handler bandwidthHandler;
 
-    public BandwidthBytesT(BluetoothSocket socket, Handler handler) {
+    public BandwidthBytesT(BluetoothSocket socket, Handler handler, TextView checkBandwidthTxt) {
         bandwidthSocket = socket;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
@@ -50,6 +53,7 @@ public class BandwidthBytesT extends Thread {
         bandwidthOutStream = tmpOut;
 
         bandwidthHandler = handler;
+        checkBandwidthText = checkBandwidthTxt;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -67,11 +71,11 @@ public class BandwidthBytesT extends Thread {
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
                     // Send the obtained bytes to the UI activity.
                     //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
-                        Message readMsg = bandwidthHandler.obtainMessage(
-                                Constants.MessageConstants.BW_READ, numBytes, -1,
-                                bandwidthBuffer);
-                        readMsg.sendToTarget();
-                    }else {
+                    Message readMsg = bandwidthHandler.obtainMessage(
+                            Constants.MessageConstants.BW_READ, numBytes, -1,
+                            bandwidthBuffer);
+                    readMsg.sendToTarget();
+                } else {
                     SystemClock.sleep(100);
                 }
             } catch (IOException e) {
@@ -89,17 +93,19 @@ public class BandwidthBytesT extends Thread {
             String testMessage = new String(bandwidthBuffer);
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
+            checkBandwidthText.setText(R.string.checkingBandwidth);
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
             flushOutStream();
             sendingEndTime = System.nanoTime();
-
             duration = sendingEndTime - sendingStartTime;
+            checkBandwidthText.setVisibility(View.GONE);
 
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_WRITE, -1, -1, bandwidthBuffer);
             writtenMsg.sendToTarget();
+
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error occurred when sending BW", e);
 
