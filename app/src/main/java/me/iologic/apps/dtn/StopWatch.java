@@ -63,6 +63,7 @@ class StopWatch extends Thread {
 
     public void reset (){
         stopped = false;
+        Log.i(Constants.TAG, "StopWatch is reset!");
         // delayTV.setText("StopWatch Reset");
     }
 
