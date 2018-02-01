@@ -131,6 +131,7 @@ public class BandwidthBytesT extends Thread {
     public float getTotalBandwidthDuration() {
         Log.i(Constants.TAG, "Duration:" + duration);
         timeToSendFile = stopBW.getTime();
+        stopBW.reset();
         return timeToSendFile;
     }
 

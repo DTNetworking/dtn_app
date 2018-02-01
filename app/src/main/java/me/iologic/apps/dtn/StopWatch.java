@@ -17,9 +17,6 @@ class StopWatch extends Thread {
 
     ArrayList<String> msgTiming = new ArrayList<String>();
 
-    public StopWatch(){
-
-    }
 
     public StopWatch(TextView delay){
         delayTV = delay;
