@@ -36,7 +36,6 @@ class StopWatch extends Thread {
 
     private void updateList(float updateTime){
         msgTiming.add(updateTime + " ms");
-        reset();
     }
 
     private Runnable startTimer = new Runnable() {

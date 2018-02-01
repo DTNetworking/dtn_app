@@ -170,6 +170,9 @@ public class OneScenario extends AppCompatActivity {
                 // Do Nothing
             }
         });
+
+        AlertDialog alertDialog = showList.create();
+        alertDialog.show();
     }
 
     public void Dialog() {
@@ -479,6 +482,7 @@ public class OneScenario extends AppCompatActivity {
                 if (writeBuf[0] == 'R') {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
                     stopWatch.halt();
+                    stopWatch.reset();
                 }
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE) {
                 Log.i(Constants.TAG, "I am sending an ACK.");
