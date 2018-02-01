@@ -75,6 +75,26 @@ class BluetoothConnectClientT extends Thread {
         } else { // Log.i(Constants.TAG, "I am connecting to the DTN device for the first time");
         }
 
+        // BW Part
+        try {
+            mmBWClientSocket.connect();
+        } catch (IOException e) {
+            btConnectionBWStatusMsg.arg1 = -2;
+            btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
+            Log.e(Constants.TAG, "I could not connect to BW Socket on the server side");
+            try {
+                mmBWClientSocket.close();
+            } catch (IOException closeException) {
+                Log.e(TAG, "Could not close the client socket", closeException);
+
+            }
+
+            return;
+        }
+
+        btConnectionBWStatusMsg.arg1 = 100;
+        btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
+
         try {
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
@@ -123,27 +143,6 @@ class BluetoothConnectClientT extends Thread {
 
         btConnectionACKStatusMsg.arg1 = 2;
         btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
-
-        // BW Part
-        try {
-            mmBWClientSocket.connect();
-        } catch (IOException e) {
-            btConnectionBWStatusMsg.arg1 = -2;
-            btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
-            Log.e(Constants.TAG, "I could not connect to BW Socket on the server side");
-            try {
-                mmBWClientSocket.close();
-            } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
-
-            }
-
-            return;
-        }
-
-        btConnectionBWStatusMsg.arg1 = 100;
-        btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
-
     }
 
     public BluetoothSocket getClientSocket() {
