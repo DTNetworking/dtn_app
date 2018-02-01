@@ -501,6 +501,9 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
+                checkBandwidthText.setVisibility(View.GONE);
+            } else if (msg.what == Constants.MessageConstants.BW_START_WRITE){
+                checkBandwidthText.setText(R.string.checkingBandwidth);
             }
         }
     };

@@ -93,7 +93,11 @@ public class BandwidthBytesT extends Thread {
             String testMessage = new String(bandwidthBuffer);
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
-            checkBandwidthText.setText(R.string.checkingBandwidth);
+            // Share the sent message with the UI activity.
+            Message writtenBWStatus = bandwidthHandler.obtainMessage(
+                    Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
+            writtenBWStatus.sendToTarget();
+
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
             flushOutStream();
