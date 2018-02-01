@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import java.io.File;
@@ -103,7 +102,6 @@ public class BandwidthBytesT extends Thread {
             flushOutStream();
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
-            checkBandwidthText.setVisibility(View.GONE);
 
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
