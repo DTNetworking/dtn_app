@@ -107,7 +107,6 @@ public class OneScenario extends AppCompatActivity {
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         speedText = (TextView) findViewById(R.id.speed);
         delayText = (TextView) findViewById(R.id.delay);
-        delayMs = (TextView) findViewById(R.id.delayms);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
@@ -122,7 +121,7 @@ public class OneScenario extends AppCompatActivity {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter);
 
-        stopWatch = new StopWatch(delayText, delayMs);
+        stopWatch = new StopWatch(delayText);
 
         useFile = new FileServices(getApplicationContext());
 
