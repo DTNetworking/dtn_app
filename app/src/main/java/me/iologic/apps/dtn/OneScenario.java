@@ -299,19 +299,21 @@ public class OneScenario extends AppCompatActivity {
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            // Check Bandwidth
-                            if (!useFile.checkFileExists(Constants.testFileName)) {
-                                tempFile = useFile.createTemporaryFile(Constants.testFileName);
-                                useFile.fillTempFile(tempFile);
-                            } else {
-                                tempFile = useFile.returnFile(Constants.testFileName);
+                            while (true) {
+                                // Check Bandwidth
+                                if (!useFile.checkFileExists(Constants.testFileName)) {
+                                    tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                                    useFile.fillTempFile(tempFile);
+                                } else {
+                                    tempFile = useFile.returnFile(Constants.testFileName);
+                                }
+                                bandData.checkBandwidth(useFile, tempFile);
+                                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
+                                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
+                                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+                                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+                                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
                             }
-                            bandData.checkBandwidth(useFile, tempFile);
-                            FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
-                            Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
-                            getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
-                            Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
                         }
                     });
 
