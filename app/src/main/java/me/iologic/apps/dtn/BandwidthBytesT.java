@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Abhishanth Padarthy on 30-01-2018.
@@ -23,6 +22,8 @@ public class BandwidthBytesT extends Thread {
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
+    StopWatchBW stopBW;
+    float timeToSendFile;
 
     private Handler bandwidthHandler;
 
@@ -50,7 +51,8 @@ public class BandwidthBytesT extends Thread {
         bandwidthOutStream = tmpOut;
 
         bandwidthHandler = handler;
-        bandwidthBuffer = new byte[1024];
+        // bandwidthBuffer = new byte[1024];
+        stopBW = new StopWatchBW();
     }
 
     @Override
@@ -89,11 +91,9 @@ public class BandwidthBytesT extends Thread {
             String testMessage = new String(bandwidthBuffer);
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
-            sendingStartTime = System.nanoTime();
+            stopBW.start();
             bandwidthOutStream.write(bandwidthBuffer);
-            sendingEndTime = System.nanoTime();
-
-            duration = sendingEndTime - sendingStartTime;
+            stopBW.halt();
 
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
@@ -128,15 +128,10 @@ public class BandwidthBytesT extends Thread {
         flushOutStream();
     }
 
-    public long getTotalBandwidthDuration() {
+    public float getTotalBandwidthDuration() {
         Log.i(Constants.TAG, "Duration:" + duration);
-        Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
-        if (TimeUnit.NANOSECONDS.toSeconds(duration) == 0) {
-            duration = 1;
-            Log.i(Constants.TAG, "Sending duration as: " + duration);
-            return duration;
-        }
-        return (TimeUnit.NANOSECONDS.toSeconds(duration));
+        timeToSendFile = stopBW.getTime();
+        return timeToSendFile;
     }
 
     public void cancel() {

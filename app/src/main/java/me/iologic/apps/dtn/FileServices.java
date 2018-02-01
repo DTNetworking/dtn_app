@@ -37,7 +37,7 @@ public class FileServices {
         File file = new File(ctx.getFilesDir() + File.separator + ReceivedFileName);
         if(file.exists())
         {
-            Log.i(Constants.TAG, "File is found!" + file.getName());
+            Log.i(Constants.TAG, "File is found: " + file.getName());
             return true;
         }
             Log.e(Constants.TAG, "File not found");
@@ -89,7 +89,7 @@ public class FileServices {
         return readData;
     }
 
-    public long getFileSize(){
+    public float getFileSize(){
         return readData.length;
     }
 
