@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -262,8 +261,6 @@ public class OneScenario extends AppCompatActivity {
                     peerConnectTime.setText((long) msg.arg2 + " msec");
 
                     SocketGlobal = clientConnect.getClientSocket();
-                    BandSocketGlobal = clientConnect.getBWClientSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
                     speedText.setText("Calculating Bandwidth");
@@ -272,13 +269,13 @@ public class OneScenario extends AppCompatActivity {
                         @Override
                         public void run() {
                             // Check Bandwidth
-                            SystemClock.sleep(1000);
                             if(!useFile.checkFileExists(Constants.testFileName)) {
                             tempFile = useFile.createTemporaryFile(Constants.testFileName);
                             useFile.fillTempFile(tempFile);
                             } else {
                                 tempFile = useFile.returnFile(Constants.testFileName);
                             }
+                            speedText.setText("Please Wait...");
                             bandData.checkBandwidth(useFile, tempFile);
                             FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
                             Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
@@ -342,6 +339,13 @@ public class OneScenario extends AppCompatActivity {
                     ACKSocketGlobal = clientConnect.getACKClientSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
+                } else if(msg.arg1 == 100) {
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    BandSocketGlobal = clientConnect.getBWClientSocket();
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData.start();
                 }
 
                 toastShown = true;

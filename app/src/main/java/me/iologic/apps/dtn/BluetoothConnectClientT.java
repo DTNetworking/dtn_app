@@ -121,6 +121,9 @@ class BluetoothConnectClientT extends Thread {
             return;
         }
 
+        btConnectionACKStatusMsg.arg1 = 2;
+        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+
         // BW Part
         try {
             mmBWClientSocket.connect();
@@ -138,7 +141,7 @@ class BluetoothConnectClientT extends Thread {
             return;
         }
 
-        btConnectionBWStatusMsg.arg1 = 2;
+        btConnectionBWStatusMsg.arg1 = 100;
         btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
 
     }
