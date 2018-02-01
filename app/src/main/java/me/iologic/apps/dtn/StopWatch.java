@@ -2,6 +2,7 @@ package me.iologic.apps.dtn;
 
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -32,6 +33,14 @@ class StopWatch extends Thread {
 		/* Setting the timer text to the elapsed time */
         delayTV.setText(time + " ms");
         globalTime = time;
+
+        // Convert MilliSeconds to Seconds
+        delayTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                delayTV.setText((globalTime/1000) + " secs");
+            }
+        });
     }
 
     public void updateList(){
