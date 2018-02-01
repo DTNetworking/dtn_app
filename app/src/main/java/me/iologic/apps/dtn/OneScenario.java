@@ -308,7 +308,12 @@ public class OneScenario extends AppCompatActivity {
                                 } else {
                                     tempFile = useFile.returnFile(Constants.testFileName);
                                 }
-                                checkBandwidthText.setVisibility(View.VISIBLE);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        checkBandwidthText.setVisibility(View.VISIBLE);
+                                    }
+                                });
                                 bandData.checkBandwidth(useFile, tempFile);
                                 FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
                                 Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
