@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class OneScenario extends AppCompatActivity {
 
@@ -47,6 +48,8 @@ public class OneScenario extends AppCompatActivity {
     BluetoothSocket BandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
+
+    String saveFileUUID;
 
     AlertDialog alertDialog;
 
@@ -127,6 +130,8 @@ public class OneScenario extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter);
+
+        saveFileUUID = UUID.randomUUID().toString();
 
         stopWatch = new StopWatch(delayText);
 
