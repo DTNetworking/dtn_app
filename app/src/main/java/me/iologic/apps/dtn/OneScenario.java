@@ -173,7 +173,11 @@ public class OneScenario extends AppCompatActivity {
         });
 
         AlertDialog alertDialog = showList.create();
-        alertDialog.show();
+        try {
+            alertDialog.show();
+        } catch (Exception e){
+            alertDialog.dismiss();
+        }
     }
 
     public void Dialog() {
