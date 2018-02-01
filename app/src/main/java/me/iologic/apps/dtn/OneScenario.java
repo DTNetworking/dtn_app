@@ -28,7 +28,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 public class OneScenario extends AppCompatActivity {
 
@@ -158,12 +157,10 @@ public class OneScenario extends AppCompatActivity {
         int counter = 0;
         AlertDialog.Builder showList = new AlertDialog.Builder(OneScenario.this);
         showList.setTitle("Message Timings");
-        String[] msgTimings =  new String[1024];
-        ListIterator<String> itr= stopWatch.getTimings().listIterator();
-        while(itr.hasNext() && (counter!=1024)){
-            msgTimings[counter] = itr.next();
-            counter ++;
-        }
+
+        String[] msgTimings = new String[stopWatch.getTimings().size()];
+        msgTimings = stopWatch.getTimings().toArray(msgTimings);
+
         showList.setItems(msgTimings, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
