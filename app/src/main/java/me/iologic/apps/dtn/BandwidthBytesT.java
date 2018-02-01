@@ -50,6 +50,7 @@ public class BandwidthBytesT extends Thread {
         bandwidthOutStream = tmpOut;
 
         bandwidthHandler = handler;
+        bandwidthBuffer = new byte[1024];
     }
 
     @Override
@@ -84,7 +85,7 @@ public class BandwidthBytesT extends Thread {
         try {
 
             bandwidthBuffer = bytes;
-
+            Log.i(Constants.TAG, "bandwidthBuffer size(): " + bandwidthBuffer.length);
             String testMessage = new String(bandwidthBuffer);
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
