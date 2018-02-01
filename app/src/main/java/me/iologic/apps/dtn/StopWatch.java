@@ -13,6 +13,7 @@ class StopWatch extends Thread {
     private long elapsedTime;
     private final int REFRESH_RATE = 100;
     private boolean stopped = false;
+    float globalTime;
 
     ArrayList<String> msgTiming = new ArrayList<String>();
 
@@ -29,13 +30,11 @@ class StopWatch extends Thread {
 
 		/* Setting the timer text to the elapsed time */
         delayTV.setText(time + " ms");
-
-        // Update Message Timing List and Reset The Timer
-        updateList(time);
+        globalTime = time;
     }
 
-    private void updateList(float updateTime){
-        msgTiming.add(updateTime + " ms");
+    public void updateList(){
+        msgTiming.add(globalTime + " ms");
     }
 
     private Runnable startTimer = new Runnable() {

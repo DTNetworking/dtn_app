@@ -482,6 +482,8 @@ public class OneScenario extends AppCompatActivity {
                 if (writeBuf[0] == 'R') {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
                     stopWatch.halt();
+                    // Update Message Timing List and Reset The Timer
+                    stopWatch.updateList();
                     stopWatch.reset();
                 }
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE) {
