@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -109,6 +110,8 @@ public class OneScenario extends AppCompatActivity {
         speedText = (TextView) findViewById(R.id.speed);
         delayText = (TextView) findViewById(R.id.delay);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
+
+        checkBandwidthText.setVisibility(View.GONE);
 
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
@@ -312,6 +315,7 @@ public class OneScenario extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         checkBandwidthText.setVisibility(View.VISIBLE);
+                                        checkBandwidthText.setTextColor(Color.CYAN);
                                     }
                                 });
                                 bandData.checkBandwidth(useFile, tempFile);
@@ -506,7 +510,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
-                checkBandwidthText.setVisibility(View.GONE);
+                checkBandwidthText.setTextColor(Color.MAGENTA);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE){
                 checkBandwidthText.setText(R.string.checkingBandwidth);
             }
