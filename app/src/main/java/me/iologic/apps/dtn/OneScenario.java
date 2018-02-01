@@ -48,6 +48,8 @@ public class OneScenario extends AppCompatActivity {
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
 
+    AlertDialog alertDialog;
+
     Handler btClientConnectionStatus;
     Handler btServerConnectionStatus;
     Bundle bundle;
@@ -146,7 +148,7 @@ public class OneScenario extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         // Handle Item Selection
         switch (item.getItemId()) {
             case R.id.action_msgTime:
@@ -157,7 +159,7 @@ public class OneScenario extends AppCompatActivity {
         }
     }
 
-    public void showMsgTimeList(){
+    public void showMsgTimeList() {
         int counter = 0;
         AlertDialog.Builder showList = new AlertDialog.Builder(OneScenario.this);
         showList.setTitle("Message Timings");
@@ -172,10 +174,10 @@ public class OneScenario extends AppCompatActivity {
             }
         });
 
-        AlertDialog alertDialog = showList.create();
+         alertDialog = showList.create();
         try {
             alertDialog.show();
-        } catch (Exception e){
+        } catch (Exception e) {
             alertDialog.dismiss();
         }
     }
@@ -515,7 +517,7 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.MAGENTA);
-            } else if (msg.what == Constants.MessageConstants.BW_START_WRITE){
+            } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 checkBandwidthText.setText(R.string.checkingBandwidth);
             }
         }
@@ -546,6 +548,7 @@ public class OneScenario extends AppCompatActivity {
     protected void onDestroy() {
         mBluetoothAdapter.setName(getGoodOldName);
         mBluetoothAdapter.disable();
+        alertDialog.dismiss();
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
