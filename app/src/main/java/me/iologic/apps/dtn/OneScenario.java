@@ -400,7 +400,7 @@ public class OneScenario extends AppCompatActivity {
                     ACKSocketGlobal = serverConnect.getACKSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
-                } else if(msg.what == 3){
+                } else if(msg.arg1 == 3){
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
