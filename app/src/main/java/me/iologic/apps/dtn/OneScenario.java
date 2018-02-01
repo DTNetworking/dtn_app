@@ -141,7 +141,7 @@ public class OneScenario extends AppCompatActivity {
         return true;
     }
 
-    public void Dialog(){
+    public void Dialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Choose Server/Client")
                 .setMessage("Do you want to connect as Server or a Client?")
@@ -234,7 +234,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStatusText.setText("Discovery Period Finished");
-                if(connectAsClient == false) {
+                if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
                 } else {
                     connectDevice();
@@ -269,9 +269,9 @@ public class OneScenario extends AppCompatActivity {
                         @Override
                         public void run() {
                             // Check Bandwidth
-                            if(!useFile.checkFileExists(Constants.testFileName)) {
-                            tempFile = useFile.createTemporaryFile(Constants.testFileName);
-                            useFile.fillTempFile(tempFile);
+                            if (!useFile.checkFileExists(Constants.testFileName)) {
+                                tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                                useFile.fillTempFile(tempFile);
                             } else {
                                 tempFile = useFile.returnFile(Constants.testFileName);
                             }
@@ -282,18 +282,17 @@ public class OneScenario extends AppCompatActivity {
                             // getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
                             Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
                             Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
-                            speedText.setText(String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps");
                         }
                     });
 
-                            checkBandwidthT.start();
+                    checkBandwidthT.start();
 
 
-                   //   getDataHandler = new Handler() {
-                   //     @Override
-                 //       public void handleMessage(Message msg) {
-                         //   Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-
+                    getDataHandler = new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                            speedText.setText(String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps");
 
                           /*  try {
                                 checkBandwidthT.sleep(1000);
@@ -305,8 +304,8 @@ public class OneScenario extends AppCompatActivity {
                         } */
 
 
-                     //   }
-                 //   };
+                        }
+                    };
 
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
@@ -333,13 +332,13 @@ public class OneScenario extends AppCompatActivity {
 
 
                 } else if (msg.arg1 == 2) {
-                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
-                        toast.show();
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
 
                     ACKSocketGlobal = clientConnect.getACKClientSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
-                } else if(msg.arg1 == 100) {
+                } else if (msg.arg1 == 100) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
@@ -400,7 +399,7 @@ public class OneScenario extends AppCompatActivity {
                     ACKSocketGlobal = serverConnect.getACKSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
-                } else if(msg.arg1 == 3){
+                } else if (msg.arg1 == 3) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
@@ -427,10 +426,10 @@ public class OneScenario extends AppCompatActivity {
             } else if ((msg.what == Constants.MessageConstants.MESSAGE_READ)) {
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
-                byte[] writeACK = new byte[] {'R'};
+                byte[] writeACK = new byte[]{'R'};
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
-              //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
+                //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(writeMessage);
                 // }
                 ACKData.write(writeACK);
@@ -446,23 +445,23 @@ public class OneScenario extends AppCompatActivity {
             if (msg.what == Constants.MessageConstants.ACK_READ) {
                 byte[] writeBuf = (byte[]) msg.obj;
                 Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
-                if(writeBuf[0] == 'R') {
+                if (writeBuf[0] == 'R') {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
                     stopWatch.halt();
                 }
-            } else if(msg.what == Constants.MessageConstants.ACK_WRITE) {
+            } else if (msg.what == Constants.MessageConstants.ACK_WRITE) {
                 Log.i(Constants.TAG, "I am sending an ACK.");
             }
         }
     };
 
-    private final Handler btBandStatus = new Handler(){
+    private final Handler btBandStatus = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if(msg.what == Constants.MessageConstants.BW_READ){
+            if (msg.what == Constants.MessageConstants.BW_READ) {
                 byte[] writeBuf = (byte[]) msg.obj;
                 Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
-            } else if(msg.what ==  Constants.MessageConstants.BW_WRITE){
+            } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
             }
         }
