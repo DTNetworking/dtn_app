@@ -89,7 +89,7 @@ public class FileServices {
         return readData;
     }
 
-    public float getFileSize(){
+    public long getFileSize(){
         return readData.length;
     }
 

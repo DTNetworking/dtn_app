@@ -307,7 +307,7 @@ public class OneScenario extends AppCompatActivity {
                                 tempFile = useFile.returnFile(Constants.testFileName);
                             }
                             bandData.checkBandwidth(useFile, tempFile);
-                            FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration() / 1000);
+                            FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
                             Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
                             getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
                             Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
