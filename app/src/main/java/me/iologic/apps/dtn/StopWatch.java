@@ -2,8 +2,9 @@ package me.iologic.apps.dtn;
 
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 class StopWatch extends Thread {
     private TextView delayTV; //Temporary TextView
@@ -12,6 +13,8 @@ class StopWatch extends Thread {
     private long elapsedTime;
     private final int REFRESH_RATE = 100;
     private boolean stopped = false;
+
+    ArrayList<String> msgTiming = new ArrayList<String>();
 
     public StopWatch(TextView delay){
         delayTV = delay;
@@ -26,6 +29,14 @@ class StopWatch extends Thread {
 
 		/* Setting the timer text to the elapsed time */
         delayTV.setText(time + " ms");
+
+        // Update Message Timing List and Reset The Timer
+        updateList(time);
+    }
+
+    private void updateList(float updateTime){
+        msgTiming.add(updateTime + " ms");
+        reset();
     }
 
     private Runnable startTimer = new Runnable() {
@@ -52,9 +63,13 @@ class StopWatch extends Thread {
         stopped = true;
     }
 
-    public void reset (View view){
+    public void reset (){
         stopped = false;
-        delayTV.setText("StopWatch Reset");
+        // delayTV.setText("StopWatch Reset");
+    }
+
+    public ArrayList<String> getTimings(){
+        return msgTiming;
     }
 
 }

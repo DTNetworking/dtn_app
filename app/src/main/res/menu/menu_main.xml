@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="me.iologic.apps.dtn.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_msgTime"
         android:orderInCategory="100"
         android:title="@string/action_msgTime"
         app:showAsAction="always" />

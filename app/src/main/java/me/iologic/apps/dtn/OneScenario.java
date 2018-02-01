@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class OneScenario extends AppCompatActivity {
 
@@ -138,6 +140,36 @@ public class OneScenario extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item){
+        // Handle Item Selection
+        switch (item.getItemId()) {
+            case R.id.action_msgTime:
+                showMsgTimeList();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void showMsgTimeList(){
+        int counter = 0;
+        AlertDialog.Builder showList = new AlertDialog.Builder(OneScenario.this);
+        showList.setTitle("Message Timings");
+        String[] msgTimings =  new String[1024];
+        ListIterator<String> itr= stopWatch.getTimings().listIterator();
+        while(itr.hasNext() && (counter!=1024)){
+            msgTimings[counter] = itr.next();
+            counter ++;
+        }
+        showList.setItems(msgTimings, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Do Nothing
+            }
+        });
     }
 
     public void Dialog() {
