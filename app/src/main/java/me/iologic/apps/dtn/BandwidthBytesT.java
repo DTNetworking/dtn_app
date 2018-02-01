@@ -26,7 +26,7 @@ public class BandwidthBytesT extends Thread {
 
     private Handler bandwidthHandler;
 
-    long duration;
+    long sendingStartTime, sendingEndTime, duration;
 
     public BandwidthBytesT(BluetoothSocket socket, Handler handler) {
         bandwidthSocket = socket;
@@ -88,7 +88,11 @@ public class BandwidthBytesT extends Thread {
             String testMessage = new String(bandwidthBuffer);
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
+            sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
+            sendingEndTime = System.nanoTime();
+
+            duration = sendingEndTime - sendingStartTime;
 
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
