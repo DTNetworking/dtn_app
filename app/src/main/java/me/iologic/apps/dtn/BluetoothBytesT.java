@@ -143,6 +143,7 @@ class BluetoothBytesT extends Thread {
                     try {
                         MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
                         mmOutStream.write(MessagePacket.getBytes());
+                        flushOutStream();
                     } catch (IOException WriteE) {
                         Log.i(Constants.TAG, "Write Error: " + WriteE);
                     }
@@ -159,6 +160,7 @@ class BluetoothBytesT extends Thread {
 
                     MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
                     mmOutStream.write(MessagePacket.getBytes());
+                    flushOutStream();
                     packet = new byte[2]; // Erase old Data
                 }
 
