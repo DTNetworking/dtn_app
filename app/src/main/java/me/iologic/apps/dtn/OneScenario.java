@@ -191,7 +191,12 @@ public class OneScenario extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Choose Server/Client")
                 .setMessage("Do you want to connect as Server or a Client?")
-                .setNegativeButton("Client", null)
+                .setNegativeButton("Client", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        alertDialog.dismiss();
+                    }
+                })
                 .setPositiveButton("Server", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -556,9 +561,7 @@ public class OneScenario extends AppCompatActivity {
     protected void onDestroy() {
         mBluetoothAdapter.setName(getGoodOldName);
         mBluetoothAdapter.disable();
-        if(!(alertDialog.equals(null))) {
-            alertDialog.dismiss();
-        }
+
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
