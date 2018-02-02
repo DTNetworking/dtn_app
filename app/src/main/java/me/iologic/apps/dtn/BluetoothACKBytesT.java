@@ -55,7 +55,7 @@ public class BluetoothACKBytesT extends Thread {
                 mmACKBuffer = new byte[1];
                 int numBytes; // bytes returned from read()
 
-                if (mmACKInStream.available() > 0) {
+                if (mmACKInStream.available() > 2) {
                     // Read from the InputStream.
                     numBytes = mmACKInStream.read(mmACKBuffer);
                     // Send the obtained bytes to the UI activity.
