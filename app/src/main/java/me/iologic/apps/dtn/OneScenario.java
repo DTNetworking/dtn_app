@@ -135,7 +135,7 @@ public class OneScenario extends AppCompatActivity {
 
         useFile = new FileServices(getApplicationContext(), saveFileUUID);
 
-        stopWatch = new StopWatch(delayText, useFile);
+        stopWatch = new StopWatch(delayText);
 
         deviceConnected = false;
         retryConnectionHandler = new Handler();
@@ -505,6 +505,7 @@ public class OneScenario extends AppCompatActivity {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
                     stopWatch.halt();
                     // Update Message Timing List and Reset The Timer
+                    useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
                 }
