@@ -179,7 +179,7 @@ public class OneScenario extends AppCompatActivity {
             }
         });
 
-         alertDialog = showList.create();
+        alertDialog = showList.create();
         try {
             alertDialog.show();
         } catch (Exception e) {
@@ -348,7 +348,7 @@ public class OneScenario extends AppCompatActivity {
                             Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
                             String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                             speedText.setText(bandwidth);
-                            useFile.saveBWData(Constants.FILE_NAME_BW, bandwidth);
+                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
 
                           /*  try {
                                 checkBandwidthT.sleep(1000);
