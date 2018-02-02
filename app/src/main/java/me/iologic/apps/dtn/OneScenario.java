@@ -133,9 +133,9 @@ public class OneScenario extends AppCompatActivity {
 
         saveFileUUID = UUID.randomUUID().toString();
 
-        stopWatch = new StopWatch(delayText, useFile);
-
         useFile = new FileServices(getApplicationContext(), saveFileUUID);
+
+        stopWatch = new StopWatch(delayText, useFile);
 
         deviceConnected = false;
         retryConnectionHandler = new Handler();
