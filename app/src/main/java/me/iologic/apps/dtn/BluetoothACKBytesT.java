@@ -84,7 +84,6 @@ public class BluetoothACKBytesT extends Thread {
             Log.i(Constants.TAG, "ACK Sending: " + testMessage);
 
             mmACKOutStream.write(mmACKBuffer);
-            flushOutStream();
             // Share the sent message with the UI activity.
             Message writtenMsg = mACKHandler.obtainMessage(
                     Constants.MessageConstants.ACK_WRITE, -1, -1, mmACKBuffer);
