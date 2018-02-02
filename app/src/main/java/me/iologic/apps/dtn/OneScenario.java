@@ -65,6 +65,7 @@ public class OneScenario extends AppCompatActivity {
     Handler getDataHandler;
     boolean deviceConnected;
     Handler retryConnectionHandler = new Handler();
+    String GlobalReceivedMessage;
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
     private static String SERVER_CONNECTION_FAIL;
@@ -496,6 +497,7 @@ public class OneScenario extends AppCompatActivity {
                 //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(writeMessage);
                 // }
+                GlobalReceivedMessage = writeMessage;
                 ACKData.write(writeACK);
                 // isCheckingBandwidth = false;
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
@@ -518,7 +520,8 @@ public class OneScenario extends AppCompatActivity {
                     stopWatch.reset();
                 }
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE) {
-                Log.i(Constants.TAG, "I am sending an ACK.");
+                Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
+                Log.i(Constants.TAG, "---------------------");
             }
         }
     };
