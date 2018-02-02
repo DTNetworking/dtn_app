@@ -555,7 +555,9 @@ public class OneScenario extends AppCompatActivity {
     protected void onDestroy() {
         mBluetoothAdapter.setName(getGoodOldName);
         mBluetoothAdapter.disable();
-        alertDialog.dismiss();
+        if(!(alertDialog.equals(null))) {
+            alertDialog.dismiss();
+        }
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
