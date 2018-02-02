@@ -409,7 +409,7 @@ public class OneScenario extends AppCompatActivity {
 
         for (BluetoothDevice btDevice : btDevicesFoundList) {
             Log.i(Constants.TAG, "BtNullDevicefound " + btDevice.equals(null));
-            if (!btDevice.equals(null)) {
+            if (!(btDevice.equals(null) && !(btDevice.getName() != null))) {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
                     clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
