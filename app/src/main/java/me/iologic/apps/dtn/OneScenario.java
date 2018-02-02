@@ -276,7 +276,7 @@ public class OneScenario extends AppCompatActivity {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (!device.equals(null)) {
+                if ((device !=null) && (device.getName() != null) && (device.getName() != "null")) {
                     btDevicesFoundList.add(device);
                 }
                 String deviceName = device.getName();
