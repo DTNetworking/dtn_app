@@ -1,6 +1,7 @@
 package me.iologic.apps.dtn;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -108,7 +109,7 @@ public class FileServices {
     // Save Bandwidth Data To File
     public void saveBWData(String ReceivedFileName, String ReceivedBandwidth){
         String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
-        dataFile = new File(ctx.getFilesDir(), saveFileName);
+            dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
 
         FileOutputStream fOut = null;
         try {
