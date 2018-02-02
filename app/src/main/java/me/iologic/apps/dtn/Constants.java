@@ -12,6 +12,7 @@ public class Constants {
 
     public interface FileNames {
         public static final String Bandwidth = "Bandwidth";
+        public static final String Delay = "MsgTimings";
     }
 
     // Defines several constants used when transmitting messages between the

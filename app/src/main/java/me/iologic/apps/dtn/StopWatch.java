@@ -15,12 +15,14 @@ class StopWatch extends Thread {
     private final int REFRESH_RATE = 100;
     private boolean stopped = false;
     float globalTime;
+    private FileServices saveDData;
 
     ArrayList<String> msgTiming = new ArrayList<String>();
 
 
-    public StopWatch(TextView delay){
+    public StopWatch(TextView delay, FileServices ReceivedFileObj){
         delayTV = delay;
+        saveDData = ReceivedFileObj;
     }
 
 
@@ -33,6 +35,8 @@ class StopWatch extends Thread {
 		/* Setting the timer text to the elapsed time */
         delayTV.setText(time + " ms");
         globalTime = time;
+
+        saveDData.saveDelayData(Constants.FileNames.Delay, globalTime);
 
         // Convert MilliSeconds to Seconds
         delayTV.setOnClickListener(new View.OnClickListener() {

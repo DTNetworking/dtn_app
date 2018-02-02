@@ -130,6 +130,32 @@ public class FileServices {
 
     }
 
+    // Save Message Sending Delay Data To File
+    public void saveDelayData(String ReceivedFileName, float ReceivedDelay){
+        String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
+        dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
+
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(dataFile, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write(ReceivedDelay + " ms" + "\r\n");
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+
     public void deleteFile(){
           if(file.delete() == true)
           {
