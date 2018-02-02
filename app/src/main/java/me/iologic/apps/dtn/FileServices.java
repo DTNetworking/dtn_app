@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 
 /**
@@ -17,14 +18,17 @@ import java.io.RandomAccessFile;
 public class FileServices {
 
     private File file;
+    private File dataFile;
     private FileOutputStream outputStream;
     private Context ctx;
 
     byte[] readData;
+    String dataUUID;
 
-    public FileServices(Context context)
+    public FileServices(Context context, String receivedUUID)
     {
         ctx = context;
+        dataUUID = receivedUUID;
     }
 
     public File createTemporaryFile(String ReceivedFileName) {
@@ -99,6 +103,30 @@ public class FileServices {
             o.append("*");
         }
         return o.toString();
+    }
+
+    // Save Bandwidth Data To File
+    public void saveBWData(String ReceivedFileName, String ReceivedBandwidth){
+        String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
+        dataFile = new File(ctx.getFilesDir(), saveFileName);
+
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(dataFile, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write(ReceivedBandwidth + "\r\n");
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public void deleteFile(){

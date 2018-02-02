@@ -8,6 +8,8 @@ public class Constants {
     public static final String TAG = "DTNLogs";
     public static final String testFileName = "testFile";
 
+    public static final String FILE_NAME_BW = "Bandwidth";
+
     // Defines several constants used when transmitting messages between the
     // service and the UI.
     public interface MessageConstants {

@@ -135,7 +135,7 @@ public class OneScenario extends AppCompatActivity {
 
         stopWatch = new StopWatch(delayText);
 
-        useFile = new FileServices(getApplicationContext());
+        useFile = new FileServices(getApplicationContext(), saveFileUUID);
 
         deviceConnected = false;
         retryConnectionHandler = new Handler();
@@ -346,7 +346,9 @@ public class OneScenario extends AppCompatActivity {
                         @Override
                         public void handleMessage(Message msg) {
                             Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                            speedText.setText(String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps");
+                            String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                            speedText.setText(bandwidth);
+                            useFile.saveBWData(Constants.FILE_NAME_BW, bandwidth);
 
                           /*  try {
                                 checkBandwidthT.sleep(1000);
