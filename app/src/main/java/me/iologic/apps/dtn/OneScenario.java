@@ -52,6 +52,7 @@ public class OneScenario extends AppCompatActivity {
     String saveFileUUID;
 
     AlertDialog alertDialog;
+    boolean alertDialogOpened;
 
     Handler btClientConnectionStatus;
     Handler btServerConnectionStatus;
@@ -140,6 +141,8 @@ public class OneScenario extends AppCompatActivity {
         deviceConnected = false;
         retryConnectionHandler = new Handler();
 
+        alertDialogOpened = false;
+
         Dialog();
         startBluetooth();
         sendMessage();
@@ -165,7 +168,7 @@ public class OneScenario extends AppCompatActivity {
     }
 
     public void showMsgTimeList() {
-        int counter = 0;
+        alertDialogOpened = true;
         AlertDialog.Builder showList = new AlertDialog.Builder(OneScenario.this);
         showList.setTitle("Message Timings");
 
@@ -194,7 +197,7 @@ public class OneScenario extends AppCompatActivity {
                 .setNegativeButton("Client", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        alertDialog.dismiss();
+                        // Do Nothing
                     }
                 })
                 .setPositiveButton("Server", new DialogInterface.OnClickListener() {
@@ -561,7 +564,9 @@ public class OneScenario extends AppCompatActivity {
     protected void onDestroy() {
         mBluetoothAdapter.setName(getGoodOldName);
         mBluetoothAdapter.disable();
-
+        if(alertDialogOpened == true){
+            alertDialog.dismiss();
+        }
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
