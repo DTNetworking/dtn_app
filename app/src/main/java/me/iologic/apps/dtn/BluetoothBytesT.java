@@ -13,9 +13,9 @@ import java.io.OutputStream;
 
 /**
  * Created by vinee on 15-01-2018.
- *
+ * <p>
  * Documentation:
- *
+ * <p>
  * No Of Packets To Be Sent =(bytes.length/PACKET_SIZE).
  */
 
@@ -72,11 +72,11 @@ class BluetoothBytesT extends Thread {
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
                     // Send the obtained bytes to the UI activity.
-                  //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
-                        Message readMsg = mHandler.obtainMessage(
-                                Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
-                                mmBuffer);
-                        readMsg.sendToTarget();
+                    Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes);
+                    Message readMsg = mHandler.obtainMessage(
+                            Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
+                            mmBuffer);
+                    readMsg.sendToTarget();
                 } else {
 
                     SystemClock.sleep(100);
