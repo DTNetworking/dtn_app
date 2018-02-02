@@ -527,9 +527,9 @@ public class OneScenario extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == Constants.MessageConstants.BW_READ) {
-                byte[] writeBuf = (byte[]) msg.obj;
-                Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
-                Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+               // byte[] writeBuf = (byte[]) msg.obj;
+               // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
+               // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.MAGENTA);
