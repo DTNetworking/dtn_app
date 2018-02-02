@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Enter Your Message Here"
+            android:hint="@string/enterMessage"
             android:inputType="textPersonName"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="138dp" />
@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Send" />
+            android:text="@string/send" />
 
     </LinearLayout>
 
@@ -103,52 +103,51 @@
             android:textSize="30sp" />
 
 
+            <TextView
+                android:id="@+id/delay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/delay"
+                android:textSize="30sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/delay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/delay"
-            android:gravity="center"
-            android:textSize="30sp"
-            android:clickable="true"/>
+            <TextView
+                android:id="@+id/speed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/speed"
+                android:textAlignment="center"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/checkBandwidthStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/holo_blue_bright" />
+
 
         </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
         <TextView
-            android:id="@+id/speed"
+            android:id="@+id/throughput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:text="@string/speed"
+            android:layout_weight="2"
+            android:text="@string/throughput"
             android:textAlignment="center"
-            android:textSize="30sp"
-            />
-
- <TextView
-     android:id="@+id/checkBandwidthStatus"
-     android:layout_width="wrap_content"
-     android:layout_height="match_parent"
-     android:layout_marginTop="8dp"
-     android:layout_gravity="center"
-     android:textColor="@android:color/holo_blue_bright"
-     />
-
-
-
-    </LinearLayout>
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/currentStatus"

@@ -19,4 +19,7 @@
     <string name="currentStatus">Current Status</string>
     <string name="receivedMessage">Received Message</string>
     <string name="checkingBandwidth">Checking Bandwidth Now</string>
+    <string name="throughput">Throughput</string>\
+    <string name="enterMessage">Enter Your Message Here</string>
+    <string name="send">Send</string>
 </resources>
