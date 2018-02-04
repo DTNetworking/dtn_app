@@ -98,7 +98,7 @@ public class BandwidthBytesT extends Thread {
             byte[] data = new byte[(int) ReceivedFileObj.length()];
             FileInputStream fin = new FileInputStream(ReceivedFileObj);
             int numBytes = 0;
-            int up = 1000;
+            int up = 1024 * 50;
 
             // Share the sent message with the UI activity.
             Message writtenBWStatus = bandwidthHandler.obtainMessage(
@@ -111,7 +111,7 @@ public class BandwidthBytesT extends Thread {
                     sendingStartTime = System.nanoTime();
                     bandwidthOutStream.write(data);
                     sendingEndTime = System.nanoTime();
-                    up+=1000;
+                    up+=1024 * 50;
                     Log.i(Constants.TAG, "Writing " + up + " bytes");
                 } else {
                     Log.i(Constants.TAG, "Else Not Reached My Target");
