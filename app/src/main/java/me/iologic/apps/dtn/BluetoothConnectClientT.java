@@ -46,11 +46,11 @@ class BluetoothConnectClientT extends Thread {
         btConnectionStatus = getBtConnectionStatus;
 
         try {
-            // Get a BluetoothSocket to connect with the given BluetoothDevice.
+            // Get a BluetoothSocket to connect with the given BluetoothDevice. Allowing Insecure connections to avoid Pairing Key.
             // MY_UUID is the app's UUID string, also used in the server code.
-            tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-            ACKtmp = device.createRfcommSocketToServiceRecord(ACK_UUID);
-            BWtmp = device.createRfcommSocketToServiceRecord(BW_UUID);
+            tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+            ACKtmp = device.createInsecureRfcommSocketToServiceRecord(ACK_UUID);
+            BWtmp = device.createInsecureRfcommSocketToServiceRecord(BW_UUID);
         } catch (IOException e) {
             Log.e(TAG, "Socket's create() method failed", e);
         }
