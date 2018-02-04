@@ -225,6 +225,7 @@ public class OneScenario extends AppCompatActivity {
             //  startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT); // Calls onActivityResult */
 
             setBtName();
+            setBtDiscovery();
 
             Toast btDeviceEnableToast = Toast.makeText(getApplicationContext(), btEnabledMessage, Toast.LENGTH_SHORT);
             btDeviceEnableToast.show();

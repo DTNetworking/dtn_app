@@ -14,6 +14,12 @@ public class Constants {
         public static final String Delay = "MsgTimings";
     }
 
+    public interface Packet {
+        public static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
+        public static final int NO_OF_PACKETS = 25;
+        public static final int BW_PACKET_SIZE = 1024 * 64; // 65536 Bytes = 64 KB
+    }
+
     // Defines several constants used when transmitting messages between the
     // service and the UI.
     public interface MessageConstants {
@@ -38,8 +44,5 @@ public class Constants {
 
         public static final String BW_CONNECT_SERVER_SUCCESS = "Bandwidth connection is successful as a server";
         public static final String BW_CONNECT_CLIENT_SUCCESS = "Bandwidth connection is successful as a client";
-
-        public static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
-        public static final int NO_OF_PACKETS = 25;
     }
 }

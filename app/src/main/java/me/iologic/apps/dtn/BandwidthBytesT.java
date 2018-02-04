@@ -9,10 +9,10 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -85,38 +85,22 @@ public class BandwidthBytesT extends Thread {
         }
     }
 
-    public void write(byte[] bytes, FileServices fileService, File ReceivedFileObj) {
+    public void write(byte[] bytes) {
         try {
 
             bandwidthBuffer = bytes;
             Log.i(Constants.TAG, "bandwidthBuffer size(): " + bandwidthBuffer.length);
             String testMessage = new String(bandwidthBuffer);
             //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
-
-            //File Services
-
-            byte[] data = new byte[(int) ReceivedFileObj.length()];
-            FileInputStream fin = new FileInputStream(ReceivedFileObj);
-            int numBytes = 0;
-            int up = 1024 * 50;
-
             // Share the sent message with the UI activity.
             Message writtenBWStatus = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
             writtenBWStatus.sendToTarget();
 
-            while ((numBytes = fin.read(data, numBytes, data.length - numBytes)) > 0) {
-                Log.i(Constants.TAG, "Number Of Bytes Read & Writing: " + numBytes);
-                    sendingStartTime = System.nanoTime();
-                    bandwidthOutStream.write(data);
-                    sendingEndTime = System.nanoTime();
-
-                    Log.i(Constants.TAG, "Writing " + up + " bytes");
-
-
-
-                duration = sendingEndTime - sendingStartTime;
-            }
+            sendingStartTime = System.nanoTime();
+            bandwidthOutStream.write(bandwidthBuffer);
+            sendingEndTime = System.nanoTime();
+            duration = sendingEndTime - sendingStartTime;
 
 
             // Share the sent message with the UI activity.
@@ -149,7 +133,16 @@ public class BandwidthBytesT extends Thread {
     public void checkBandwidth(FileServices fileService, File tempFileRead) {
         byte[] getData = fileService.readTempFile(tempFileRead);
         Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
-        write(getData, fileService, tempFileRead);
+
+        byte[] sendData; // Breaking 1 MB file into 64 KB packets. So total 16 packets.
+        int counter = 1;
+        int startPacketIndex = 0;
+        while (counter != 17) { // (1024 * 1024) / (1024 * 64) = 16 Packets
+            sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
+            write(sendData);
+            counter++;
+            startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
+        }
     }
 
     public long getTotalBandwidthDuration() {

@@ -137,7 +137,7 @@ class BluetoothBytesT extends Thread {
 
         stopW.start();
 
-        for (j = initi; j < (Constants.MessageConstants.PACKET_SIZE + offset); j++) {
+        for (j = initi; j < (Constants.Packet.PACKET_SIZE + offset); j++) {
             try {
                 if (j == bytes.length) {
                     try {
