@@ -142,6 +142,8 @@ public class BandwidthBytesT extends Thread {
             write(sendData);
             counter++;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
+
+            Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
         }
     }
 
