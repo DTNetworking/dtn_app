@@ -323,7 +323,7 @@ public class OneScenario extends AppCompatActivity {
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            while (true) {
+
                                 // Check Bandwidth
                                 if (!useFile.checkFileExists(Constants.testFileName)) {
                                     tempFile = useFile.createTemporaryFile(Constants.testFileName);
@@ -331,6 +331,7 @@ public class OneScenario extends AppCompatActivity {
                                 } else {
                                     tempFile = useFile.returnFile(Constants.testFileName);
                                 }
+                            while (true) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
