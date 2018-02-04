@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -35,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
         AskForLocation();
         setBtDiscovery();
-        openOneScenario();
     }
 
     public void AskForLocation() {
@@ -51,12 +49,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(discoverableIntent);
     }
 
-    public void openOneScenario() {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e){
-            Log.e(Constants.TAG, "Unable to sleep -> OneScenario" + e);
-        }
+    public void openOneScenario(View view) {
         Intent intent = new Intent(this, OneScenario.class);
         startActivity(intent);
     }
