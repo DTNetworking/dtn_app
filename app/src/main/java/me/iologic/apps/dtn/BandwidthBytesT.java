@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -84,13 +85,19 @@ public class BandwidthBytesT extends Thread {
         }
     }
 
-    public void write(byte[] bytes) {
+    public void write(byte[] bytes, FileServices fileService, File ReceivedFileObj) {
         try {
 
             bandwidthBuffer = bytes;
             Log.i(Constants.TAG, "bandwidthBuffer size(): " + bandwidthBuffer.length);
             String testMessage = new String(bandwidthBuffer);
-            Log.i(Constants.TAG, "BW Sending: " + testMessage);
+          //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
+
+            //File Services
+
+            byte [] data = new byte[ (int) ReceivedFileObj.length() ];
+            FileInputStream fin = new FileInputStream(ReceivedFileObj);
+            int numBytes = 0;
 
             // Share the sent message with the UI activity.
             Message writtenBWStatus = bandwidthHandler.obtainMessage(
@@ -98,8 +105,10 @@ public class BandwidthBytesT extends Thread {
             writtenBWStatus.sendToTarget();
 
             sendingStartTime = System.nanoTime();
-            bandwidthOutStream.write(bandwidthBuffer);
-            flushOutStream();
+            while ( (numBytes = fin.read(data, numBytes, data.length - numBytes) ) > 0) {
+                Log.i(Constants.TAG, "Number Of Bytes Read & Writing: " + numBytes);
+                bandwidthOutStream.write(data);
+            }
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
 
@@ -133,7 +142,7 @@ public class BandwidthBytesT extends Thread {
     public void checkBandwidth(FileServices fileService, File tempFileRead) {
         byte[] getData = fileService.readTempFile(tempFileRead);
         Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
-        write(getData);
+        write(getData, fileService, tempFileRead);
     }
 
     public long getTotalBandwidthDuration() {
