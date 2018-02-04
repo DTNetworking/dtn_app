@@ -91,7 +91,8 @@ public class BandwidthBytesT extends Thread {
             bandwidthBuffer = bytes;
             Log.i(Constants.TAG, "bandwidthBuffer size(): " + bandwidthBuffer.length);
             String testMessage = new String(bandwidthBuffer);
-            //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
+            Log.i(Constants.TAG, "BW Sending: " + testMessage);
+
             // Share the sent message with the UI activity.
             Message writtenBWStatus = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
@@ -140,9 +141,10 @@ public class BandwidthBytesT extends Thread {
         while (counter != 17) { // (1024 * 1024) / (1024 * 64) = 16 Packets
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
             write(sendData);
+            flushOutStream();
             counter++;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
-
+            SystemClock.sleep(1000);
             Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
         }
     }
