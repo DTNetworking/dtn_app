@@ -100,6 +100,7 @@ public class BandwidthBytesT extends Thread {
 
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
+            flushOutStream();
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
 
@@ -142,7 +143,6 @@ public class BandwidthBytesT extends Thread {
         while (counter != 17) { // (1024 * 1024) / (1024 * 64) = 16 Packets
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
             write(sendData);
-            flushOutStream();
             counter++;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             SystemClock.sleep(20000);
