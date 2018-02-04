@@ -108,6 +108,7 @@ public class BandwidthBytesT extends Thread {
             Message writtenMsg = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_WRITE, -1, -1, bandwidthBuffer);
             writtenMsg.sendToTarget();
+            SystemClock.sleep(10000);
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error occurred when sending BW", e);
@@ -144,7 +145,7 @@ public class BandwidthBytesT extends Thread {
             flushOutStream();
             counter++;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
-            SystemClock.sleep(5000);
+            SystemClock.sleep(20000);
             Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
         }
     }

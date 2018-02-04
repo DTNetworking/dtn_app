@@ -537,6 +537,7 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.MAGENTA);
+                checkBandwidthText.setText("I changed!");
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 checkBandwidthText.setText(R.string.checkingBandwidth);
             }
