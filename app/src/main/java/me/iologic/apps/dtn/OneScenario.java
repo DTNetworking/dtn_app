@@ -146,7 +146,8 @@ public class OneScenario extends AppCompatActivity {
         retryConnectionHandler = new Handler();
 
         alertDialogOpened = false;
-
+        
+        AskForLocation();
         Dialog();
         startBluetooth();
         sendMessage();
