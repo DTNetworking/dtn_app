@@ -148,8 +148,8 @@ public class OneScenario extends AppCompatActivity {
         alertDialogOpened = false;
 
         AskForLocation();
-        Dialog();
         setBtDiscovery();
+        Dialog();
         startBluetooth();
         sendMessage();
     }
@@ -263,12 +263,10 @@ public class OneScenario extends AppCompatActivity {
     }
 
     public void setBtDiscovery() {
-        if (connectAsClient == false) {
             // Make Device Discoverable
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
             startActivity(discoverableIntent);
-        }
     }
 
     private void setBtName() {
