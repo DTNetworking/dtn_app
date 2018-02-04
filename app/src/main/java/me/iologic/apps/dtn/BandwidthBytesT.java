@@ -91,28 +91,32 @@ public class BandwidthBytesT extends Thread {
             bandwidthBuffer = bytes;
             Log.i(Constants.TAG, "bandwidthBuffer size(): " + bandwidthBuffer.length);
             String testMessage = new String(bandwidthBuffer);
-          //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
+            //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
             //File Services
 
-            byte [] data = new byte[ (int) ReceivedFileObj.length() ];
+            byte[] data = new byte[(int) ReceivedFileObj.length()];
             FileInputStream fin = new FileInputStream(ReceivedFileObj);
             int numBytes = 0;
+            int up = 50;
 
             // Share the sent message with the UI activity.
             Message writtenBWStatus = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
             writtenBWStatus.sendToTarget();
 
-            while ( (numBytes = fin.read(data, numBytes, data.length - numBytes) ) > 0) {
+            while ((numBytes = fin.read(data, numBytes, data.length - numBytes)) > 0) {
                 Log.i(Constants.TAG, "Number Of Bytes Read & Writing: " + numBytes);
-                sendingStartTime = System.nanoTime();
-                bandwidthOutStream.write(data);
-                sendingEndTime = System.nanoTime();
-                
+                if (numBytes == up) {
+                    sendingStartTime = System.nanoTime();
+                    bandwidthOutStream.write(data);
+                    sendingEndTime = System.nanoTime();
+                    up+=50;
+                }
+
+
                 duration = sendingEndTime - sendingStartTime;
             }
-
 
 
             // Share the sent message with the UI activity.
