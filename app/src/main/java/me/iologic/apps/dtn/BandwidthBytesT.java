@@ -104,13 +104,16 @@ public class BandwidthBytesT extends Thread {
                     Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
             writtenBWStatus.sendToTarget();
 
-            sendingStartTime = System.nanoTime();
             while ( (numBytes = fin.read(data, numBytes, data.length - numBytes) ) > 0) {
                 Log.i(Constants.TAG, "Number Of Bytes Read & Writing: " + numBytes);
+                sendingStartTime = System.nanoTime();
                 bandwidthOutStream.write(data);
+                sendingEndTime = System.nanoTime();
+                
+                duration = sendingEndTime - sendingStartTime;
             }
-            sendingEndTime = System.nanoTime();
-            duration = sendingEndTime - sendingStartTime;
+
+
 
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
