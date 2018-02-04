@@ -107,15 +107,12 @@ public class BandwidthBytesT extends Thread {
 
             while ((numBytes = fin.read(data, numBytes, data.length - numBytes)) > 0) {
                 Log.i(Constants.TAG, "Number Of Bytes Read & Writing: " + numBytes);
-                if (numBytes == up) {
                     sendingStartTime = System.nanoTime();
                     bandwidthOutStream.write(data);
                     sendingEndTime = System.nanoTime();
-                    up+=1024 * 50;
+
                     Log.i(Constants.TAG, "Writing " + up + " bytes");
-                } else {
-                    Log.i(Constants.TAG, "Else Not Reached My Target");
-                }
+
 
 
                 duration = sendingEndTime - sendingStartTime;

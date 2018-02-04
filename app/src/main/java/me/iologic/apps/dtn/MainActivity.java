@@ -1,6 +1,5 @@
 package me.iologic.apps.dtn;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,23 +34,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Make Device Discoverable
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+       /* Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        startActivity(discoverableIntent);
+        startActivity(discoverableIntent); */
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
         }
 
         object = new OneScenario();
+
+        openOneScenario();
     }
 
-    public void openOneScenario(View view) {
+    public void openOneScenario() {
         Intent intent = new Intent(this, OneScenario.class);
         startActivity(intent);
     }
 
-    public void sendMessage(View view){
+   /* public void sendMessage(View view){
         object.connectDevice();
-    }
+    } */
 }

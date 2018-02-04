@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -212,8 +213,7 @@ public class OneScenario extends AppCompatActivity {
     protected void startBluetooth() {
         String discMessage = "Discoverability set to ON";
         String btEnabledMessage = "Bluetooth is Enabled";
-        Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), discMessage, Toast.LENGTH_SHORT);
-        btDeviceDiscoverToast.show();
+        String discFailMessage = "Bluetooth failed to switch ON";
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         getGoodOldName = mBluetoothAdapter.getName();
@@ -225,6 +225,21 @@ public class OneScenario extends AppCompatActivity {
             //   Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
             //  startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT); // Calls onActivityResult */
+            Method method;
+            try {
+                method = mBluetoothAdapter.getClass().getMethod("setScanMode", int.class, int.class);
+                method.invoke(mBluetoothAdapter,BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE,120);
+                Log.e("invoke","method invoke successfully");
+
+                Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), discMessage, Toast.LENGTH_SHORT);
+                btDeviceDiscoverToast.show();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), discFailMessage, Toast.LENGTH_SHORT);
+                btDeviceDiscoverToast.show();
+            }
+
             setBtName();
 
             Toast btDeviceEnableToast = Toast.makeText(getApplicationContext(), btEnabledMessage, Toast.LENGTH_SHORT);
