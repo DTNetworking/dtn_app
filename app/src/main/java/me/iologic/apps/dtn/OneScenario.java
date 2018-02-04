@@ -148,8 +148,8 @@ public class OneScenario extends AppCompatActivity {
         alertDialogOpened = false;
 
         AskForLocation();
-        setBtDiscovery();
         Dialog();
+        setBtDiscovery();
         startBluetooth();
         sendMessage();
     }
@@ -214,7 +214,7 @@ public class OneScenario extends AppCompatActivity {
                 }).create().show();
     }
 
-    public void AskForLocation(){
+    public void AskForLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, Constants.Permissions.PERMISSION_REQUEST_CODE);
         }
@@ -232,13 +232,9 @@ public class OneScenario extends AppCompatActivity {
             mBluetoothAdapter.enable();
             //   Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
-           // startActivityForResult(enableBtIntent, Constants.Permissions.REQUEST_ENABLE_BT); // Calls onActivityResult */
+            // startActivityForResult(enableBtIntent, Constants.Permissions.REQUEST_ENABLE_BT); // Calls onActivityResult */
 
             setBtName();
-
-            /*if (connectAsClient == false) { // Needed Only For Server
-                setBtDiscovery();
-            } */
 
             Toast btDeviceEnableToast = Toast.makeText(getApplicationContext(), btEnabledMessage, Toast.LENGTH_SHORT);
             btDeviceEnableToast.show();
@@ -267,10 +263,12 @@ public class OneScenario extends AppCompatActivity {
     }
 
     public void setBtDiscovery() {
-        // Make Device Discoverable
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        startActivity(discoverableIntent);
+        if (connectAsClient == false) {
+            // Make Device Discoverable
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
+        }
     }
 
     private void setBtName() {
