@@ -9,7 +9,6 @@ public class Constants {
     public static final String testFileName = "testFile";
 
 
-
     public interface FileNames {
         public static final String Bandwidth = "Bandwidth";
         public static final String Delay = "MsgTimings";
@@ -31,11 +30,14 @@ public class Constants {
         public static final int BW_FAIL_TO_SEND = 12;
         public static final int BW_START_WRITE = 14;
 
+        public static final String DISCOVERY_SUCCESS_MESSAGE = "Discoverability set to ON";
+        public static final String DISCOVERY_FAIL_MESSAGE = "Discoverability failed";
+
         public static final String ACK_CONNECT_SERVER_SUCCESS = "Acknowledgement connection is successful as a server";
         public static final String ACK_CONNECT_CLIENT_SUCCESS = "Acknowledgement connection is successful as a client";
 
-        public static final String BW_CONNECT_SERVER_SUCCESS ="Bandwidth connection is successful as a server";
-        public static final String BW_CONNECT_CLIENT_SUCCESS ="Bandwidth connection is successful as a client";
+        public static final String BW_CONNECT_SERVER_SUCCESS = "Bandwidth connection is successful as a server";
+        public static final String BW_CONNECT_CLIENT_SUCCESS = "Bandwidth connection is successful as a client";
 
         public static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
         public static final int NO_OF_PACKETS = 25;

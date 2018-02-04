@@ -211,9 +211,7 @@ public class OneScenario extends AppCompatActivity {
     }
 
     protected void startBluetooth() {
-        String discMessage = "Discoverability set to ON";
         String btEnabledMessage = "Bluetooth is Enabled";
-        String discFailMessage = "Bluetooth failed to switch ON";
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         getGoodOldName = mBluetoothAdapter.getName();
@@ -221,24 +219,10 @@ public class OneScenario extends AppCompatActivity {
         if (mBluetoothAdapter == null) {
             btStatusText.setText("Bluetooth Not Found!");
         } else if (!mBluetoothAdapter.isEnabled()) {
-            // mBluetoothAdapter.enable();
+            mBluetoothAdapter.enable();
             //   Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
             //  startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT); // Calls onActivityResult */
-            Method method;
-            try {
-                method = mBluetoothAdapter.getClass().getMethod("setScanMode", int.class, int.class);
-                method.invoke(mBluetoothAdapter,BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE,120);
-                Log.e("invoke","method invoke successfully");
-
-                Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), discMessage, Toast.LENGTH_SHORT);
-                btDeviceDiscoverToast.show();
-            }
-            catch (Exception e){
-                e.printStackTrace();
-                Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), discFailMessage, Toast.LENGTH_SHORT);
-                btDeviceDiscoverToast.show();
-            }
 
             setBtName();
 
@@ -268,6 +252,22 @@ public class OneScenario extends AppCompatActivity {
 
     }
 
+    public void setBtDiscovery(){
+        Method method;
+        try {
+            method = mBluetoothAdapter.getClass().getMethod("setScanMode", int.class, int.class);
+            method.invoke(mBluetoothAdapter, BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE, 120);
+            Log.e("invoke", "method invoke successfully");
+
+            Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.DISCOVERY_SUCCESS_MESSAGE, Toast.LENGTH_SHORT);
+            btDeviceDiscoverToast.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.DISCOVERY_FAIL_MESSAGE, Toast.LENGTH_SHORT);
+            btDeviceDiscoverToast.show();
+        }
+    }
+
     private void setBtName() {
         String btDeviceName = "DTN-" + Build.SERIAL;
         String message = "Bluetooth Device Name: " + btDeviceName;
@@ -292,7 +292,7 @@ public class OneScenario extends AppCompatActivity {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if ((device !=null) && (device.getName() != null) && (device.getName() != "null")) {
+                if ((device != null) && (device.getName() != null) && (device.getName() != "null")) {
                     btDevicesFoundList.add(device);
                 }
                 String deviceName = device.getName();
@@ -339,13 +339,13 @@ public class OneScenario extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                                // Check Bandwidth
-                                if (!useFile.checkFileExists(Constants.testFileName)) {
-                                    tempFile = useFile.createTemporaryFile(Constants.testFileName);
-                                    useFile.fillTempFile(tempFile);
-                                } else {
-                                    tempFile = useFile.returnFile(Constants.testFileName);
-                                }
+                            // Check Bandwidth
+                            if (!useFile.checkFileExists(Constants.testFileName)) {
+                                tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                                useFile.fillTempFile(tempFile);
+                            } else {
+                                tempFile = useFile.returnFile(Constants.testFileName);
+                            }
                             while (true) {
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -546,9 +546,9 @@ public class OneScenario extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == Constants.MessageConstants.BW_READ) {
-               // byte[] writeBuf = (byte[]) msg.obj;
-               // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
-               // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+                // byte[] writeBuf = (byte[]) msg.obj;
+                // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
+                // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.MAGENTA);
@@ -583,7 +583,7 @@ public class OneScenario extends AppCompatActivity {
     protected void onDestroy() {
         mBluetoothAdapter.setName(getGoodOldName);
         mBluetoothAdapter.disable();
-        if(alertDialogOpened == true){
+        if (alertDialogOpened == true) {
             alertDialog.dismiss();
         }
         super.onDestroy();
