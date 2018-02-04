@@ -144,7 +144,7 @@ public class BandwidthBytesT extends Thread {
             flushOutStream();
             counter++;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
-            SystemClock.sleep(1000);
+            SystemClock.sleep(5000);
             Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
         }
     }
