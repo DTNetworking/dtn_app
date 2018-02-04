@@ -146,8 +146,9 @@ public class OneScenario extends AppCompatActivity {
         retryConnectionHandler = new Handler();
 
         alertDialogOpened = false;
-        
+
         AskForLocation();
+        setBtDiscovery();
         Dialog();
         startBluetooth();
         sendMessage();
@@ -235,9 +236,9 @@ public class OneScenario extends AppCompatActivity {
 
             setBtName();
 
-            if (connectAsClient == false) { // Needed Only For Server
+            /*if (connectAsClient == false) { // Needed Only For Server
                 setBtDiscovery();
-            }
+            } */
 
             Toast btDeviceEnableToast = Toast.makeText(getApplicationContext(), btEnabledMessage, Toast.LENGTH_SHORT);
             btDeviceEnableToast.show();
