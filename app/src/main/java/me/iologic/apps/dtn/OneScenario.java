@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,13 +29,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 public class OneScenario extends AppCompatActivity {
 
-    static final int REQUEST_ENABLE_BT = 1;
+
     BluetoothAdapter mBluetoothAdapter; // The Only Bluetooth Adapter Used.
     boolean connectAsClient = true;
     int noOfPeers = 0;
@@ -210,11 +212,17 @@ public class OneScenario extends AppCompatActivity {
                 }).create().show();
     }
 
+    public void AskForLocation(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, Constants.Permissions.PERMISSION_REQUEST_CODE);
+        }
+    }
+
     protected void startBluetooth() {
         String btEnabledMessage = "Bluetooth is Enabled";
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        getGoodOldName = mBluetoothAdapter.getName();
+        getGoodOldName = mBluetoothAdapter.getName(); // For replacing name when Activity Exits
 
         if (mBluetoothAdapter == null) {
             btStatusText.setText("Bluetooth Not Found!");
@@ -222,10 +230,13 @@ public class OneScenario extends AppCompatActivity {
             mBluetoothAdapter.enable();
             //   Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
-            //  startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT); // Calls onActivityResult */
+           // startActivityForResult(enableBtIntent, Constants.Permissions.REQUEST_ENABLE_BT); // Calls onActivityResult */
 
             setBtName();
-            setBtDiscovery();
+
+            if (connectAsClient == false) { // Needed Only For Server
+                setBtDiscovery();
+            }
 
             Toast btDeviceEnableToast = Toast.makeText(getApplicationContext(), btEnabledMessage, Toast.LENGTH_SHORT);
             btDeviceEnableToast.show();
@@ -253,20 +264,11 @@ public class OneScenario extends AppCompatActivity {
 
     }
 
-    public void setBtDiscovery(){
-        Method method;
-        try {
-            method = mBluetoothAdapter.getClass().getMethod("setScanMode", int.class, int.class);
-            method.invoke(mBluetoothAdapter, BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE, 120);
-            Log.e("invoke", "method invoke successfully");
-
-            Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.DISCOVERY_SUCCESS_MESSAGE, Toast.LENGTH_SHORT);
-            btDeviceDiscoverToast.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast btDeviceDiscoverToast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.DISCOVERY_FAIL_MESSAGE, Toast.LENGTH_SHORT);
-            btDeviceDiscoverToast.show();
-        }
+    public void setBtDiscovery() {
+        // Make Device Discoverable
+        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        startActivity(discoverableIntent);
     }
 
     private void setBtName() {
@@ -313,6 +315,7 @@ public class OneScenario extends AppCompatActivity {
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             }
+
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
         }
     };

@@ -20,6 +20,11 @@ public class Constants {
         public static final int BW_PACKET_SIZE = 1024 * 64; // 65536 Bytes = 64 KB
     }
 
+    public interface Permissions {
+        public static final int PERMISSION_REQUEST_CODE = 200;
+        public static final int REQUEST_ENABLE_BT = 1;
+    }
+
     // Defines several constants used when transmitting messages between the
     // service and the UI.
     public interface MessageConstants {

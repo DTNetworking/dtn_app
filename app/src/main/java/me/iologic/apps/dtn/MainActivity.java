@@ -1,21 +1,14 @@
 package me.iologic.apps.dtn;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-
 public class MainActivity extends AppCompatActivity {
-
-    private static final int PERMISSION_REQUEST_CODE = 200;
-    OneScenario object;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,16 +26,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Make Device Discoverable
-       /* Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        startActivity(discoverableIntent); */
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
-        }
-
-        object = new OneScenario();
 
         openOneScenario();
     }
