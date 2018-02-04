@@ -91,6 +91,8 @@ public class OneScenario extends AppCompatActivity {
 
     StopWatch stopWatch;
 
+    int testRemoveMe = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -537,7 +539,8 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.MAGENTA);
-                checkBandwidthText.setText("I changed!");
+                testRemoveMe++;
+                checkBandwidthText.setText("I changed! " + testRemoveMe);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 checkBandwidthText.setText(R.string.checkingBandwidth);
             }
