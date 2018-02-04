@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -31,8 +30,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class OneScenario extends AppCompatActivity {
 
@@ -147,8 +144,7 @@ public class OneScenario extends AppCompatActivity {
 
         alertDialogOpened = false;
 
-        AskForLocation();
-        setBtDiscovery();
+
         Dialog();
         startBluetooth();
         sendMessage();
@@ -214,12 +210,6 @@ public class OneScenario extends AppCompatActivity {
                 }).create().show();
     }
 
-    public void AskForLocation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, Constants.Permissions.PERMISSION_REQUEST_CODE);
-        }
-    }
-
     protected void startBluetooth() {
         String btEnabledMessage = "Bluetooth is Enabled";
 
@@ -260,13 +250,6 @@ public class OneScenario extends AppCompatActivity {
 
         }
 
-    }
-
-    public void setBtDiscovery() {
-            // Make Device Discoverable
-            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            startActivity(discoverableIntent);
     }
 
     private void setBtName() {
