@@ -55,7 +55,7 @@ public class BluetoothACKBytesT extends Thread {
                 mmACKBuffer = new byte[1];
                 int numBytes; // bytes returned from read()
 
-                if (mmACKInStream.available() > 2) {
+                if (mmACKInStream.available() > 0) {
                     // Read from the InputStream.
                     numBytes = mmACKInStream.read(mmACKBuffer);
                     // Send the obtained bytes to the UI activity.
@@ -84,6 +84,7 @@ public class BluetoothACKBytesT extends Thread {
             Log.i(Constants.TAG, "ACK Sending: " + testMessage);
 
             mmACKOutStream.write(mmACKBuffer);
+            flushOutStream();
             // Share the sent message with the UI activity.
             Message writtenMsg = mACKHandler.obtainMessage(
                     Constants.MessageConstants.ACK_WRITE, -1, -1, mmACKBuffer);
