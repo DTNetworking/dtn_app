@@ -142,7 +142,7 @@ public class BandwidthBytesT extends Thread {
 
         byte[] sendData; // Breaking 1 MB file into 128 KB packets. So total 8 packets.
         int startPacketIndex = 0;
-        while (counter != (Constants.Packet.BW_COUNTER + 1)) { // 64 Packets
+        while (counter != (Constants.Packet.BW_COUNTER + 1)) { // 32 Packets
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
             write(sendData);
             counter++;
