@@ -25,6 +25,7 @@ public class BandwidthBytesT extends Thread {
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
     int counter;
+    boolean BWForFirstTime;
 
     long sendingStartTime, sendingEndTime, duration;
 
@@ -53,6 +54,7 @@ public class BandwidthBytesT extends Thread {
 
         bandwidthHandler = handler;
         counter = 1;
+        BWForFirstTime = true;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -93,7 +95,7 @@ public class BandwidthBytesT extends Thread {
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
             // Share the sent message with the UI activity.
-            if (counter == 1) {
+            if (BWForFirstTime) {
                 Message writtenBWStatus = bandwidthHandler.obtainMessage(
                         Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
                 writtenBWStatus.sendToTarget();
@@ -134,12 +136,13 @@ public class BandwidthBytesT extends Thread {
     }
 
     public void checkBandwidth(FileServices fileService, File tempFileRead) {
+        BWForFirstTime = false;
         byte[] getData = fileService.readTempFile(tempFileRead);
         Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
 
-        byte[] sendData; // Breaking 1 MB file into 512 KB packets. So total 2 packets.
+        byte[] sendData; // Breaking 1 MB file into 128 KB packets. So total 8 packets.
         int startPacketIndex = 0;
-        while (counter != (Constants.Packet.BW_COUNTER + 1)) { // 4 Packets
+        while (counter != (Constants.Packet.BW_COUNTER + 1)) { // 8 Packets
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
             write(sendData);
             counter++;
