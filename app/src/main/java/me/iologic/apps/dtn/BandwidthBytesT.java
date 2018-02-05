@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,13 +24,13 @@ public class BandwidthBytesT extends Thread {
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
-    private TextView checkBandwidthText;
+    int counter;
 
     long sendingStartTime, sendingEndTime, duration;
 
     private Handler bandwidthHandler;
 
-    public BandwidthBytesT(BluetoothSocket socket, Handler handler, TextView checkBandwidthTxt) {
+    public BandwidthBytesT(BluetoothSocket socket, Handler handler) {
         bandwidthSocket = socket;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
@@ -53,7 +52,7 @@ public class BandwidthBytesT extends Thread {
         bandwidthOutStream = tmpOut;
 
         bandwidthHandler = handler;
-        checkBandwidthText = checkBandwidthTxt;
+        counter=1;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -94,9 +93,11 @@ public class BandwidthBytesT extends Thread {
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
             // Share the sent message with the UI activity.
-            Message writtenBWStatus = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
-            writtenBWStatus.sendToTarget();
+            if(counter == 1) {
+                Message writtenBWStatus = bandwidthHandler.obtainMessage(
+                        Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
+                writtenBWStatus.sendToTarget();
+            }
 
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
@@ -137,7 +138,6 @@ public class BandwidthBytesT extends Thread {
         Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
 
         byte[] sendData; // Breaking 1 MB file into 64 KB packets. So total 16 packets.
-        int counter = 1;
         int startPacketIndex = 0;
         while (counter != 17) { // (1024 * 1024) / (1024 * 64) = 16 Packets
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
@@ -145,6 +145,9 @@ public class BandwidthBytesT extends Thread {
             counter++;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
+            if(counter == 17){
+                counter = 1; // Reset Counter to 1
+            }
         }
     }
 

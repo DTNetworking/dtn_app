@@ -321,8 +321,6 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
-                    speedText.setText("Calculating Bandwidth");
-
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -412,7 +410,7 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
 
                     BandSocketGlobal = clientConnect.getBWClientSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus, checkBandwidthText);
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     bandData.start();
                 }
 
@@ -473,7 +471,7 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
 
                     BandSocketGlobal = serverConnect.getBWSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus, checkBandwidthText);
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     bandData.start();
                 }
             }
