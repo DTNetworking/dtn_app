@@ -151,7 +151,7 @@ public class BandwidthBytesT extends Thread {
         }
     }
 
-    public long getTotalBandwidthDuration() {
+    public double getTotalBandwidthDuration() {
         Log.i(Constants.TAG, "Duration:" + duration);
         Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
         if (TimeUnit.NANOSECONDS.toSeconds(duration) == 0) {
@@ -159,7 +159,7 @@ public class BandwidthBytesT extends Thread {
             Log.i(Constants.TAG, "Sending duration as: " + duration);
             return duration;
         }
-        return (TimeUnit.NANOSECONDS.toSeconds(duration));
+        return ((double)duration / 1000000000.0);
     }
 
     public void cancel() {
