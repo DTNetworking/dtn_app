@@ -89,7 +89,7 @@ public class FileServices {
 
         readData = data;
 
-        Log.i(Constants.TAG, "File Size Read:" + readData.length);
+        // Log.i(Constants.TAG, "File Size Read:" + readData.length);
 
         return readData;
     }
