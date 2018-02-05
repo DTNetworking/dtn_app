@@ -52,7 +52,7 @@ public class BandwidthBytesT extends Thread {
         bandwidthOutStream = tmpOut;
 
         bandwidthHandler = handler;
-        counter=1;
+        counter = 1;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -93,7 +93,7 @@ public class BandwidthBytesT extends Thread {
             Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
             // Share the sent message with the UI activity.
-            if(counter == 1) {
+            if (counter == 1) {
                 Message writtenBWStatus = bandwidthHandler.obtainMessage(
                         Constants.MessageConstants.BW_START_WRITE, -1, -1, bandwidthBuffer);
                 writtenBWStatus.sendToTarget();
@@ -145,9 +145,9 @@ public class BandwidthBytesT extends Thread {
             counter++;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
-            if(counter == 17){
-                counter = 1; // Reset Counter to 1
-            }
+        }
+        if (counter == 17) {
+            counter = 1; // Reset Counter to 1
         }
     }
 
