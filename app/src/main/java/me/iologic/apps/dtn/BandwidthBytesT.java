@@ -108,7 +108,7 @@ public class BandwidthBytesT extends Thread {
 
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_WRITE, -1, -1, bandwidthBuffer);
+                    Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
             writtenMsg.sendToTarget();
 
         } catch (IOException e) {

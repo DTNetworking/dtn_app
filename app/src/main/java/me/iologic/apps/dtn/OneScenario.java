@@ -91,8 +91,6 @@ public class OneScenario extends AppCompatActivity {
 
     StopWatch stopWatch;
 
-    int noOfBWPackets;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,8 +143,6 @@ public class OneScenario extends AppCompatActivity {
         retryConnectionHandler = new Handler();
 
         alertDialogOpened = false;
-
-        noOfBWPackets = 0;
 
         Dialog();
         startBluetooth();
@@ -545,8 +541,7 @@ public class OneScenario extends AppCompatActivity {
                 speedText.setText(bandwidth);
                 useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
 
-                noOfBWPackets++;
-                checkBandwidthText.setText("No Of Bandwidth Packets Sent " + noOfBWPackets);
+                checkBandwidthText.setText("No Of Bandwidth Packets Sent " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 checkBandwidthText.setText(R.string.checkingBandwidth);
             }
