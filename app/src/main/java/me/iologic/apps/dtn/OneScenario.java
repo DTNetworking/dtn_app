@@ -91,7 +91,7 @@ public class OneScenario extends AppCompatActivity {
 
     StopWatch stopWatch;
 
-    int testRemoveMe = 0;
+    int noOfBWPackets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +146,7 @@ public class OneScenario extends AppCompatActivity {
 
         alertDialogOpened = false;
 
+        noOfBWPackets = 0;
 
         Dialog();
         startBluetooth();
@@ -338,15 +339,15 @@ public class OneScenario extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         checkBandwidthText.setVisibility(View.VISIBLE);
-                                        checkBandwidthText.setTextColor(Color.CYAN);
+                                        checkBandwidthText.setTextColor(Color.MAGENTA);
                                     }
                                 });
                                 bandData.checkBandwidth(useFile, tempFile);
-                                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
-                                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
-                                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
-                                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
+                                //  FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
+                                //  Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
+                                //    getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+                                // Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+                                //  Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
                             }
                         }
                     });
@@ -354,13 +355,13 @@ public class OneScenario extends AppCompatActivity {
                     checkBandwidthT.start();
 
 
-                    getDataHandler = new Handler() {
-                        @Override
-                        public void handleMessage(Message msg) {
-                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                    // getDataHandler = new Handler() {
+                    //    @Override
+                    // public void handleMessage(Message msg) {
+                          /*  Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
                             String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                             speedText.setText(bandwidth);
-                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth); */
 
                           /*  try {
                                 checkBandwidthT.sleep(1000);
@@ -372,8 +373,8 @@ public class OneScenario extends AppCompatActivity {
                         } */
 
 
-                        }
-                    };
+                    //      }
+                    // };
 
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
@@ -538,9 +539,16 @@ public class OneScenario extends AppCompatActivity {
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
-                checkBandwidthText.setTextColor(Color.MAGENTA);
-                testRemoveMe++;
-                checkBandwidthText.setText("I changed! " + testRemoveMe);
+                checkBandwidthText.setTextColor(Color.CYAN);
+                FileSentBandwidth = (Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
+
+                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                speedText.setText(bandwidth);
+                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+
+                noOfBWPackets++;
+                checkBandwidthText.setText("No Of Bandwidth Packets Sent " + noOfBWPackets);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 checkBandwidthText.setText(R.string.checkingBandwidth);
             }
