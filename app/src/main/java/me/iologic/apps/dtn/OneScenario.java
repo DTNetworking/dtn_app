@@ -66,6 +66,7 @@ public class OneScenario extends AppCompatActivity {
     boolean deviceConnected;
     Handler retryConnectionHandler = new Handler();
     String GlobalReceivedMessage;
+    String globalBandwidth;
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
     private static String SERVER_CONNECTION_FAIL;
@@ -534,16 +535,25 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
-                FileSentBandwidth = ((double)Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
+                FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
 
                 // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
-                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
-
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
-                checkBandwidthText.setText(R.string.checkingBandwidth);
+                if (msg.arg1 == 1) {
+                    checkBandwidthText.setText(R.string.checkingBandwidth);
+                    final Thread writeBandwidthToFileT = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth);
+                        }
+                    });
+
+                    writeBandwidthToFileT.start();
+                }
             }
         }
     };
