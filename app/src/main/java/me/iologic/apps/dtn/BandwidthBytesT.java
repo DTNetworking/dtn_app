@@ -138,7 +138,7 @@ public class BandwidthBytesT extends Thread {
     public void checkBandwidth(FileServices fileService, File tempFileRead) {
         BWForFirstTime = false;
         byte[] getData = fileService.readTempFile(tempFileRead);
-        Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
+       // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
 
         byte[] sendData; // Breaking 1 MB file into 128 KB packets. So total 8 packets.
         int startPacketIndex = 0;
@@ -155,8 +155,8 @@ public class BandwidthBytesT extends Thread {
     }
 
     public double getTotalBandwidthDuration() {
-        Log.i(Constants.TAG, "Duration:" + duration);
-        Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
+      //  Log.i(Constants.TAG, "Duration:" + duration);
+      //  Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
       /*  if (TimeUnit.NANOSECONDS.toSeconds(duration) == 0) {
             duration = 1;
             Log.i(Constants.TAG, "Sending duration as: " + duration);
