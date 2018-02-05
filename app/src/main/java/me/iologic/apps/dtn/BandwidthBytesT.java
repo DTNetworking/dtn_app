@@ -71,7 +71,7 @@ public class BandwidthBytesT extends Thread {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
                     // Send the obtained bytes to the UI activity.
-                    Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
+                    // Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
                     Message readMsg = bandwidthHandler.obtainMessage(
                             Constants.MessageConstants.BW_READ, numBytes, -1,
                             bandwidthBuffer);
@@ -90,9 +90,9 @@ public class BandwidthBytesT extends Thread {
         try {
 
             bandwidthBuffer = bytes;
-            Log.i(Constants.TAG, "bandwidthBuffer size(): " + bandwidthBuffer.length);
+            //   Log.i(Constants.TAG, "bandwidthBuffer size(): " + bandwidthBuffer.length);
             String testMessage = new String(bandwidthBuffer);
-            Log.i(Constants.TAG, "BW Sending: " + testMessage);
+            //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
             // Share the sent message with the UI activity.
             if (BWForFirstTime) {
@@ -147,9 +147,9 @@ public class BandwidthBytesT extends Thread {
             write(sendData);
             counter++;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
-            Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
+            // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
         }
-        if (counter == (Constants.Packet.BW_COUNTER +1)) {
+        if (counter == (Constants.Packet.BW_COUNTER + 1)) {
             counter = 1; // Reset Counter to 1
         }
     }
@@ -162,7 +162,7 @@ public class BandwidthBytesT extends Thread {
             Log.i(Constants.TAG, "Sending duration as: " + duration);
             return duration;
         } */
-        return ((double)duration / 1000000000.0);
+        return ((double) duration / 1000000000.0);
     }
 
     public void cancel() {
