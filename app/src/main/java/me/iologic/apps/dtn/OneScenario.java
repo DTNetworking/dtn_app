@@ -541,22 +541,16 @@ public class OneScenario extends AppCompatActivity {
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                 globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
-                getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        getDataHandler = new Handler() {
-                            @Override
-                            public void handleMessage(Message msg) {
                                 useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth);
                             }
-                        };
-                    }
 
                 });
-                
+
                 if (msg.arg1 == 1) {
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
