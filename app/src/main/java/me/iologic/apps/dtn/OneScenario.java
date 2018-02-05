@@ -541,7 +541,7 @@ public class OneScenario extends AppCompatActivity {
                 speedText.setText(bandwidth);
                 useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
 
-                checkBandwidthText.setText("No Of Bandwidth Packets Sent " + msg.arg1);
+                checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 checkBandwidthText.setText(R.string.checkingBandwidth);
             }
