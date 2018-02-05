@@ -17,7 +17,9 @@ public class Constants {
     public interface Packet {
         public static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
         public static final int NO_OF_PACKETS = 25;
-        public static final int BW_PACKET_SIZE = 1024 * 64; // 65536 Bytes = 64 KB
+        public static final int BW_PACKET_SIZE = 1024 * 512; // 512 KB
+        public static final int BW_FILE_SIZE = 1024 * 1024;
+        public static final int BW_COUNTER = BW_FILE_SIZE / BW_PACKET_SIZE;
     }
 
     public interface Permissions {
