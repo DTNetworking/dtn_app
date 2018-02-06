@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -98,6 +99,8 @@ public class OneScenario extends AppCompatActivity {
 
     StopWatch stopWatch;
 
+    DecimalFormat df;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,6 +157,8 @@ public class OneScenario extends AppCompatActivity {
         alertDialogOpened = false;
 
         BWStart = true;
+
+        df = new DecimalFormat("#.00");
 
         Dialog();
         startBluetooth();
@@ -532,7 +537,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
                 Log.i(Constants.TAG, "---------------------");
                 GlobalMsgPacketLoss = streamData.getPacketLoss(); // For 1st Scenario
-                String showMsgLossPercent = String.format("%.2f", GlobalMsgPacketLoss + "%");
+                String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
                 if (GlobalMsgPacketLoss == 0) {
                     MsgPacketLossText.setTextColor(Color.GRAY);
                     MsgPacketLossText.setText(showMsgLossPercent);
@@ -554,7 +559,7 @@ public class OneScenario extends AppCompatActivity {
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
                 GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
-                String BWLossPercent = String.format("%.2f", GlobalBWPacketLoss + " %");
+                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
                 if (GlobalBWPacketLoss == 0) {
                     BWPacketLossText.setTextColor(Color.GRAY);
                     BWPacketLossText.setText(BWLossPercent);
@@ -569,7 +574,7 @@ public class OneScenario extends AppCompatActivity {
                 checkBandwidthText.setTextColor(Color.GREEN);
                 FileSentBandwidth = ((double) Constants.Packet.BW_FILE_SIZE / bandData.getTotalBandwidthDuration());
 
-              //  Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth + " " + bandData.getTotalBandwidthDuration());
+                //  Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth + " " + bandData.getTotalBandwidthDuration());
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                 globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
