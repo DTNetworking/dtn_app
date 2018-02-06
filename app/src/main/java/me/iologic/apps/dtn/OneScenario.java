@@ -552,7 +552,7 @@ public class OneScenario extends AppCompatActivity {
                         getDataHandler = new Handler() {
                             @Override
                             public void handleMessage(Message msg) {
-                                useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth);
+                                useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth + " " + msg.arg1);
                             }
                         };
                         Looper.loop();
