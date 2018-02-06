@@ -532,12 +532,13 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
                 Log.i(Constants.TAG, "---------------------");
                 GlobalMsgPacketLoss = streamData.getPacketLoss(); // For 1st Scenario
+                String showMsgLossPercent = String.format("%.2f", GlobalMsgPacketLoss + "%");
                 if (GlobalMsgPacketLoss == 0) {
                     MsgPacketLossText.setTextColor(Color.GRAY);
-                    MsgPacketLossText.setText(String.format("%.2f", GlobalMsgPacketLoss + "%"));
+                    MsgPacketLossText.setText(showMsgLossPercent);
                 } else {
                     MsgPacketLossText.setTextColor(Color.RED);
-                    MsgPacketLossText.setText(String.format("%.2f", GlobalMsgPacketLoss + "%"));
+                    MsgPacketLossText.setText(showMsgLossPercent);
                 }
 
                 useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
@@ -553,12 +554,13 @@ public class OneScenario extends AppCompatActivity {
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
                 GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
+                String BWLossPercent = String.format("%.2f", GlobalBWPacketLoss + " %");
                 if (GlobalBWPacketLoss == 0) {
                     BWPacketLossText.setTextColor(Color.GRAY);
-                    BWPacketLossText.setText(String.format("%.2f", GlobalBWPacketLoss + " %"));
+                    BWPacketLossText.setText(BWLossPercent);
                 } else {
                     BWPacketLossText.setTextColor(Color.RED);
-                    BWPacketLossText.setText(String.format("%.2f", GlobalBWPacketLoss + " %"));
+                    BWPacketLossText.setText(BWLossPercent);
                 }
 
                 useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
