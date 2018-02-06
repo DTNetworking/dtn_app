@@ -99,7 +99,7 @@ public class BandwidthBytesT extends Thread {
 
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
-            flushOutStream();
+           // flushOutStream();
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
 
