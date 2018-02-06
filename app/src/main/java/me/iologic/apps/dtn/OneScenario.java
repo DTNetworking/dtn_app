@@ -68,6 +68,7 @@ public class OneScenario extends AppCompatActivity {
     Handler retryConnectionHandler = new Handler();
     String GlobalReceivedMessage;
     String globalBandwidth;
+    boolean BWStart;
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
     private static String SERVER_CONNECTION_FAIL;
@@ -145,6 +146,8 @@ public class OneScenario extends AppCompatActivity {
         retryConnectionHandler = new Handler();
 
         alertDialogOpened = false;
+
+        BWStart = true;
 
         Dialog();
         startBluetooth();
@@ -552,7 +555,7 @@ public class OneScenario extends AppCompatActivity {
                         getDataHandler = new Handler() {
                             @Override
                             public void handleMessage(Message msg) {
-                                useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth + " " + msg.arg1);
+                                useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth);
                             }
                         };
                         Looper.loop();
@@ -560,7 +563,8 @@ public class OneScenario extends AppCompatActivity {
 
                 });
 
-                if (msg.arg1 == 1) {
+                if (msg.arg1 == 1 && BWStart) {
+                    BWStart = false;
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
                 }
