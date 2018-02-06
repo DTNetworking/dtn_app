@@ -75,7 +75,6 @@ class BluetoothBytesT extends Thread {
                     // Send the obtained bytes to the UI activity.
                     GlobalNumBytesRead = numBytes;
                     Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes);
-                   Log.i(Constants.TAG, "Checking NumBytesReceived: " + GlobalNumBytesRead);
                     Message readMsg = mHandler.obtainMessage(
                             Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
                             mmBuffer);
@@ -179,6 +178,7 @@ class BluetoothBytesT extends Thread {
 
     public double getPacketLoss(){
         double packetLost = ((Constants.Packet.MSG_PACKET_SIZE - GlobalNumBytesRead) / (Constants.Packet.MSG_PACKET_SIZE)) * 100;
+        Log.i(Constants.TAG, "Packet Lost Msg: " + packetLost);
         return packetLost;
     }
 
