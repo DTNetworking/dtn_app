@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -541,13 +542,21 @@ public class OneScenario extends AppCompatActivity {
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                 globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
+                getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        Looper.prepare();
+                        getDataHandler = new Handler() {
+                            @Override
+                            public void handleMessage(Message msg) {
                                 useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth);
                             }
+                        };
+                        Looper.loop();
+                    }
 
                 });
 
