@@ -567,7 +567,7 @@ public class OneScenario extends AppCompatActivity {
                 checkBandwidthText.setTextColor(Color.GREEN);
                 FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
 
-                // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth + " " + bandData.getTotalBandwidthDuration());
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                 globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
@@ -608,7 +608,7 @@ public class OneScenario extends AppCompatActivity {
                 if (!(SocketGlobal == null)) {
                     streamData.write((EditMessageBox.getText().toString()).getBytes());
                     Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
-                    //  streamData.flushOutStream();
+                    streamData.flushOutStream();
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();

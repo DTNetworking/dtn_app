@@ -69,7 +69,7 @@ public class BandwidthBytesT extends Thread {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
                     // Send the obtained bytes to the UI activity.
-                    // Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
+                    Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
                     Message readMsg = bandwidthHandler.obtainMessage(
                             Constants.MessageConstants.BW_READ, numBytes, -1,
                             bandwidthBuffer);
@@ -93,13 +93,13 @@ public class BandwidthBytesT extends Thread {
             //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
             // Share the sent message with the UI activity.
-                Message writtenBWStatus = bandwidthHandler.obtainMessage(
-                        Constants.MessageConstants.BW_START_WRITE, counter, -1, bandwidthBuffer);
-                writtenBWStatus.sendToTarget();
+            Message writtenBWStatus = bandwidthHandler.obtainMessage(
+                    Constants.MessageConstants.BW_START_WRITE, counter, -1, bandwidthBuffer);
+            writtenBWStatus.sendToTarget();
 
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
-           // flushOutStream();
+            flushOutStream();
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
 
@@ -131,7 +131,7 @@ public class BandwidthBytesT extends Thread {
         }
     }
 
-    public void checkBandwidthAsAFile(FileServices fileService, File tempFileRead){
+    public void checkBandwidthAsAFile(FileServices fileService, File tempFileRead) {
         byte[] getData = fileService.readTempFile(tempFileRead);
         Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
         write(getData);
@@ -139,7 +139,7 @@ public class BandwidthBytesT extends Thread {
 
     public void checkBandwidth(FileServices fileService, File tempFileRead) {
         byte[] getData = fileService.readTempFile(tempFileRead);
-       // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
+        // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
 
         byte[] sendData; // Breaking 1 MB file into 64 KB packets. So total 16 packets.
         int startPacketIndex = 0;
@@ -156,8 +156,8 @@ public class BandwidthBytesT extends Thread {
     }
 
     public double getTotalBandwidthDuration() {
-      //  Log.i(Constants.TAG, "Duration:" + duration);
-      //  Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
+        //  Log.i(Constants.TAG, "Duration:" + duration);
+        //  Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
       /*  if (TimeUnit.NANOSECONDS.toSeconds(duration) == 0) {
             duration = 1;
             Log.i(Constants.TAG, "Sending duration as: " + duration);
@@ -166,7 +166,7 @@ public class BandwidthBytesT extends Thread {
         return ((double) duration / 1000000000.0);
     }
 
-    public double getPacketLoss(){
+    public double getPacketLoss() {
         double packetLost = ((Constants.Packet.BW_FILE_SIZE - GlobalNumBytesRead) / (Constants.Packet.BW_FILE_SIZE)) * 100;
         return packetLost;
     }
