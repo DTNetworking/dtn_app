@@ -98,6 +98,7 @@ public class BandwidthBytesT extends Thread {
 
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
+            flushOutStream();
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
 
@@ -143,7 +144,6 @@ public class BandwidthBytesT extends Thread {
             // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
         }
         if (counter == (Constants.Packet.BW_COUNTER + 1)) {
-            flushOutStream();
             counter = 1; // Reset Counter to 1
         }
     }
