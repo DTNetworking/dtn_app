@@ -209,7 +209,7 @@ public class OneScenario extends AppCompatActivity {
                 .setNegativeButton("Client", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // Do Nothing
+                        BWPacketLossText.setVisibility(View.GONE);
                     }
                 })
                 .setPositiveButton("Server", new DialogInterface.OnClickListener() {
@@ -327,8 +327,6 @@ public class OneScenario extends AppCompatActivity {
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
-                    BWPacketLossText.setVisibility(View.GONE);
-                    MsgPacketLossText.setGravity(View.TEXT_ALIGNMENT_CENTER);
 
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
@@ -535,11 +533,11 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "---------------------");
                 GlobalMsgPacketLoss = streamData.getPacketLoss(); // For 1st Scenario
                 if (GlobalMsgPacketLoss == 0) {
-                    MsgPacketLossText.setTextColor(Color.LTGRAY);
-                    MsgPacketLossText.setText(GlobalMsgPacketLoss + " %");
+                    MsgPacketLossText.setTextColor(Color.GRAY);
+                    MsgPacketLossText.setText(String.format("%.2f", GlobalMsgPacketLoss + "%"));
                 } else {
                     MsgPacketLossText.setTextColor(Color.RED);
-                    MsgPacketLossText.setText(GlobalMsgPacketLoss + " %");
+                    MsgPacketLossText.setText(String.format("%.2f", GlobalMsgPacketLoss + "%"));
                 }
 
                 useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
@@ -556,11 +554,11 @@ public class OneScenario extends AppCompatActivity {
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
                 GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
                 if (GlobalBWPacketLoss == 0) {
-                    BWPacketLossText.setTextColor(Color.LTGRAY);
-                    BWPacketLossText.setText(GlobalBWPacketLoss + " %");
+                    BWPacketLossText.setTextColor(Color.GRAY);
+                    BWPacketLossText.setText(String.format("%.2f", GlobalBWPacketLoss + " %"));
                 } else {
                     BWPacketLossText.setTextColor(Color.RED);
-                    BWPacketLossText.setText(GlobalBWPacketLoss + " %");
+                    BWPacketLossText.setText(String.format("%.2f", GlobalBWPacketLoss + " %"));
                 }
 
                 useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);

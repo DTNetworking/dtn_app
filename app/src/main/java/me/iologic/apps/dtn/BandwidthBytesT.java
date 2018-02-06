@@ -65,7 +65,7 @@ public class BandwidthBytesT extends Thread {
 
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
 
-                if (bandwidthInStream.available() > 0) {
+         //       if (bandwidthInStream.available() > 0) {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
                     // Send the obtained bytes to the UI activity.
@@ -75,9 +75,9 @@ public class BandwidthBytesT extends Thread {
                             Constants.MessageConstants.BW_READ, numBytes, -1,
                             bandwidthBuffer);
                     readMsg.sendToTarget();
-                } else {
+              //  } else {
                     SystemClock.sleep(100);
-                }
+              //  }
             } catch (IOException e) {
                 Log.d(Constants.TAG, "Input stream was disconnected", e);
                 break;
