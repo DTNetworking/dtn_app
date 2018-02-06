@@ -69,6 +69,8 @@ public class OneScenario extends AppCompatActivity {
     String GlobalReceivedMessage;
     String globalBandwidth;
     boolean BWStart;
+    double GlobalMsgPacketLoss;
+    double GlobalBWPacketLoss;
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
     private static String SERVER_CONNECTION_FAIL;
@@ -86,6 +88,8 @@ public class OneScenario extends AppCompatActivity {
     TextView speedText;
     TextView delayText;
     TextView checkBandwidthText;
+    TextView MsgPacketLossText;
+    TextView BWPacketLossText;
     EditText EditMessageBox;
     Button sendMsgBtn;
 
@@ -120,6 +124,8 @@ public class OneScenario extends AppCompatActivity {
         speedText = (TextView) findViewById(R.id.speed);
         delayText = (TextView) findViewById(R.id.delay);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
+        MsgPacketLossText = (TextView) findViewById(R.id.MsgPacketLoss);
+        BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
 
         checkBandwidthText.setVisibility(View.GONE);
 
@@ -318,7 +324,7 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
                     currentStatusText.setText("CLIENT");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
-
+                    useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
@@ -450,7 +456,7 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
                     currentStatusText.setText("SERVER");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
-
+                    useFile.savePairingData(Constants.FileNames.Pairing, "SERVER", msg.arg2);
                     speedText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
 
@@ -525,6 +531,16 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE) {
                 Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
                 Log.i(Constants.TAG, "---------------------");
+                GlobalMsgPacketLoss = streamData.getPacketLoss(); // For 1st Scenario
+                if (GlobalMsgPacketLoss == 0) {
+                    MsgPacketLossText.setTextColor(Color.LTGRAY);
+                    MsgPacketLossText.setText(GlobalMsgPacketLoss + " %");
+                } else {
+                    MsgPacketLossText.setTextColor(Color.RED);
+                    MsgPacketLossText.setText(GlobalMsgPacketLoss + " %");
+                }
+
+                useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
             }
         }
     };
@@ -536,6 +552,16 @@ public class OneScenario extends AppCompatActivity {
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+                GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
+                if (GlobalBWPacketLoss == 0) {
+                    BWPacketLossText.setTextColor(Color.LTGRAY);
+                    BWPacketLossText.setText(GlobalBWPacketLoss + " %");
+                } else {
+                    BWPacketLossText.setTextColor(Color.RED);
+                    BWPacketLossText.setText(GlobalBWPacketLoss + " %");
+                }
+
+                useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
@@ -582,7 +608,7 @@ public class OneScenario extends AppCompatActivity {
                 if (!(SocketGlobal == null)) {
                     streamData.write((EditMessageBox.getText().toString()).getBytes());
                     Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
-                    streamData.flushOutStream();
+                    //  streamData.flushOutStream();
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();

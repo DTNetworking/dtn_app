@@ -23,6 +23,7 @@ public class BandwidthBytesT extends Thread {
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
+    private int GlobalNumBytesRead;
     int counter;
 
     long sendingStartTime, sendingEndTime, duration;
@@ -163,6 +164,11 @@ public class BandwidthBytesT extends Thread {
             return duration;
         } */
         return ((double) duration / 1000000000.0);
+    }
+
+    public double getPacketLoss(){
+        double packetLost = ((Constants.Packet.BW_FILE_SIZE - GlobalNumBytesRead) / (Constants.Packet.BW_FILE_SIZE)) * 100;
+        return packetLost;
     }
 
     public void cancel() {

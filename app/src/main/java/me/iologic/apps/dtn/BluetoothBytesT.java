@@ -24,6 +24,7 @@ class BluetoothBytesT extends Thread {
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
     private byte[] mmBuffer; // mmBuffer store for the stream
+    private int GlobalNumBytesRead;
 
     long sendingStartTime, sendingEndTime, duration, ACKStartTime;
 
@@ -72,6 +73,7 @@ class BluetoothBytesT extends Thread {
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
                     // Send the obtained bytes to the UI activity.
+                    GlobalNumBytesRead = numBytes;
                     Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes);
                    // Log.i(Constants.TAG, "Reading sendBuffer: " + new String(sendBuffer));
                     Message readMsg = mHandler.obtainMessage(
@@ -100,6 +102,7 @@ class BluetoothBytesT extends Thread {
 
             sendingStartTime = System.nanoTime();
             mmOutStream.write(mmBuffer);
+            flushOutStream();
             sendingEndTime = System.nanoTime();
 
             duration = sendingEndTime - sendingStartTime;
@@ -172,6 +175,11 @@ class BluetoothBytesT extends Thread {
                 Log.i(Constants.TAG, "Write Error: " + WriteE);
             }
         }
+    }
+
+    public double getPacketLoss(){
+        double packetLost = ((Constants.Packet.MSG_PACKET_SIZE - GlobalNumBytesRead) / (Constants.Packet.MSG_PACKET_SIZE)) * 100;
+        return packetLost;
     }
 
 

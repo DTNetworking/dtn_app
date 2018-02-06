@@ -131,7 +131,7 @@ public class FileServices {
     }
 
     // Save Message Sending Delay Data To File
-    public void saveDelayData(String ReceivedFileName, float ReceivedDelay){
+    public void saveDelayData(String ReceivedFileName, float ReceivedDelay) {
         String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
         dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
 
@@ -150,8 +150,52 @@ public class FileServices {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+        // Save Message Sending Delay Data To File
+    public void savePairingData(String ReceivedFileName, String currentStatus, int ReceivedDelay){
+        String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
+        dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
+
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(dataFile, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write(ReceivedDelay + " ms" + "\r\n" + currentStatus);
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
+    }
+
+    // Save Message Sending Delay Data To File
+    public void savePacketLossData(String ReceivedFileName, double ReceivedPacketLoss) {
+        String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
+        dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
+
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(dataFile, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write(ReceivedPacketLoss + " %" + "\r\n");
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
