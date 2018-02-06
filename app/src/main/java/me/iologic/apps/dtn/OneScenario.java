@@ -341,7 +341,7 @@ public class OneScenario extends AppCompatActivity {
                                         checkBandwidthText.setTextColor(Color.MAGENTA);
                                     }
                                 });
-                                bandData.checkBandwidth(useFile, tempFile);
+                                bandData.checkBandwidthAsAFile(useFile, tempFile);
                                 //  FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
                                 //  Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
                                 //    getDataHandler.sendEmptyMessage((int) FileSentBandwidth);

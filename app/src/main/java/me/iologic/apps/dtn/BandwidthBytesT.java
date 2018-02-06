@@ -130,6 +130,12 @@ public class BandwidthBytesT extends Thread {
         }
     }
 
+    public void checkBandwidthAsAFile(FileServices fileService, File tempFileRead){
+        byte[] getData = fileService.readTempFile(tempFileRead);
+        Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
+        write(getData);
+    }
+
     public void checkBandwidth(FileServices fileService, File tempFileRead) {
         byte[] getData = fileService.readTempFile(tempFileRead);
        // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
