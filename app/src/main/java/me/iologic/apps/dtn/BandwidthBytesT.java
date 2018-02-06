@@ -59,7 +59,7 @@ public class BandwidthBytesT extends Thread {
     public void run() {
         while (true) {
             try {
-                bandwidthBuffer = new byte[Constants.Packet.BW_PACKET_SIZE];
+                bandwidthBuffer = new byte[Constants.Packet.BW_FILE_SIZE];
                 int numBytes; // bytes returned from read()
 
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
