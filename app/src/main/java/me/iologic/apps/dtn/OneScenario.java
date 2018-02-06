@@ -540,7 +540,7 @@ public class OneScenario extends AppCompatActivity {
                 String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
                 if (GlobalMsgPacketLoss == 0) {
                     MsgPacketLossText.setTextColor(Color.GRAY);
-                    MsgPacketLossText.setText(showMsgLossPercent);
+                    MsgPacketLossText.setText("0" + showMsgLossPercent);
                 } else {
                     MsgPacketLossText.setTextColor(Color.RED);
                     MsgPacketLossText.setText(showMsgLossPercent);
@@ -562,7 +562,7 @@ public class OneScenario extends AppCompatActivity {
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
                 if (GlobalBWPacketLoss == 0) {
                     BWPacketLossText.setTextColor(Color.GRAY);
-                    BWPacketLossText.setText(BWLossPercent);
+                    BWPacketLossText.setText("0" + BWLossPercent);
                 } else {
                     BWPacketLossText.setTextColor(Color.RED);
                     BWPacketLossText.setText(BWLossPercent);

@@ -154,17 +154,17 @@
                 android:layout_weight="1"
                 android:text="@string/BWPacketLoss"
                 android:gravity="center"
-                android:textSize="30sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/MsgPacketLoss"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:gravity="center"
                 android:text="@string/MsgPacketLoss"
-                android:textSize="30sp" />
+                android:textSize="16sp" />
 
         </LinearLayout>
 
