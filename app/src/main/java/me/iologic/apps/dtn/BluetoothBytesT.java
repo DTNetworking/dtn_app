@@ -178,7 +178,7 @@ class BluetoothBytesT extends Thread {
 
     public double getPacketLoss(){
         double packetLost = ((Constants.Packet.MSG_PACKET_SIZE - GlobalNumBytesRead) / (Constants.Packet.MSG_PACKET_SIZE)) * 100;
-        Log.i(Constants.TAG, "Packet Lost Msg: " + packetLost);
+        Log.i(Constants.TAG, "Packet Lost Msg: " + (Constants.Packet.MSG_PACKET_SIZE - GlobalNumBytesRead));
         return packetLost;
     }
 
