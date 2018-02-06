@@ -567,7 +567,7 @@ public class OneScenario extends AppCompatActivity {
                 checkBandwidthText.setTextColor(Color.GREEN);
                 FileSentBandwidth = ((double) Constants.Packet.BW_FILE_SIZE / bandData.getTotalBandwidthDuration());
 
-                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth + " " + bandData.getTotalBandwidthDuration());
+              //  Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth + " " + bandData.getTotalBandwidthDuration());
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                 globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
