@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.File;
@@ -65,7 +64,7 @@ public class BandwidthBytesT extends Thread {
                 int numBytes; // bytes returned from read()
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
 
-                if (bandwidthInStream.available() > 0) {
+             //   if (bandwidthInStream.available() > 0) {
                     // Read from the InputStream.
                     while (bandwidthInStream.read() != -1) {
                         numBytes = bandwidthInStream.read(bandwidthBuffer);
@@ -78,9 +77,9 @@ public class BandwidthBytesT extends Thread {
                             Constants.MessageConstants.BW_READ, -1, -1,
                             bandwidthBuffer);
                     readMsg.sendToTarget();
-                } else {
-                    SystemClock.sleep(100);
-                }
+               // } else {
+                 //   SystemClock.sleep(100);
+                //}
             } catch (IOException e) {
                 Log.d(Constants.TAG, "Input stream was disconnected", e);
                 break;
