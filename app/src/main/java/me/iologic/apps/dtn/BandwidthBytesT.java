@@ -64,24 +64,26 @@ public class BandwidthBytesT extends Thread {
                 int numBytes; // bytes returned from read()
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
 
-               if (bandwidthInStream.available() > 0) {
+                if (bandwidthInStream.available() > 0) {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
-                   GlobalNumBytesRead = numBytes;
+                    GlobalNumBytesRead = numBytes;
                     // Send the obtained bytes to the UI activity.
-                  //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
+                    //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
                 } else {
                     SystemClock.sleep(100);
-               }
+                }
             } catch (IOException e) {
                 Log.d(Constants.TAG, "Input stream was disconnected", e);
                 break;
             }
 
-            Message readMsg = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_READ, GlobalNumBytesRead, -1,
-                    bandwidthBuffer);
-            readMsg.sendToTarget();
+            if (GlobalNumBytesRead == Constants.Packet.BW_FILE_SIZE) {
+                Message readMsg = bandwidthHandler.obtainMessage(
+                        Constants.MessageConstants.BW_READ, GlobalNumBytesRead, -1,
+                        bandwidthBuffer);
+                readMsg.sendToTarget();
+            }
         }
     }
 
