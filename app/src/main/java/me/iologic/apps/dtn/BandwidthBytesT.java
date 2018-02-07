@@ -78,6 +78,8 @@ public class BandwidthBytesT extends Thread {
                 break;
             }
 
+            Log.i(Constants.TAG, "GlobalBWNumBytesRead: " + GlobalNumBytesRead);
+
             if (GlobalNumBytesRead == Constants.Packet.BW_FILE_SIZE) {
                 Message readMsg = bandwidthHandler.obtainMessage(
                         Constants.MessageConstants.BW_READ, GlobalNumBytesRead, -1,
