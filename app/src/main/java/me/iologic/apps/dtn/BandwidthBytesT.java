@@ -67,12 +67,15 @@ public class BandwidthBytesT extends Thread {
 
                 if (bandwidthInStream.available() > 0) {
                     // Read from the InputStream.
-                    numBytes = bandwidthInStream.read(bandwidthBuffer);
+                    while (bandwidthInStream.read() != -1) {
+                        numBytes = bandwidthInStream.read(bandwidthBuffer);
+                        GlobalNumBytesRead = numBytes;
+                    }
                     // Send the obtained bytes to the UI activity.
-                    //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
+                    Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + GlobalNumBytesRead);
 
                     Message readMsg = bandwidthHandler.obtainMessage(
-                            Constants.MessageConstants.BW_READ, numBytes, -1,
+                            Constants.MessageConstants.BW_READ, -1, -1,
                             bandwidthBuffer);
                     readMsg.sendToTarget();
                 } else {
@@ -83,7 +86,7 @@ public class BandwidthBytesT extends Thread {
                 break;
             }
 
-            }
+        }
 
     }
 
@@ -170,7 +173,7 @@ public class BandwidthBytesT extends Thread {
     }
 
     public double getPacketLoss(byte[] ReceivedBWData) {
-        double packetLost = ((double)(Constants.Packet.BW_FILE_SIZE - ReceivedBWData.length) / (double)(Constants.Packet.BW_FILE_SIZE)) * 100;
+        double packetLost = ((double) (Constants.Packet.BW_FILE_SIZE - ReceivedBWData.length) / (double) (Constants.Packet.BW_FILE_SIZE)) * 100;
         Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
         return packetLost;
     }
