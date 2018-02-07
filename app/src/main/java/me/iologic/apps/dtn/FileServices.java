@@ -211,7 +211,7 @@ public class FileServices {
 
         OutputStreamWriter osw = new OutputStreamWriter(fOut);
         try {
-            osw.write(ReceivedBWData + " %" + "\r\n");
+            osw.write(ReceivedBWData.toString());
             osw.flush();
             osw.close();
         } catch (IOException e) {
@@ -238,7 +238,7 @@ public class FileServices {
 
         readData = data;
 
-        // Log.i(Constants.TAG, "File Size Read:" + readData.length);
+        Log.i(Constants.TAG, "File Size Read:" + readData.length);
 
         return readData;
     }
