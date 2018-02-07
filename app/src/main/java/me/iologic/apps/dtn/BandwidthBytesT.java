@@ -61,12 +61,12 @@ public class BandwidthBytesT extends Thread {
         while (true) {
             try {
                 bandwidthBuffer = new byte[Constants.Packet.BW_FILE_SIZE];
-                int numBytes; // bytes returned from read()
+                int numBytes = bandwidthInStream.read(); // bytes returned from read()
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
 
              //   if (bandwidthInStream.available() > 0) {
                     // Read from the InputStream.
-                    while (bandwidthInStream.read() != -1) {
+                    while (numBytes!=-1) {
                         numBytes = bandwidthInStream.read(bandwidthBuffer);
                         GlobalNumBytesRead = numBytes;
                         Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
