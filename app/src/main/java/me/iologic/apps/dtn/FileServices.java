@@ -198,6 +198,53 @@ public class FileServices {
         }
     }
 
+    public File saveBWReceivedData(String ReceivedFileName, Object ReceivedBWData) { // Only For One Scenario
+        String saveFileName = ReceivedFileName + "--" + dataUUID;
+        File BWFile = new File(ctx.getFilesDir(), saveFileName);
+
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(BWFile, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write(ReceivedBWData + " %" + "\r\n");
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return BWFile;
+    }
+
+    public byte[] readBWReceivedFile (File ReceivedFileObj){
+        byte [] data = new byte[ (int) ReceivedFileObj.length() ];
+        readData = new byte[(int) ReceivedFileObj.length()];
+        try {
+            FileInputStream fin = new FileInputStream(ReceivedFileObj);
+            int n = 0;
+            while ( (n = fin.read(data, n, data.length - n) ) > 0);
+
+        }
+        catch (FileNotFoundException e) {
+            Log.e(Constants.TAG, "File not found (from read() file): " + e.toString());
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Can not read file: " + e.toString());
+        }
+
+        readData = data;
+
+        // Log.i(Constants.TAG, "File Size Read:" + readData.length);
+
+        return readData;
+    }
+
+
+
 
 
     public void deleteFile(){

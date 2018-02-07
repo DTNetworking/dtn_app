@@ -555,10 +555,14 @@ public class OneScenario extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == Constants.MessageConstants.BW_READ) {
+
+               File BWFile =  useFile.saveBWReceivedData(Constants.FileNames.BWFileName, msg.obj);
+               byte[] readBWFile = useFile.readBWReceivedFile(BWFile);
+
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
-                GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
+                GlobalBWPacketLoss = bandData.getPacketLoss(readBWFile); // For 1st Scenario
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
                 if (GlobalBWPacketLoss == 0) {
                     BWPacketLossText.setTextColor(Color.GRAY);
@@ -570,7 +574,6 @@ public class OneScenario extends AppCompatActivity {
 
                 useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
-                // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
                 FileSentBandwidth = ((double) Constants.Packet.BW_FILE_SIZE / bandData.getTotalBandwidthDuration());
 

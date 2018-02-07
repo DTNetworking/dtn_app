@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.File;
@@ -61,26 +62,26 @@ public class BandwidthBytesT extends Thread {
             try {
                 bandwidthBuffer = new byte[Constants.Packet.BW_FILE_SIZE];
                 int numBytes; // bytes returned from read()
-
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
 
-         //       if (bandwidthInStream.available() > 0) {
+               if (bandwidthInStream.available() > 0) {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
+                   GlobalNumBytesRead = numBytes;
                     // Send the obtained bytes to the UI activity.
-                    GlobalNumBytesRead = numBytes;
                   //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
-                    Message readMsg = bandwidthHandler.obtainMessage(
-                            Constants.MessageConstants.BW_READ, numBytes, -1,
-                            bandwidthBuffer);
-                    readMsg.sendToTarget();
-              //  } else {
-                   // SystemClock.sleep(100);
-              //  }
+                } else {
+                    SystemClock.sleep(100);
+               }
             } catch (IOException e) {
                 Log.d(Constants.TAG, "Input stream was disconnected", e);
                 break;
             }
+
+            Message readMsg = bandwidthHandler.obtainMessage(
+                    Constants.MessageConstants.BW_READ, GlobalNumBytesRead, -1,
+                    bandwidthBuffer);
+            readMsg.sendToTarget();
         }
     }
 
@@ -166,8 +167,8 @@ public class BandwidthBytesT extends Thread {
         return ((double) duration / 1000000000.0);
     }
 
-    public double getPacketLoss() {
-        double packetLost = ((double)(Constants.Packet.BW_FILE_SIZE - GlobalNumBytesRead) / (double)(Constants.Packet.BW_FILE_SIZE)) * 100;
+    public double getPacketLoss(byte[] ReceivedBWData) {
+        double packetLost = ((double)(Constants.Packet.BW_FILE_SIZE - ReceivedBWData.length) / (double)(Constants.Packet.BW_FILE_SIZE)) * 100;
         Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
         return packetLost;
     }

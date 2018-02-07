@@ -15,6 +15,7 @@ public class Constants {
         public static final String Pairing = "PairingTime";
         public static final String MsgPacketLoss = "MsgPacketLoss";
         public static final String BWPacketLoss = "BWPacketLoss";
+        public static final String BWFileName = "BWDataFile"; // Only For One Scenario
     }
 
     public interface Packet {
