@@ -69,6 +69,7 @@ public class BandwidthBytesT extends Thread {
                     while (bandwidthInStream.read() != -1) {
                         numBytes = bandwidthInStream.read(bandwidthBuffer);
                         GlobalNumBytesRead = numBytes;
+                        Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
                     }
                     // Send the obtained bytes to the UI activity.
                     Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + GlobalNumBytesRead);
