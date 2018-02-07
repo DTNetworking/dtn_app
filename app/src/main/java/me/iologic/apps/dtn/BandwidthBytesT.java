@@ -52,6 +52,7 @@ public class BandwidthBytesT extends Thread {
         bandwidthOutStream = tmpOut;
 
         bandwidthHandler = handler;
+        GlobalNumBytesRead = 0;
         counter = 1;
         // bandwidthBuffer = new byte[1024];
     }
@@ -67,7 +68,7 @@ public class BandwidthBytesT extends Thread {
                 if (bandwidthInStream.available() > 0) {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
-                    GlobalNumBytesRead = numBytes;
+                    GlobalNumBytesRead += numBytes;
                     // Send the obtained bytes to the UI activity.
                     //  Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
                 } else {
@@ -85,6 +86,7 @@ public class BandwidthBytesT extends Thread {
                         Constants.MessageConstants.BW_READ, GlobalNumBytesRead, -1,
                         bandwidthBuffer);
                 readMsg.sendToTarget();
+                GlobalNumBytesRead = 0;
             }
         }
     }
