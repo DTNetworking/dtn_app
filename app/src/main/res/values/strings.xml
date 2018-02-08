@@ -22,4 +22,6 @@
     <string name="throughput">Throughput</string>\
     <string name="enterMessage">Enter Your Message Here</string>
     <string name="send">Send</string>
+    <string name="MsgPacketLoss">Message Packet Loss</string>
+    <string name="BWPacketLoss">Bandwidth Packet Loss</string>
 </resources>
