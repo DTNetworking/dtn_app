@@ -507,14 +507,15 @@ public class OneScenario extends AppCompatActivity {
             } else if ((msg.what == Constants.MessageConstants.MESSAGE_READ)) {
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
-                byte[] writeACK = new byte[]{'R'};
+                // byte[] writeACK = new byte[]{'R'};
+                String writeACK = String.valueOf(msg.arg1);
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
                 //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(writeMessage);
                 // }
                 GlobalReceivedMessage = writeMessage;
-                ACKData.write(writeACK);
+                ACKData.write(writeACK.getBytes());
                 // isCheckingBandwidth = false;
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
             }
@@ -534,21 +535,28 @@ public class OneScenario extends AppCompatActivity {
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
+                } else {
+                    stopWatch.halt();
+                    // Update Message Timing List and Reset The Timer
+                    useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
+                    stopWatch.updateList();
+                    stopWatch.reset();
+
+                    GlobalMsgPacketLoss = streamData.getPacketLoss(writeBuf.toString()); // For 1st Scenario
+                    String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
+                    if (GlobalMsgPacketLoss == 0) {
+                        MsgPacketLossText.setTextColor(Color.GRAY);
+                        MsgPacketLossText.setText("0" + showMsgLossPercent);
+                    } else {
+                        MsgPacketLossText.setTextColor(Color.RED);
+                        MsgPacketLossText.setText(showMsgLossPercent);
+                    }
+
+                    useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
                 }
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE) {
                 Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
                 Log.i(Constants.TAG, "---------------------");
-                GlobalMsgPacketLoss = streamData.getPacketLoss(); // For 1st Scenario
-                String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
-                if (GlobalMsgPacketLoss == 0) {
-                    MsgPacketLossText.setTextColor(Color.GRAY);
-                    MsgPacketLossText.setText("0" + showMsgLossPercent);
-                } else {
-                    MsgPacketLossText.setTextColor(Color.RED);
-                    MsgPacketLossText.setText(showMsgLossPercent);
-                }
-
-                useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
             }
         }
     };
