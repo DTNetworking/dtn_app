@@ -333,7 +333,6 @@ public class OneScenario extends AppCompatActivity {
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
-                    MsgPacketLossText.setVisibility(View.GONE);
 
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
