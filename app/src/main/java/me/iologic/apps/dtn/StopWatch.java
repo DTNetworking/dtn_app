@@ -19,13 +19,13 @@ class StopWatch extends Thread {
     ArrayList<String> msgTiming = new ArrayList<String>();
 
 
-    public StopWatch(TextView delay){
+    public StopWatch(TextView delay) {
         delayTV = delay;
     }
 
 
     private void updateTimer(float time) {
-    	/* Although we are not using milliseconds on the timer in this example
+        /* Although we are not using milliseconds on the timer in this example
     	 * I included the code in the event that you wanted to include it on your own
     	 */
         Log.i(Constants.TAG, " Time : " + time);
@@ -39,16 +39,16 @@ class StopWatch extends Thread {
         delayTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                delayTV.setText((globalTime/1000) + " secs");
+                delayTV.setText((globalTime / 1000) + " secs");
             }
         });
     }
 
-    public void updateList(){
+    public void updateList() {
         msgTiming.add(globalTime + " ms");
     }
 
-    public float getGlobalTime(){
+    public float getGlobalTime() {
         return globalTime;
     }
 
@@ -56,33 +56,32 @@ class StopWatch extends Thread {
         public void run() {
             elapsedTime = System.currentTimeMillis() - startTime;
             updateTimer(elapsedTime);
-            mHandler.postDelayed(this,REFRESH_RATE);
+            mHandler.postDelayed(this, REFRESH_RATE);
         }
     };
 
-    public void start (){
-        if(stopped){
+    public void start() {
+        if (stopped) {
             startTime = System.currentTimeMillis() - elapsedTime;
-        }
-        else{
+        } else {
             startTime = System.currentTimeMillis();
         }
         mHandler.removeCallbacks(startTimer);
         mHandler.postDelayed(startTimer, 0);
     }
 
-    public void halt (){
+    public void halt() {
         mHandler.removeCallbacks(startTimer);
         stopped = true;
     }
 
-    public void reset (){
+    public void reset() {
         stopped = false;
         Log.i(Constants.TAG, "StopWatch is reset!");
         // delayTV.setText("StopWatch Reset");
     }
 
-    public ArrayList<String> getTimings(){
+    public ArrayList<String> getTimings() {
         return msgTiming;
     }
 

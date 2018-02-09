@@ -92,9 +92,9 @@ public class BandwidthBytesT extends Thread {
             //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
             // Share the sent message with the UI activity.
-                Message writtenBWStatus = bandwidthHandler.obtainMessage(
-                        Constants.MessageConstants.BW_START_WRITE, counter, -1, bandwidthBuffer);
-                writtenBWStatus.sendToTarget();
+            Message writtenBWStatus = bandwidthHandler.obtainMessage(
+                    Constants.MessageConstants.BW_START_WRITE, counter, -1, bandwidthBuffer);
+            writtenBWStatus.sendToTarget();
 
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
@@ -132,7 +132,7 @@ public class BandwidthBytesT extends Thread {
 
     public void checkBandwidth(FileServices fileService, File tempFileRead) {
         byte[] getData = fileService.readTempFile(tempFileRead);
-       // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
+        // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
 
         byte[] sendData; // Breaking 1 MB file into 64 KB packets. So total 16 packets.
         int startPacketIndex = 0;
@@ -149,14 +149,20 @@ public class BandwidthBytesT extends Thread {
     }
 
     public double getTotalBandwidthDuration() {
-      //  Log.i(Constants.TAG, "Duration:" + duration);
-      //  Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
+        //  Log.i(Constants.TAG, "Duration:" + duration);
+        //  Log.i(Constants.TAG, "Duration in seconds: " + TimeUnit.NANOSECONDS.toSeconds(duration));
       /*  if (TimeUnit.NANOSECONDS.toSeconds(duration) == 0) {
             duration = 1;
             Log.i(Constants.TAG, "Sending duration as: " + duration);
             return duration;
         } */
         return ((double) duration / 1000000000.0);
+    }
+
+    public double getPacketLoss() {
+        double packetLost = ((double) (Constants.Packet.BW_COUNTER - counter) / (double) (Constants.Packet.BW_COUNTER)) * 100;
+        Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
+        return packetLost;
     }
 
     public void cancel() {

@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -69,8 +70,8 @@ public class OneScenario extends AppCompatActivity {
     String GlobalReceivedMessage;
     String globalBandwidth;
     boolean BWStart;
-
     double GlobalMsgPacketLoss;
+    double GlobalBWPacketLoss;
 
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
@@ -92,11 +93,14 @@ public class OneScenario extends AppCompatActivity {
     EditText EditMessageBox;
     Button sendMsgBtn;
     TextView MsgPacketLossText;
+    TextView BWPacketLossText;
 
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
 
     StopWatch stopWatch;
+
+    DecimalFormat df;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +128,7 @@ public class OneScenario extends AppCompatActivity {
         speedText = (TextView) findViewById(R.id.speed);
         delayText = (TextView) findViewById(R.id.delay);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
+        BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
 
         checkBandwidthText.setVisibility(View.GONE);
 
@@ -530,12 +535,13 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
                 Log.i(Constants.TAG, "---------------------");
                 GlobalMsgPacketLoss = streamData.getPacketLoss(); // For 1st Scenario
+                String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
                 if (GlobalMsgPacketLoss == 0) {
                     MsgPacketLossText.setTextColor(Color.GRAY);
-                    MsgPacketLossText.setText(String.format("%.2f", GlobalMsgPacketLoss + "%"));
+                    MsgPacketLossText.setText("0" + showMsgLossPercent);
                 } else {
                     MsgPacketLossText.setTextColor(Color.RED);
-                    MsgPacketLossText.setText(String.format("%.2f", GlobalMsgPacketLoss + "%"));
+                    MsgPacketLossText.setText(showMsgLossPercent);
                 }
 
                 useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
@@ -550,13 +556,10 @@ public class OneScenario extends AppCompatActivity {
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
-                File BWFile =  useFile.saveBWReceivedData(Constants.FileNames.BWFileName, msg.obj);
-                byte[] readBWFile = useFile.readBWReceivedFile(BWFile);
-
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
-                GlobalBWPacketLoss = bandData.getPacketLoss(readBWFile); // For 1st Scenario
+                GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
                 if (GlobalBWPacketLoss == 0) {
                     BWPacketLossText.setTextColor(Color.GRAY);
