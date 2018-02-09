@@ -158,6 +158,8 @@ public class OneScenario extends AppCompatActivity {
 
         BWStart = true;
 
+        df = new DecimalFormat("#.00");
+
         Dialog();
         startBluetooth();
         sendMessage();
