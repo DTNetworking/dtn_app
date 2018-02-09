@@ -103,8 +103,6 @@ public class BandwidthBytesT extends Thread {
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
 
-            Log.i(Constants.TAG, "Bandwidth Duration: " + duration);
-
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
