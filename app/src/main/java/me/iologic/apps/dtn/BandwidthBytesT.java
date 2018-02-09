@@ -140,9 +140,9 @@ public class BandwidthBytesT extends Thread {
         byte[] getData = fileService.readTempFile(tempFileRead);
         // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
 
-        byte[] sendData; // Breaking 1 MB file into 64 KB packets. So total 16 packets.
+        byte[] sendData; // Breaking 1 MB file into 2 KB packets.
         int startPacketIndex = 0;
-        while (counter != (Constants.Packet.BW_COUNTER + 1)) { // 16 Packets
+        while (counter != (Constants.Packet.BW_COUNTER + 1)) {
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
             write(sendData);
             counter++;
