@@ -25,6 +25,7 @@ class BluetoothBytesT extends Thread {
     private final OutputStream mmOutStream;
     private byte[] mmBuffer; // mmBuffer store for the stream
     private int GlobalNumBytesRead;
+    byte dummyByte;
 
     long sendingStartTime, sendingEndTime, duration, ACKStartTime;
 
@@ -179,8 +180,8 @@ class BluetoothBytesT extends Thread {
         }
     }
 
-    public double getPacketLoss(int EditWritten, String receivedNumBytes) {
-        double packetLost = ((double) ( EditWritten - Integer.valueOf(receivedNumBytes)) / (double) EditWritten) * 100;
+    public double getPacketLoss(int EditWritten, int receivedNumBytes) {
+        double packetLost = ((double) ( EditWritten - receivedNumBytes) / (double) EditWritten) * 100;
         Log.i(Constants.TAG, "Packet Lost Msg: " + EditWritten + " " + Integer.valueOf(receivedNumBytes));
         return packetLost;
     }

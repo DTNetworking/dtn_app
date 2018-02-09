@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -543,7 +544,7 @@ public class OneScenario extends AppCompatActivity {
                     stopWatch.updateList();
                     stopWatch.reset();
 
-                    GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
+                    GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new BigInteger(writeBuf).intValue()); // For 1st Scenario
                     String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
                     if (GlobalMsgPacketLoss == 0) {
                         MsgPacketLossText.setTextColor(Color.GRAY);
