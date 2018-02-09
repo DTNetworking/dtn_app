@@ -124,6 +124,8 @@ public class BandwidthBytesT extends Thread {
 
             // Share the sent message with the UI activity.
             if (GlobalNumWriteBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
+                Log.i(Constants.TAG, "GlobalNumWriteBytes: " + GlobalNumWriteBytes);
+                Log.i(Constants.TAG, "AvgTime: " + AvgTime);
                 Message writtenMsg = bandwidthHandler.obtainMessage(
                         Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
                 writtenMsg.sendToTarget();
