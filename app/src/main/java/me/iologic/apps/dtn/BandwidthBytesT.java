@@ -25,6 +25,7 @@ public class BandwidthBytesT extends Thread {
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
     int counter, GlobalPacketCounter;
     long GlobalNumBytes;
+    long dummyCounter;
 
     boolean isFirstTime;
 
@@ -58,6 +59,7 @@ public class BandwidthBytesT extends Thread {
         counter = 1;
         GlobalPacketCounter = counter;
         GlobalNumBytes = 0;
+        dummyCounter = 0;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -157,7 +159,8 @@ public class BandwidthBytesT extends Thread {
             GlobalPacketCounter = counter;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
-
+            dummyCounter++;
+            Log.i(Constants.TAG, "Dummy Counter from checkBW(): " + dummyCounter);
             Message readMsg = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_PACKET_LOSS_CHECK, -1, -1,
                     bandwidthBuffer);
