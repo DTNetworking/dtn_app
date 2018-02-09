@@ -25,6 +25,8 @@ public class BandwidthBytesT extends Thread {
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
     int counter, GlobalPacketCounter;
 
+    boolean isFirstTime;
+
     long sendingStartTime, sendingEndTime, duration;
 
     private Handler bandwidthHandler;
@@ -51,6 +53,7 @@ public class BandwidthBytesT extends Thread {
         bandwidthOutStream = tmpOut;
 
         bandwidthHandler = handler;
+        isFirstTime = true;
         counter = 1;
         GlobalPacketCounter = counter;
         // bandwidthBuffer = new byte[1024];
@@ -92,11 +95,14 @@ public class BandwidthBytesT extends Thread {
             String testMessage = new String(bandwidthBuffer);
             //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
-            // Share the sent message with the UI activity.
-            Message writtenBWStatus = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_START_WRITE, counter, -1, bandwidthBuffer);
-            writtenBWStatus.sendToTarget();
+            if(isFirstTime) {
+                isFirstTime = false;
+                // Share the sent message with the UI activity.
+                Message writtenBWStatus = bandwidthHandler.obtainMessage(
+                        Constants.MessageConstants.BW_START_WRITE, counter, -1, bandwidthBuffer);
+                writtenBWStatus.sendToTarget();
 
+            }
             sendingStartTime = System.nanoTime();
             bandwidthOutStream.write(bandwidthBuffer);
             flushOutStream();
