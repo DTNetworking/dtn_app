@@ -542,7 +542,7 @@ public class OneScenario extends AppCompatActivity {
                     stopWatch.updateList();
                     stopWatch.reset();
 
-                    GlobalMsgPacketLoss = streamData.getPacketLoss(new String(writeBuf)); // For 1st Scenario
+                    GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
                     String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
                     if (GlobalMsgPacketLoss == 0) {
                         MsgPacketLossText.setTextColor(Color.GRAY);
