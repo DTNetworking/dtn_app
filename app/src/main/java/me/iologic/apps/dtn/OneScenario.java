@@ -128,6 +128,7 @@ public class OneScenario extends AppCompatActivity {
         speedText = (TextView) findViewById(R.id.speed);
         delayText = (TextView) findViewById(R.id.delay);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
+        MsgPacketLossText = (TextView) findViewById(R.id.MsgPacketLoss);
         BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
 
         checkBandwidthText.setVisibility(View.GONE);
