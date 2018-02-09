@@ -23,15 +23,14 @@ public class BandwidthBytesT extends Thread {
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
-    int counter, GlobalPacketCounter;
-    long GlobalNumReadBytes;
-    long GlobalNumWriteBytes;
-    double AvgTime;
-    long dummyCounter;
+    private int counter, GlobalPacketCounter;
+    private long GlobalNumReadBytes;
+    private long GlobalNumWriteBytes;
+    private double AvgTime;
 
-    boolean isFirstTime;
+    private boolean isFirstTime;
 
-    long sendingStartTime, sendingEndTime, duration;
+    private long sendingStartTime, sendingEndTime, duration;
 
     private Handler bandwidthHandler;
 
@@ -63,7 +62,6 @@ public class BandwidthBytesT extends Thread {
         GlobalNumReadBytes = 0;
         GlobalNumWriteBytes = 0;
         AvgTime = 0;
-        dummyCounter = 0;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -80,10 +78,10 @@ public class BandwidthBytesT extends Thread {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
                     // Send the obtained bytes to the UI activity.
-                    Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
+                    // Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
                     GlobalNumReadBytes += numBytes;
-                    Log.i(Constants.TAG, "Global Num Bytes: " + GlobalNumReadBytes);
-                    if(GlobalNumReadBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
+                    //  Log.i(Constants.TAG, "Global Num Bytes: " + GlobalNumReadBytes);
+                    if (GlobalNumReadBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
                         Message readMsg = bandwidthHandler.obtainMessage(
                                 Constants.MessageConstants.BW_READ, numBytes, -1,
                                 bandwidthBuffer);
@@ -125,10 +123,12 @@ public class BandwidthBytesT extends Thread {
             AvgTime += duration;
 
             // Share the sent message with the UI activity.
-            if(GlobalNumWriteBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
+            if (GlobalNumWriteBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
                 Message writtenMsg = bandwidthHandler.obtainMessage(
                         Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
                 writtenMsg.sendToTarget();
+                GlobalNumWriteBytes = 0;
+                AvgTime = 0;
             }
 
         } catch (IOException e) {
@@ -167,8 +167,6 @@ public class BandwidthBytesT extends Thread {
             GlobalPacketCounter = counter;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
-            dummyCounter++;
-            Log.i(Constants.TAG, "Dummy Counter from checkBW(): " + dummyCounter);
             Message readMsg = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_PACKET_LOSS_CHECK, -1, -1,
                     bandwidthBuffer);
@@ -189,6 +187,10 @@ public class BandwidthBytesT extends Thread {
             return duration;
         } */
         return (AvgTime / 1000000000.0);
+    }
+
+    public long getGlobalNumWriteBytes() {
+        return GlobalNumWriteBytes;
     }
 
     public double getPacketLoss() {
