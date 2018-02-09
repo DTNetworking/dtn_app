@@ -23,7 +23,7 @@ public class BandwidthBytesT extends Thread {
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
-    int counter;
+    int counter, GlobalPacketCounter;
 
     long sendingStartTime, sendingEndTime, duration;
 
@@ -52,6 +52,7 @@ public class BandwidthBytesT extends Thread {
 
         bandwidthHandler = handler;
         counter = 1;
+        GlobalPacketCounter = counter;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -160,8 +161,8 @@ public class BandwidthBytesT extends Thread {
     }
 
     public double getPacketLoss() {
-        double packetLost = ((double) (Constants.Packet.BW_COUNTER - counter) / (double) (Constants.Packet.BW_COUNTER)) * 100;
-        Log.i(Constants.TAG, "Counter from getPacketLoss(): " + counter);
+        double packetLost = ((double) (Constants.Packet.BW_COUNTER - GlobalPacketCounter) / (double) (Constants.Packet.BW_COUNTER)) * 100;
+        Log.i(Constants.TAG, "Counter from getPacketLoss(): " + GlobalPacketCounter);
         Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
         return packetLost;
     }
