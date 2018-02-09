@@ -574,19 +574,6 @@ public class OneScenario extends AppCompatActivity {
                 speedText.setText(bandwidth);
                 getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
-
-                GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
-                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
-                if (GlobalBWPacketLoss == 0) {
-                    BWPacketLossText.setTextColor(Color.GRAY);
-                    BWPacketLossText.setText("0" + BWLossPercent);
-                } else {
-                    BWPacketLossText.setTextColor(Color.RED);
-                    BWPacketLossText.setText(BWLossPercent);
-                }
-
-                useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
-
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
                     @Override
@@ -608,6 +595,18 @@ public class OneScenario extends AppCompatActivity {
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
                 }
+            } else if(msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK){
+                GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
+                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
+                if (GlobalBWPacketLoss == 0) {
+                    BWPacketLossText.setTextColor(Color.GRAY);
+                    BWPacketLossText.setText("0" + BWLossPercent);
+                } else {
+                    BWPacketLossText.setTextColor(Color.RED);
+                    BWPacketLossText.setText(BWLossPercent);
+                }
+
+                useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
             }
         }
     };

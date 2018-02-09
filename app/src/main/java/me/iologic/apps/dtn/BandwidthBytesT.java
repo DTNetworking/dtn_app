@@ -144,6 +144,11 @@ public class BandwidthBytesT extends Thread {
             GlobalPacketCounter = counter;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
+
+            Message readMsg = bandwidthHandler.obtainMessage(
+                    Constants.MessageConstants.BW_PACKET_LOSS_CHECK, -1, -1,
+                    bandwidthBuffer);
+            readMsg.sendToTarget();
         }
         if (counter == (Constants.Packet.BW_COUNTER + 1)) {
             counter = 1; // Reset Counter to 1
