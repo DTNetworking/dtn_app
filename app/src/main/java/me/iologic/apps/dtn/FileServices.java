@@ -106,6 +106,27 @@ public class FileServices {
         return o.toString();
     }
 
+    public void savePacketLossData(String ReceivedFileName, double ReceivedPacketLoss) {
+        String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
+        dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
+
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(dataFile, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write(ReceivedPacketLoss + " %" + "\r\n");
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Save Bandwidth Data To File
     public void saveBWData(String ReceivedFileName, String ReceivedBandwidth){
         String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";

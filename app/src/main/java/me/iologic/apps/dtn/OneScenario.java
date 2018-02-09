@@ -70,6 +70,9 @@ public class OneScenario extends AppCompatActivity {
     String globalBandwidth;
     boolean BWStart;
 
+    double GlobalMsgPacketLoss;
+
+
     private static String SERVER_CONNECTION_SUCCESSFUL;
     private static String SERVER_CONNECTION_FAIL;
 
@@ -88,6 +91,7 @@ public class OneScenario extends AppCompatActivity {
     TextView checkBandwidthText;
     EditText EditMessageBox;
     Button sendMsgBtn;
+    TextView MsgPacketLossText;
 
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
@@ -525,6 +529,16 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE) {
                 Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
                 Log.i(Constants.TAG, "---------------------");
+                GlobalMsgPacketLoss = streamData.getPacketLoss(); // For 1st Scenario
+                if (GlobalMsgPacketLoss == 0) {
+                    MsgPacketLossText.setTextColor(Color.GRAY);
+                    MsgPacketLossText.setText(String.format("%.2f", GlobalMsgPacketLoss + "%"));
+                } else {
+                    MsgPacketLossText.setTextColor(Color.RED);
+                    MsgPacketLossText.setText(String.format("%.2f", GlobalMsgPacketLoss + "%"));
+                }
+
+                useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
             }
         }
     };
@@ -536,6 +550,24 @@ public class OneScenario extends AppCompatActivity {
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+                File BWFile =  useFile.saveBWReceivedData(Constants.FileNames.BWFileName, msg.obj);
+                byte[] readBWFile = useFile.readBWReceivedFile(BWFile);
+
+                // byte[] writeBuf = (byte[]) msg.obj;
+                // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
+                // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+                GlobalBWPacketLoss = bandData.getPacketLoss(readBWFile); // For 1st Scenario
+                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
+                if (GlobalBWPacketLoss == 0) {
+                    BWPacketLossText.setTextColor(Color.GRAY);
+                    BWPacketLossText.setText("0" + BWLossPercent);
+                } else {
+                    BWPacketLossText.setTextColor(Color.RED);
+                    BWPacketLossText.setText(BWLossPercent);
+                }
+
+                useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
+
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
