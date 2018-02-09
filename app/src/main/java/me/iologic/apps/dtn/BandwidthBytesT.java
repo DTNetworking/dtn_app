@@ -127,8 +127,6 @@ public class BandwidthBytesT extends Thread {
                 Message writtenMsg = bandwidthHandler.obtainMessage(
                         Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
                 writtenMsg.sendToTarget();
-                GlobalNumWriteBytes = 0;
-                AvgTime = 0;
             }
 
         } catch (IOException e) {
@@ -191,6 +189,14 @@ public class BandwidthBytesT extends Thread {
 
     public long getGlobalNumWriteBytes() {
         return GlobalNumWriteBytes;
+    }
+
+    public void resetGlobalNumWriteBytes(){
+        GlobalNumWriteBytes = 0;
+    }
+
+    public void resetAvgTime(){
+        AvgTime = 0;
     }
 
     public double getPacketLoss() {
