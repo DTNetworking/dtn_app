@@ -330,9 +330,10 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
                     currentStatusText.setText("CLIENT");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
-
+                    useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
+                    MsgPacketLossText.setVisibility(View.GONE);
 
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
@@ -462,8 +463,9 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
                     currentStatusText.setText("SERVER");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
-
+                    useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     speedText.setVisibility(View.GONE);
+                    BWPacketLossText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
 
                     SocketGlobal = serverConnect.getServerSocket();
@@ -562,6 +564,18 @@ public class OneScenario extends AppCompatActivity {
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+            } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
+                // Do Nothing
+                checkBandwidthText.setTextColor(Color.GREEN);
+                FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
+
+                // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                globalBandwidth = bandwidth;
+                speedText.setText(bandwidth);
+                getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
+                checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
+
                 GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
                 if (GlobalBWPacketLoss == 0) {
@@ -574,17 +588,6 @@ public class OneScenario extends AppCompatActivity {
 
                 useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
 
-            } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
-                // Do Nothing
-                checkBandwidthText.setTextColor(Color.GREEN);
-                FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
-
-                // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-                globalBandwidth = bandwidth;
-                speedText.setText(bandwidth);
-                getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
-                checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
                     @Override
