@@ -141,11 +141,13 @@ public class BandwidthBytesT extends Thread {
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
             write(sendData);
             counter++;
+            GlobalPacketCounter = counter;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
         }
         if (counter == (Constants.Packet.BW_COUNTER + 1)) {
             counter = 1; // Reset Counter to 1
+            GlobalPacketCounter = counter;
         }
     }
 
