@@ -24,7 +24,9 @@ public class BandwidthBytesT extends Thread {
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
     int counter, GlobalPacketCounter;
-    long GlobalNumBytes;
+    long GlobalNumReadBytes;
+    long GlobalNumWriteBytes;
+    double AvgTime;
     long dummyCounter;
 
     boolean isFirstTime;
@@ -58,7 +60,9 @@ public class BandwidthBytesT extends Thread {
         isFirstTime = true;
         counter = 1;
         GlobalPacketCounter = counter;
-        GlobalNumBytes = 0;
+        GlobalNumReadBytes = 0;
+        GlobalNumWriteBytes = 0;
+        AvgTime = 0;
         dummyCounter = 0;
         // bandwidthBuffer = new byte[1024];
     }
@@ -77,15 +81,15 @@ public class BandwidthBytesT extends Thread {
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
                     // Send the obtained bytes to the UI activity.
                     Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
-                    GlobalNumBytes += numBytes;
-                    Log.i(Constants.TAG, "Global Num Bytes: " + GlobalNumBytes);
-                    if(GlobalNumBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
+                    GlobalNumReadBytes += numBytes;
+                    Log.i(Constants.TAG, "Global Num Bytes: " + GlobalNumReadBytes);
+                    if(GlobalNumReadBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
                         Message readMsg = bandwidthHandler.obtainMessage(
                                 Constants.MessageConstants.BW_READ, numBytes, -1,
                                 bandwidthBuffer);
                         readMsg.sendToTarget();
 
-                        GlobalNumBytes = 0;
+                        GlobalNumReadBytes = 0;
                     }
                 } else {
                     SystemClock.sleep(100);
@@ -118,11 +122,14 @@ public class BandwidthBytesT extends Thread {
             flushOutStream();
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
+            AvgTime += duration;
 
             // Share the sent message with the UI activity.
-            Message writtenMsg = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
-            writtenMsg.sendToTarget();
+            if(GlobalNumWriteBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
+                Message writtenMsg = bandwidthHandler.obtainMessage(
+                        Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
+                writtenMsg.sendToTarget();
+            }
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error occurred when sending BW", e);
@@ -154,6 +161,7 @@ public class BandwidthBytesT extends Thread {
         int startPacketIndex = 0;
         while (counter != (Constants.Packet.BW_COUNTER + 1)) {
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
+            GlobalNumWriteBytes += sendData.length;
             write(sendData);
             counter++;
             GlobalPacketCounter = counter;
@@ -180,7 +188,7 @@ public class BandwidthBytesT extends Thread {
             Log.i(Constants.TAG, "Sending duration as: " + duration);
             return duration;
         } */
-        return ((double) duration / 1000000000.0);
+        return (AvgTime / 1000000000.0);
     }
 
     public double getPacketLoss() {
