@@ -536,6 +536,7 @@ public class OneScenario extends AppCompatActivity {
                     stopWatch.updateList();
                     stopWatch.reset();
                 } else {
+                    Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
                     stopWatch.halt();
                     // Update Message Timing List and Reset The Timer
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());

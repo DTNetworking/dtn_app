@@ -100,8 +100,11 @@ class BluetoothBytesT extends Thread {
             String testMessage = new String(mmBuffer);
             Log.i(Constants.TAG, "Message Sending: " + testMessage);
 
+            stopW.start();
+
             sendingStartTime = System.nanoTime();
             mmOutStream.write(mmBuffer);
+            flushOutStream();
             sendingEndTime = System.nanoTime();
 
             duration = sendingEndTime - sendingStartTime;
