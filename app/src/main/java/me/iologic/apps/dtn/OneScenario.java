@@ -576,7 +576,7 @@ public class OneScenario extends AppCompatActivity {
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
                 dummycount++;
                // Log.i(Constants.TAG, "BW Received Counter: " + dummycount);
-            } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
+                } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
                 FileSentBandwidth = ((double) bandData.getGlobalNumWriteBytes() / bandData.getTotalBandwidthDuration());
@@ -587,8 +587,6 @@ public class OneScenario extends AppCompatActivity {
                 speedText.setText(bandwidth);
                 getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
-                bandData.resetGlobalNumWriteBytes();
-                bandData.resetAvgTime();
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
                     @Override
