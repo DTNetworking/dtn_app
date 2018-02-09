@@ -102,6 +102,8 @@ public class OneScenario extends AppCompatActivity {
 
     DecimalFormat df;
 
+    int dummycount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -572,6 +574,8 @@ public class OneScenario extends AppCompatActivity {
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+                dummycount++;
+                Log.i(Constants.TAG, "BW Received Counter: " + dummycount);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
