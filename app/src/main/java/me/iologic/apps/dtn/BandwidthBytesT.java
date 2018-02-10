@@ -124,8 +124,8 @@ public class BandwidthBytesT extends Thread {
 
             // Share the sent message with the UI activity.
             if (GlobalNumWriteBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
-                Log.i(Constants.TAG, "GlobalNumWriteBytes: " + GlobalNumWriteBytes);
-                Log.i(Constants.TAG, "AvgTime: " + AvgTime);
+             //   Log.i(Constants.TAG, "GlobalNumWriteBytes: " + GlobalNumWriteBytes);
+           //     Log.i(Constants.TAG, "AvgTime: " + AvgTime);
                 Message writtenMsg = bandwidthHandler.obtainMessage(
                         Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
                 writtenMsg.sendToTarget();
@@ -197,10 +197,12 @@ public class BandwidthBytesT extends Thread {
     }
 
     public void resetAvgTime(){
+        Log.i(Constants.TAG, "AvgTime: " + 0);
         AvgTime = 0;
     }
 
     public void resetGlobalNumWriteBytes(){
+        Log.i(Constants.TAG, "GlobalNumWriteBytes: " + 0);
         GlobalNumWriteBytes = 0;
     }
 

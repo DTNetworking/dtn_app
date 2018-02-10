@@ -584,6 +584,7 @@ public class OneScenario extends AppCompatActivity {
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
                 packetReceivedCount++;
+                Log.i(Constants.TAG, "packetReceivedCount: " + packetReceivedCount);
                 if (packetReceivedCount >= 64) {
                     ACKData.write(Constants.MessageConstants.BW_PACKET_RECEIVED.getBytes());
                     packetReceivedCount = 0;
