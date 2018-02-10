@@ -655,10 +655,11 @@ public class OneScenario extends AppCompatActivity {
                     }
                 });
 
-                if(BWPacketLossCheckStart){
+                if (BWPacketLossCheckStart) {
                     BWPacketLossCheckStart = false;
                     writeGlobalPacketLossT.start();
                 }
+
                 double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
                 GlobalBWPacketLoss = packetLost;
                 writeBWPacketLossHandler.sendEmptyMessage((int) GlobalBWPacketLoss); // Send Anything
