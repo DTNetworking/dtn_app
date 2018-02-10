@@ -168,9 +168,9 @@ public class OneScenario extends AppCompatActivity {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 currentSpeed = location.getLatitude();
-                String showSpeed = location.getSpeed() + " " + R.string.MeterPerSecond;
+                String showSpeed = location.getSpeed() + " m/s";
                 speedText.setText(showSpeed);
-                useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
+               // useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
