@@ -619,6 +619,7 @@ public class OneScenario extends AppCompatActivity {
                             sendBWProgressBarView.setProgress(msg.arg1);
                         }
                     };
+                    Looper.loop();
                     }
                 });
 
