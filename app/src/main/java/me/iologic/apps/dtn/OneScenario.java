@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +66,7 @@ public class OneScenario extends AppCompatActivity {
 
     double FileSentBandwidth;
     Handler getDataHandler;
+    Handler progressBarHandler;
     boolean deviceConnected;
     Handler retryConnectionHandler = new Handler();
     String GlobalReceivedMessage;
@@ -94,6 +96,7 @@ public class OneScenario extends AppCompatActivity {
     Button sendMsgBtn;
     TextView MsgPacketLossText;
     TextView BWPacketLossText;
+    ProgressBar sendBWProgressBarView;
 
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
@@ -132,6 +135,7 @@ public class OneScenario extends AppCompatActivity {
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
         MsgPacketLossText = (TextView) findViewById(R.id.MsgPacketLoss);
         BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
+        sendBWProgressBarView = (ProgressBar) findViewById(R.id.sendBWProgressBar);
 
         checkBandwidthText.setVisibility(View.GONE);
 
@@ -539,24 +543,24 @@ public class OneScenario extends AppCompatActivity {
                     stopWatch.updateList();
                     stopWatch.reset();
                 } */
-                    Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
-                    stopWatch.halt();
-                    // Update Message Timing List and Reset The Timer
-                    useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
-                    stopWatch.updateList();
-                    stopWatch.reset();
+                Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
+                stopWatch.halt();
+                // Update Message Timing List and Reset The Timer
+                useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
+                stopWatch.updateList();
+                stopWatch.reset();
 
-                    GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
-                    String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
-                    if (GlobalMsgPacketLoss == 0) {
-                        MsgPacketLossText.setTextColor(Color.GRAY);
-                        MsgPacketLossText.setText("0" + showMsgLossPercent);
-                    } else {
-                        MsgPacketLossText.setTextColor(Color.RED);
-                        MsgPacketLossText.setText(showMsgLossPercent);
-                    }
+                GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
+                String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
+                if (GlobalMsgPacketLoss == 0) {
+                    MsgPacketLossText.setTextColor(Color.GRAY);
+                    MsgPacketLossText.setText("0" + showMsgLossPercent);
+                } else {
+                    MsgPacketLossText.setTextColor(Color.RED);
+                    MsgPacketLossText.setText(showMsgLossPercent);
+                }
 
-                    useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
+                useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
 
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE)
 
@@ -581,12 +585,13 @@ public class OneScenario extends AppCompatActivity {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
                 FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
-               // Log.i(Constants.TAG, "Bandwidth Duration: " + bandData.getTotalBandwidthDuration());
+                // Log.i(Constants.TAG, "Bandwidth Duration: " + bandData.getTotalBandwidthDuration());
                 // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                 globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
                 getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
+                progressBarHandler.sendMessage(msg);
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
@@ -604,10 +609,24 @@ public class OneScenario extends AppCompatActivity {
 
                 });
 
+                final Thread sendBWProgressBarT = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                    Looper.prepare();
+                    progressBarHandler = new Handler(){
+                        @Override
+                        public void handleMessage(Message msg){
+                            sendBWProgressBarView.setProgress(msg.arg1);
+                        }
+                    };
+                    }
+                });
+
                 if (msg.arg1 == 1 && BWStart) {
                     BWStart = false;
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
+                    sendBWProgressBarT.start();
                 }
             } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
                 GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
