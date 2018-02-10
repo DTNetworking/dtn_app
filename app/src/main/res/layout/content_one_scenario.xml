@@ -145,7 +145,7 @@
                 android:layout_gravity="center"
                 android:max="16"
                 android:progressTint="#4DFF00"
-                android:backgroundTint="#005166"
+                android:progressBackgroundTint="#005166"
                 android:visibility="gone" />
 
 
