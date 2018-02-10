@@ -536,21 +536,21 @@ public class OneScenario extends AppCompatActivity {
             if (msg.what == Constants.MessageConstants.ACK_READ) {
                 byte[] writeBuf = (byte[]) msg.obj;
                 Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
-              /*  if (writeBuf[0] == 'R') {
+                if (writeBuf[0] == 'R') {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
                     stopWatch.halt();
                     // Update Message Timing List and Reset The Timer
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
-                } */
-                Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
-                stopWatch.halt();
-                // Update Message Timing List and Reset The Timer
-                useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
-                stopWatch.updateList();
-                stopWatch.reset();
-
+                } else {
+                    Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
+                    stopWatch.halt();
+                    // Update Message Timing List and Reset The Timer
+                    useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
+                    stopWatch.updateList();
+                    stopWatch.reset();
+                }
                 GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
                 String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
                 if (GlobalMsgPacketLoss == 0) {
