@@ -130,6 +130,8 @@ public class BandwidthBytesT extends Thread {
                 Message writtenMsg = bandwidthHandler.obtainMessage(
                         Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
                 writtenMsg.sendToTarget();
+                resetGlobalNumWriteBytes();
+                resetAvgTime();
             }
 
         } catch (IOException e) {

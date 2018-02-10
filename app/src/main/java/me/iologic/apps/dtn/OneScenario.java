@@ -539,12 +539,6 @@ public class OneScenario extends AppCompatActivity {
                     stopWatch.updateList();
                     stopWatch.reset();
                 } */
-
-                if (writeBuf[0] == 'B') {
-                    Log.i(Constants.TAG, "Received BW Packet Confirmation");
-                    bandData.resetGlobalNumWriteBytes();
-                    bandData.resetAvgTime();
-                } else {
                     Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
                     stopWatch.halt();
                     // Update Message Timing List and Reset The Timer
@@ -563,7 +557,7 @@ public class OneScenario extends AppCompatActivity {
                     }
 
                     useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
-                }
+
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE)
 
             {
@@ -583,12 +577,6 @@ public class OneScenario extends AppCompatActivity {
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
-                packetReceivedCount++;
-                Log.i(Constants.TAG, "packetReceivedCount: " + packetReceivedCount);
-                if (packetReceivedCount >= 64) {
-                    ACKData.write(Constants.MessageConstants.BW_PACKET_RECEIVED.getBytes());
-                    packetReceivedCount = 0;
-                }
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
