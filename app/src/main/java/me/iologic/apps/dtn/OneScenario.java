@@ -72,7 +72,7 @@ public class OneScenario extends AppCompatActivity {
     Handler retryConnectionHandler = new Handler();
     String GlobalReceivedMessage;
     String globalBandwidth;
-    boolean BWStart;
+    boolean BWStart, BWPacketLossCheckStart;
     double GlobalMsgPacketLoss;
     double GlobalBWPacketLoss;
 
@@ -165,6 +165,7 @@ public class OneScenario extends AppCompatActivity {
         alertDialogOpened = false;
 
         BWStart = true;
+        BWPacketLossCheckStart = true;
 
         df = new DecimalFormat("#.00");
         packetReceivedCount = 0;
@@ -625,6 +626,14 @@ public class OneScenario extends AppCompatActivity {
                     }
                 });
 
+                if (msg.arg1 == 1 && BWStart) {
+                    BWStart = false;
+                    checkBandwidthText.setText(R.string.checkingBandwidth);
+                    writeBandwidthToFileT.start();
+                    sendBWProgressBarView.setVisibility(View.VISIBLE);
+                    sendBWProgressBarT.start();
+                }
+            } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
                 final Thread writeGlobalPacketLossT = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -646,15 +655,10 @@ public class OneScenario extends AppCompatActivity {
                     }
                 });
 
-                if (msg.arg1 == 1 && BWStart) {
-                    BWStart = false;
-                    checkBandwidthText.setText(R.string.checkingBandwidth);
-                    writeBandwidthToFileT.start();
-                    sendBWProgressBarView.setVisibility(View.VISIBLE);
-                    sendBWProgressBarT.start();
+                if(BWPacketLossCheckStart){
+                    BWPacketLossCheckStart = false;
                     writeGlobalPacketLossT.start();
                 }
-            } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
                 double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
                 GlobalBWPacketLoss = packetLost;
                 writeBWPacketLossHandler.sendEmptyMessage((int) GlobalBWPacketLoss); // Send Anything
