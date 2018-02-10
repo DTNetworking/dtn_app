@@ -644,6 +644,7 @@ public class OneScenario extends AppCompatActivity {
                     BWPacketLossText.setTextColor(Color.GRAY);
                     BWPacketLossText.setText("0" + BWLossPercent);
                 } else {
+                    Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " BWLossPercent: " + BWLossPercent);
                     BWPacketLossText.setTextColor(Color.RED);
                     BWPacketLossText.setText(BWLossPercent);
                 }
