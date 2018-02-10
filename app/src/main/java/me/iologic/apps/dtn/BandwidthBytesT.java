@@ -173,7 +173,7 @@ public class BandwidthBytesT extends Thread {
     }
 
     public double getPacketLoss() {
-        double packetLost = ((double) (Constants.Packet.BW_COUNTER - (GlobalPacketCounter + 1)) / (double) (Constants.Packet.BW_COUNTER)) * 100;
+        double packetLost = ((double) (Constants.Packet.BW_COUNTER - (GlobalPacketCounter - 1)) / (double) (Constants.Packet.BW_COUNTER)) * 100;
         // Log.i(Constants.TAG, "Counter from getPacketLoss(): " + GlobalPacketCounter);
         //Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
         return packetLost;
