@@ -122,10 +122,10 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/speed"
+                android:id="@+id/bandwidth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/speed"
+                android:text="@string/bandwidth"
                 android:textAlignment="center"
                 android:textSize="30sp" />
 
@@ -144,12 +144,21 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:max="16"
-                android:progressTint="#4DFF00"
                 android:progressBackgroundTint="#005166"
+                android:progressTint="#4DFF00"
                 android:visibility="gone" />
 
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="@string/speed"
+            android:textSize="20sp" />
 
         <LinearLayout
             android:layout_width="match_parent"

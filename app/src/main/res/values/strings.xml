@@ -15,7 +15,7 @@
     <string name="copyright">© Abhishanth Padarthy | Vineeth Penugonda</string>
     <string name="pairingTime">Pairing Time</string>
     <string name="delay">Delay</string>
-    <string name="speed">Speed</string>
+    <string name="bandwidth">Bandwidth</string>
     <string name="currentStatus">Current Status</string>
     <string name="receivedMessage">Received Message</string>
     <string name="checkingBandwidth">Checking Bandwidth Now</string>
@@ -24,4 +24,5 @@
     <string name="send">Send</string>
     <string name="MsgPacketLoss">Message Packet Loss</string>
     <string name="BWPacketLoss">Bandwidth Packet Loss</string>
+    <string name="speed">Speed</string>
 </resources>

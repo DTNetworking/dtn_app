@@ -90,7 +90,7 @@ public class OneScenario extends AppCompatActivity {
     TextView messageReceived;
     TextView currentStatusText;
     TextView peerConnectTime;
-    TextView speedText;
+    TextView bandwidthText;
     TextView delayText;
     TextView checkBandwidthText;
     EditText EditMessageBox;
@@ -131,7 +131,7 @@ public class OneScenario extends AppCompatActivity {
         sendMsgBtn = (Button) findViewById(R.id.sendMsg);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
-        speedText = (TextView) findViewById(R.id.speed);
+        bandwidthText = (TextView) findViewById(R.id.bandwidth);
         delayText = (TextView) findViewById(R.id.delay);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
         MsgPacketLossText = (TextView) findViewById(R.id.MsgPacketLoss);
@@ -383,7 +383,7 @@ public class OneScenario extends AppCompatActivity {
                     // public void handleMessage(Message msg) {
                           /*  Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
                             String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-                            speedText.setText(bandwidth);
+                            bandwidthText.setText(bandwidth);
                             useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth); */
 
                           /*  try {
@@ -475,7 +475,7 @@ public class OneScenario extends AppCompatActivity {
                     currentStatusText.setText("SERVER");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
-                    speedText.setVisibility(View.GONE);
+                    bandwidthText.setVisibility(View.GONE);
                     sendBWProgressBarView.setVisibility(View.GONE);
                     BWPacketLossText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
@@ -595,7 +595,7 @@ public class OneScenario extends AppCompatActivity {
                 // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
                 globalBandwidth = bandwidth;
-                speedText.setText(bandwidth);
+                bandwidthText.setText(bandwidth);
                 getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
                 progressBarHandler.sendEmptyMessage(msg.arg1);
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
