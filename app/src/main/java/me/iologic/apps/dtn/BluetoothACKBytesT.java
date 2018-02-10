@@ -59,7 +59,7 @@ public class BluetoothACKBytesT extends Thread {
                     // Read from the InputStream.
                     numBytes = mmACKInStream.read(mmACKBuffer);
                     // Send the obtained bytes to the UI activity.
-                    Log.i(Constants.TAG, "Number Of Speed Bytes Received (ACK read()): " + numBytes);
+                    Log.i(Constants.TAG, "Number Of LightningMcQueen Bytes Received (ACK read()): " + numBytes);
                     Message readMsg = mACKHandler.obtainMessage(
                             Constants.MessageConstants.ACK_READ, numBytes, -1,
                             mmACKBuffer);

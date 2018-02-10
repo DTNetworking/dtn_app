@@ -9,13 +9,17 @@ public class Constants {
     public static final String testFileName = "testFile";
 
 
+    public interface Earth {
+        public static final double RADIUS = 6371000;
+    }
+
     public interface FileNames {
         public static final String Bandwidth = "Bandwidth";
         public static final String Delay = "MsgTimings";
         public static final String Pairing = "PairingTime";
         public static final String MsgPacketLoss = "MsgPacketLoss";
         public static final String BWPacketLoss = "BWPacketLoss";
-        public static final String Speed = "Speed";
+        public static final String Speed = "LightningMcQueen";
     }
 
     public interface Packet {

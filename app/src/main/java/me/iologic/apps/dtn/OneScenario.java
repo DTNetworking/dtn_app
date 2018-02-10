@@ -111,7 +111,8 @@ public class OneScenario extends AppCompatActivity {
     DecimalFormat df;
 
     int packetReceivedCount;
-    double currentSpeed;
+
+    LightningMcQueen speed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,16 +162,19 @@ public class OneScenario extends AppCompatActivity {
         saveFileUUID = UUID.randomUUID().toString();
 
         useFile = new FileServices(getApplicationContext(), saveFileUUID);
+
+        speed = new LightningMcQueen();
+
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this
                 .getSystemService(Context.LOCATION_SERVICE);
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                currentSpeed = location.getLatitude();
-                String showSpeed = location.getSpeed() + " m/s";
+                double currentspeed = speed.getSpeed(location);
+                String showSpeed = currentspeed + " m/s";
                 speedText.setText(showSpeed);
-               // useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
+                // useFile.saveSpeedData(Constants.FileNames.LightningMcQueen, showSpeed);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {

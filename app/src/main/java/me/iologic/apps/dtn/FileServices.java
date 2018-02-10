@@ -194,7 +194,7 @@ public class FileServices {
 
     }
 
-    // Save Message Sending Speed Data To File
+    // Save Message Sending LightningMcQueen Data To File
     public void saveSpeedData(String ReceivedFileName, String ReceivedSpeed) {
         String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
         dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
