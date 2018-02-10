@@ -55,7 +55,7 @@ public class BandwidthBytesT extends Thread {
         bandwidthHandler = handler;
         isFirstTime = true;
         counter = 1;
-        GlobalPacketCounter = counter;
+        GlobalPacketCounter = 1;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -95,7 +95,7 @@ public class BandwidthBytesT extends Thread {
             String testMessage = new String(bandwidthBuffer);
             //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
-            if(isFirstTime) {
+            if (isFirstTime) {
                 isFirstTime = false;
                 // Share the sent message with the UI activity.
                 Message writtenBWStatus = bandwidthHandler.obtainMessage(
@@ -173,9 +173,9 @@ public class BandwidthBytesT extends Thread {
     }
 
     public double getPacketLoss() {
-        double packetLost = ((double) (Constants.Packet.BW_COUNTER - GlobalPacketCounter) / (double) (Constants.Packet.BW_COUNTER)) * 100;
-        Log.i(Constants.TAG, "Counter from getPacketLoss(): " + GlobalPacketCounter);
-        Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
+        double packetLost = ((double) (Constants.Packet.BW_COUNTER - (GlobalPacketCounter + 1)) / (double) (Constants.Packet.BW_COUNTER)) * 100;
+        // Log.i(Constants.TAG, "Counter from getPacketLoss(): " + GlobalPacketCounter);
+        //Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
         return packetLost;
     }
 
