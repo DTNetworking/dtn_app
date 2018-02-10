@@ -52,7 +52,7 @@ public class BluetoothACKBytesT extends Thread {
     public void run() {
         while (true) {
             try {
-                mmACKBuffer = new byte[]{' ', ' ' , ' ', ' ',  ' ', ' ',  ' ', ' '};
+                mmACKBuffer = new byte[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
                 int numBytes; // bytes returned from read()
 
                 if (mmACKInStream.available() > 0) {

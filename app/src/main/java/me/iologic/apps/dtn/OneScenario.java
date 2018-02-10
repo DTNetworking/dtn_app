@@ -592,7 +592,7 @@ public class OneScenario extends AppCompatActivity {
                 globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
                 getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
-               // progressBarHandler.sendEmptyMessage(msg.arg1);
+                progressBarHandler.sendEmptyMessage(msg.arg1);
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
@@ -613,14 +613,14 @@ public class OneScenario extends AppCompatActivity {
                 final Thread sendBWProgressBarT = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                    Looper.prepare();
-                    progressBarHandler = new Handler(){
-                        @Override
-                        public void handleMessage(Message msg){
-                            sendBWProgressBarView.setProgress(msg.what);
-                        }
-                    };
-                    Looper.loop();
+                        Looper.prepare();
+                        progressBarHandler = new Handler() {
+                            @Override
+                            public void handleMessage(Message msg) {
+                                sendBWProgressBarView.setProgress(msg.what);
+                            }
+                        };
+                        Looper.loop();
                     }
                 });
 
@@ -628,6 +628,7 @@ public class OneScenario extends AppCompatActivity {
                     BWStart = false;
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
+                    sendBWProgressBarView.setVisibility(View.VISIBLE);
                     sendBWProgressBarT.start();
                 }
             } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
