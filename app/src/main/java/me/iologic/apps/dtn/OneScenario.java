@@ -170,6 +170,8 @@ public class OneScenario extends AppCompatActivity {
         df = new DecimalFormat("#.00");
         packetReceivedCount = 0;
 
+        writeBandwidthLossData();
+
         Dialog();
         startBluetooth();
         sendMessage();
@@ -634,34 +636,6 @@ public class OneScenario extends AppCompatActivity {
                     sendBWProgressBarT.start();
                 }
             } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
-                final Thread writeGlobalPacketLossT = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        writeBWPacketLossHandler = new Handler() {
-                            @Override
-                            public void handleMessage(Message msg) {
-                                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
-                                if (GlobalBWPacketLoss == 0) {
-                                    BWPacketLossText.setTextColor(Color.GRAY);
-                                    BWPacketLossText.setText("0" + BWLossPercent);
-                                } else {
-                                    BWPacketLossText.setTextColor(Color.RED);
-                                    BWPacketLossText.setText(BWLossPercent);
-                                }
-
-                                useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
-                            }
-                        };
-                        Looper.loop();
-                    }
-                });
-
-                if (BWPacketLossCheckStart) {
-                    BWPacketLossCheckStart = false;
-                    writeGlobalPacketLossT.start();
-                }
-
                 double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
                 GlobalBWPacketLoss = packetLost;
                 writeBWPacketLossHandler.sendEmptyMessage((int) GlobalBWPacketLoss); // Send Anything
@@ -669,6 +643,36 @@ public class OneScenario extends AppCompatActivity {
             }
         }
     };
+
+    public void writeBandwidthLossData() {
+        final Thread writeGlobalPacketLossT = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                writeBWPacketLossHandler = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
+                        if (GlobalBWPacketLoss == 0) {
+                            BWPacketLossText.setTextColor(Color.GRAY);
+                            BWPacketLossText.setText("0" + BWLossPercent);
+                        } else {
+                            BWPacketLossText.setTextColor(Color.RED);
+                            BWPacketLossText.setText(BWLossPercent);
+                        }
+
+                        useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
+                    }
+                };
+                Looper.loop();
+            }
+        });
+
+        if (BWPacketLossCheckStart) {
+            BWPacketLossCheckStart = false;
+            writeGlobalPacketLossT.start();
+        }
+    }
 
     public void sendMessage() {
 
