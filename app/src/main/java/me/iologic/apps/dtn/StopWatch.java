@@ -26,7 +26,7 @@ class StopWatch extends Thread {
 
     private void updateTimer(float time) {
         /* Although we are not using milliseconds on the timer in this example
-    	 * I included the code in the event that you wanted to include it on your own
+         * I included the code in the event that you wanted to include it on your own
     	 */
         Log.i(Constants.TAG, " Time : " + time);
 

@@ -9,6 +9,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -98,6 +101,7 @@ public class OneScenario extends AppCompatActivity {
     TextView MsgPacketLossText;
     TextView BWPacketLossText;
     ProgressBar sendBWProgressBarView;
+    TextView speedText;
 
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
@@ -107,6 +111,7 @@ public class OneScenario extends AppCompatActivity {
     DecimalFormat df;
 
     int packetReceivedCount;
+    double currentSpeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +142,7 @@ public class OneScenario extends AppCompatActivity {
         MsgPacketLossText = (TextView) findViewById(R.id.MsgPacketLoss);
         BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
         sendBWProgressBarView = (ProgressBar) findViewById(R.id.sendBWProgressBar);
+        speedText = (TextView) findViewById(R.id.speed);
 
         checkBandwidthText.setVisibility(View.GONE);
         BWPacketLossText.setVisibility(View.GONE);
@@ -149,14 +155,46 @@ public class OneScenario extends AppCompatActivity {
         btClientConnectionStatus = new Handler();
         bundle = new Bundle();
 
+        saveFileUUID = UUID.randomUUID().toString();
+
+        useFile = new FileServices(getApplicationContext(), saveFileUUID);
+        saveFileUUID = UUID.randomUUID().toString();
+
+        useFile = new FileServices(getApplicationContext(), saveFileUUID);
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this
+                .getSystemService(Context.LOCATION_SERVICE);
+
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                currentSpeed = location.getLatitude();
+                String showSpeed = location.getSpeed() + " " + R.string.MeterPerSecond;
+                speedText.setText(showSpeed);
+                useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+
+        };
+
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } catch (SecurityException e) {
+            Log.e(Constants.TAG, "Location Error:" + e);
+        }
+
         // Register for broadcasts when a device is discovered.
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter);
-
-        saveFileUUID = UUID.randomUUID().toString();
-
-        useFile = new FileServices(getApplicationContext(), saveFileUUID);
 
         stopWatch = new StopWatch(delayText);
 

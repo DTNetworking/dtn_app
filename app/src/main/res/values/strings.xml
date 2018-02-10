@@ -25,4 +25,5 @@
     <string name="MsgPacketLoss">Message Packet Loss</string>
     <string name="BWPacketLoss">Bandwidth Packet Loss</string>
     <string name="speed">Speed</string>
+    <string name="MeterPerSecond">m/s</string>
 </resources>
