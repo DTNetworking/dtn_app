@@ -17,11 +17,11 @@ public class LightningMcQueen {
         double newTime = System.currentTimeMillis();
         double newLat = location.getLatitude();
         double newLon = location.getLongitude();
-        if (location.hasSpeed()) {
-            Log.i(Constants.TAG, "I am in if condition of SPEED");
-            float speed = location.getSpeed();
-            return speed;
-        } else {
+       // if (location.hasSpeed()) {
+         //   Log.i(Constants.TAG, "I am in if condition of SPEED");
+         //   float speed = location.getSpeed();
+         //   return speed;
+        //} else {
             double distance = calculationBydistance(newLat, newLon, oldLat, oldLon);
             double timeDifference = newTime - curTime;
             double speed = distance / (timeDifference / 1000.0);
@@ -32,7 +32,7 @@ public class LightningMcQueen {
 
             return speed;
 
-        }
+    //    }
     }
 
     private double calculationBydistance(double lat1, double lon1, double lat2, double lon2) {
