@@ -67,6 +67,7 @@ public class OneScenario extends AppCompatActivity {
     double FileSentBandwidth;
     Handler getDataHandler;
     Handler progressBarHandler;
+    Handler writeBWPacketLossHandler;
     boolean deviceConnected;
     Handler retryConnectionHandler = new Handler();
     String GlobalReceivedMessage;
@@ -624,27 +625,40 @@ public class OneScenario extends AppCompatActivity {
                     }
                 });
 
+                final Thread writeGlobalPacketLossT = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        writeBWPacketLossHandler = new Handler() {
+                            @Override
+                            public void handleMessage(Message msg) {
+                                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
+                                if (GlobalBWPacketLoss == 0) {
+                                    BWPacketLossText.setTextColor(Color.GRAY);
+                                    BWPacketLossText.setText("0" + BWLossPercent);
+                                } else {
+                                    BWPacketLossText.setTextColor(Color.RED);
+                                    BWPacketLossText.setText(BWLossPercent);
+                                }
+
+                                useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
+                            }
+                        };
+                    }
+                });
+
                 if (msg.arg1 == 1 && BWStart) {
                     BWStart = false;
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
                     sendBWProgressBarView.setVisibility(View.VISIBLE);
                     sendBWProgressBarT.start();
+                    writeGlobalPacketLossT.start();
                 }
             } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
                 double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
                 GlobalBWPacketLoss = packetLost;
-                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
-                Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " packetLost: " + packetLost + " BWLossPercent: " + BWLossPercent);
-                if (GlobalBWPacketLoss == 0) {
-                    BWPacketLossText.setTextColor(Color.GRAY);
-                    BWPacketLossText.setText("0" + BWLossPercent);
-                } else {
-                    BWPacketLossText.setTextColor(Color.RED);
-                    BWPacketLossText.setText(BWLossPercent);
-                }
+                writeBWPacketLossHandler.sendEmptyMessage((int) GlobalBWPacketLoss); // Send Anything
 
-                useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
             }
         }
     };
