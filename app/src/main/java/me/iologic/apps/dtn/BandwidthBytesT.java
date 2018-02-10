@@ -23,14 +23,11 @@ public class BandwidthBytesT extends Thread {
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
-    private int counter, GlobalPacketCounter;
-    private long GlobalNumReadBytes;
-    private long GlobalNumWriteBytes;
-    private double AvgTime;
+    int counter, GlobalPacketCounter;
 
-    private boolean isFirstTime;
+    boolean isFirstTime;
 
-    private long sendingStartTime, sendingEndTime, duration;
+    long sendingStartTime, sendingEndTime, duration;
 
     private Handler bandwidthHandler;
 
@@ -59,9 +56,6 @@ public class BandwidthBytesT extends Thread {
         isFirstTime = true;
         counter = 1;
         GlobalPacketCounter = counter;
-        GlobalNumReadBytes = 0;
-        GlobalNumWriteBytes = 0;
-        AvgTime = 0;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -78,18 +72,11 @@ public class BandwidthBytesT extends Thread {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
                     // Send the obtained bytes to the UI activity.
-                    // Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
-                    GlobalNumReadBytes += numBytes;
-                    //  Log.i(Constants.TAG, "Global Num Bytes: " + GlobalNumReadBytes);
-                    if (GlobalNumReadBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
-                        Log.i(Constants.TAG, "Global Num Bytes: " + GlobalNumReadBytes);
-                        Message readMsg = bandwidthHandler.obtainMessage(
-                                Constants.MessageConstants.BW_READ, numBytes, -1,
-                                bandwidthBuffer);
-                        readMsg.sendToTarget();
-
-                        GlobalNumReadBytes = 0;
-                    }
+                    //   Log.i(Constants.TAG, "Number Of Speed Bytes Received: " + numBytes);
+                    Message readMsg = bandwidthHandler.obtainMessage(
+                            Constants.MessageConstants.BW_READ, numBytes, -1,
+                            bandwidthBuffer);
+                    readMsg.sendToTarget();
                 } else {
                     SystemClock.sleep(100);
                 }
@@ -108,7 +95,7 @@ public class BandwidthBytesT extends Thread {
             String testMessage = new String(bandwidthBuffer);
             //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
 
-            if (isFirstTime) {
+            if(isFirstTime) {
                 isFirstTime = false;
                 // Share the sent message with the UI activity.
                 Message writtenBWStatus = bandwidthHandler.obtainMessage(
@@ -121,18 +108,11 @@ public class BandwidthBytesT extends Thread {
             flushOutStream();
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
-            AvgTime += duration;
 
             // Share the sent message with the UI activity.
-            if (GlobalNumWriteBytes >= (Constants.Packet.BW_PACKET_SIZE * 64)) {
-             //   Log.i(Constants.TAG, "GlobalNumWriteBytes: " + GlobalNumWriteBytes);
-           //     Log.i(Constants.TAG, "AvgTime: " + AvgTime);
-                Message writtenMsg = bandwidthHandler.obtainMessage(
-                        Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
-                writtenMsg.sendToTarget();
-                resetGlobalNumWriteBytes();
-                resetAvgTime();
-            }
+            Message writtenMsg = bandwidthHandler.obtainMessage(
+                    Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
+            writtenMsg.sendToTarget();
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error occurred when sending BW", e);
@@ -164,12 +144,12 @@ public class BandwidthBytesT extends Thread {
         int startPacketIndex = 0;
         while (counter != (Constants.Packet.BW_COUNTER + 1)) {
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
-            GlobalNumWriteBytes += sendData.length;
             write(sendData);
             counter++;
             GlobalPacketCounter = counter;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
+
             Message readMsg = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_PACKET_LOSS_CHECK, -1, -1,
                     bandwidthBuffer);
@@ -179,9 +159,6 @@ public class BandwidthBytesT extends Thread {
             counter = 1; // Reset Counter to 1
             GlobalPacketCounter = counter;
         }
-
-        // AvgTime = 0;
-        // GlobalNumWriteBytes = 0;
     }
 
     public double getTotalBandwidthDuration() {
@@ -192,27 +169,13 @@ public class BandwidthBytesT extends Thread {
             Log.i(Constants.TAG, "Sending duration as: " + duration);
             return duration;
         } */
-        return (AvgTime / 1000000000.0);
-    }
-
-    public long getGlobalNumWriteBytes() {
-        return GlobalNumWriteBytes;
-    }
-
-    public void resetAvgTime(){
-        Log.i(Constants.TAG, "AvgTime: " + 0);
-        AvgTime = 0;
-    }
-
-    public void resetGlobalNumWriteBytes(){
-        Log.i(Constants.TAG, "GlobalNumWriteBytes: " + 0);
-        GlobalNumWriteBytes = 0;
+        return ((double) duration / 1000000000.0);
     }
 
     public double getPacketLoss() {
         double packetLost = ((double) (Constants.Packet.BW_COUNTER - GlobalPacketCounter) / (double) (Constants.Packet.BW_COUNTER)) * 100;
-       // Log.i(Constants.TAG, "Counter from getPacketLoss(): " + GlobalPacketCounter);
-       // Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
+        Log.i(Constants.TAG, "Counter from getPacketLoss(): " + GlobalPacketCounter);
+        Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
         return packetLost;
     }
 
