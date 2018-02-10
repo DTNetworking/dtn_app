@@ -23,7 +23,7 @@ public class BandwidthBytesT extends Thread {
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
     private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
-    int counter, GlobalPacketCounter;
+    int counter;
 
     boolean isFirstTime;
 
@@ -55,7 +55,6 @@ public class BandwidthBytesT extends Thread {
         bandwidthHandler = handler;
         isFirstTime = true;
         counter = 1;
-        GlobalPacketCounter = 1;
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -146,18 +145,16 @@ public class BandwidthBytesT extends Thread {
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
             write(sendData);
             counter++;
-            GlobalPacketCounter = counter;
             startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
             // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
 
             Message readMsg = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_PACKET_LOSS_CHECK, -1, -1,
+                    Constants.MessageConstants.BW_PACKET_LOSS_CHECK, counter, -1,
                     bandwidthBuffer);
             readMsg.sendToTarget();
         }
         if (counter == (Constants.Packet.BW_COUNTER + 1)) {
             counter = 1; // Reset Counter to 1
-            GlobalPacketCounter = counter;
         }
     }
 
@@ -170,13 +167,6 @@ public class BandwidthBytesT extends Thread {
             return duration;
         } */
         return ((double) duration / 1000000000.0);
-    }
-
-    public double getPacketLoss() {
-        double packetLost = ((double) (Constants.Packet.BW_COUNTER - (GlobalPacketCounter - 1)) / (double) (Constants.Packet.BW_COUNTER)) * 100;
-        // Log.i(Constants.TAG, "Counter from getPacketLoss(): " + GlobalPacketCounter);
-        //Log.i(Constants.TAG, "Packet Lost BW: " + packetLost);
-        return packetLost;
     }
 
     public void cancel() {

@@ -632,7 +632,8 @@ public class OneScenario extends AppCompatActivity {
                     sendBWProgressBarT.start();
                 }
             } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
-                GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
+                double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
+                GlobalBWPacketLoss = packetLost;
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
                 if (GlobalBWPacketLoss == 0) {
                     BWPacketLossText.setTextColor(Color.GRAY);
