@@ -584,7 +584,7 @@ public class OneScenario extends AppCompatActivity {
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
-                checkBandwidthText.setTextColor(Color.GREEN);
+                checkBandwidthText.setTextColor(Color.parseColor("#566680"));
                 FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
                 // Log.i(Constants.TAG, "Bandwidth Duration: " + bandData.getTotalBandwidthDuration());
                 // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
