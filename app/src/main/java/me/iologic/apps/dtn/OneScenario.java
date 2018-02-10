@@ -639,7 +639,14 @@ public class OneScenario extends AppCompatActivity {
                 double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
                 GlobalBWPacketLoss = packetLost;
                 writeBWPacketLossHandler.sendEmptyMessage((int) GlobalBWPacketLoss); // Send Anything
-
+                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
+                if (GlobalBWPacketLoss == 0) {
+                    BWPacketLossText.setTextColor(Color.GRAY);
+                    BWPacketLossText.setText("0" + BWLossPercent);
+                } else {
+                    BWPacketLossText.setTextColor(Color.RED);
+                    BWPacketLossText.setText(BWLossPercent);
+                }
             }
         }
     };
@@ -652,15 +659,6 @@ public class OneScenario extends AppCompatActivity {
                 writeBWPacketLossHandler = new Handler() {
                     @Override
                     public void handleMessage(Message msg) {
-                        String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
-                        if (GlobalBWPacketLoss == 0) {
-                            BWPacketLossText.setTextColor(Color.GRAY);
-                            BWPacketLossText.setText("0" + BWLossPercent);
-                        } else {
-                            BWPacketLossText.setTextColor(Color.RED);
-                            BWPacketLossText.setText(BWLossPercent);
-                        }
-
                         useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
                     }
                 };
