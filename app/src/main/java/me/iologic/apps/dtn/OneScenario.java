@@ -643,7 +643,7 @@ public class OneScenario extends AppCompatActivity {
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
 
                 if (msg.arg1 != 16) {
-                    Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " BWLossPercent: " + BWLossPercent);
+                    //Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " BWLossPercent: " + BWLossPercent);
                     BWPacketLossText.setTextColor(Color.RED);
                     BWPacketLossText.setText(BWLossPercent);
                 } else {
