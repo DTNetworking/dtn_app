@@ -22,7 +22,7 @@ public class LightningMcQueen {
         } else {
             double distance = calculationBydistance(newLat, newLon, oldLat, oldLon);
             double timeDifference = newTime - curTime;
-            double speed = distance / timeDifference;
+            double speed = distance / (timeDifference / 1000.0);
             curTime = newTime;
             oldLat = newLat;
             oldLon = newLon;
