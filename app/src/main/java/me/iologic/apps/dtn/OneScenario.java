@@ -640,15 +640,16 @@ public class OneScenario extends AppCompatActivity {
                 GlobalBWPacketLoss = packetLost;
                 writeBWPacketLossHandler.sendEmptyMessage((int) GlobalBWPacketLoss); // Send Anything
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
-
-                if (msg.arg1 != 16) {
+                BWPacketLossText.setText(BWLossPercent);
+                
+             /*   if (msg.arg1 != 16) {
                     Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " BWLossPercent: " + BWLossPercent);
                     BWPacketLossText.setTextColor(Color.RED);
                     BWPacketLossText.setText(BWLossPercent);
                 } else {
                     BWPacketLossText.setTextColor(Color.GRAY);
                     BWPacketLossText.setText("0" + BWLossPercent);
-                }
+                } */
             }
         }
     };
