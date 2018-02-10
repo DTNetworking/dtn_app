@@ -592,7 +592,7 @@ public class OneScenario extends AppCompatActivity {
                 globalBandwidth = bandwidth;
                 speedText.setText(bandwidth);
                 getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
-                progressBarHandler.sendMessage(msg);
+                progressBarHandler.sendEmptyMessage(msg.arg1);
                 checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
@@ -617,7 +617,7 @@ public class OneScenario extends AppCompatActivity {
                     progressBarHandler = new Handler(){
                         @Override
                         public void handleMessage(Message msg){
-                            sendBWProgressBarView.setProgress(msg.arg1);
+                            sendBWProgressBarView.setProgress(msg.what);
                         }
                     };
                     Looper.loop();
