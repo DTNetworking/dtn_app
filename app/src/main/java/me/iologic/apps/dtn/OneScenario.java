@@ -637,6 +637,7 @@ public class OneScenario extends AppCompatActivity {
                 final Thread writeGlobalPacketLossT = new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        Looper.prepare();
                         writeBWPacketLossHandler = new Handler() {
                             @Override
                             public void handleMessage(Message msg) {
@@ -652,6 +653,7 @@ public class OneScenario extends AppCompatActivity {
                                 useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
                             }
                         };
+                        Looper.loop();
                     }
                 });
 
