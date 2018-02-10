@@ -471,6 +471,7 @@ public class OneScenario extends AppCompatActivity {
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     speedText.setVisibility(View.GONE);
+                    sendBWProgressBarView.setVisibility(View.GONE);
                     BWPacketLossText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
 
