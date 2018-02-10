@@ -146,7 +146,7 @@ public class BandwidthBytesT extends Thread {
                     Constants.MessageConstants.BW_PACKET_LOSS_CHECK, counter, -1,
                     bandwidthBuffer);
             readMsg.sendToTarget();
-            
+
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
             write(sendData);
             counter++;
