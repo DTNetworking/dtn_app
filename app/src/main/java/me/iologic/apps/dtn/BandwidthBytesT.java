@@ -175,9 +175,10 @@ public class BandwidthBytesT extends Thread {
         if (counter == (Constants.Packet.BW_COUNTER + 1)) {
             counter = 1; // Reset Counter to 1
             GlobalPacketCounter = counter;
-            GlobalNumWriteBytes = 0;
-            AvgTime = 0;
         }
+
+        // AvgTime = 0;
+        // GlobalNumWriteBytes = 0;
     }
 
     public double getTotalBandwidthDuration() {
@@ -193,6 +194,14 @@ public class BandwidthBytesT extends Thread {
 
     public long getGlobalNumWriteBytes() {
         return GlobalNumWriteBytes;
+    }
+
+    public void resetAvgTime(){
+        AvgTime = 0;
+    }
+
+    public void resetGlobalNumWriteBytes(){
+        GlobalNumWriteBytes = 0;
     }
 
     public double getPacketLoss() {

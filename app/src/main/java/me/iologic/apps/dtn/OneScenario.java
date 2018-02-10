@@ -102,7 +102,7 @@ public class OneScenario extends AppCompatActivity {
 
     DecimalFormat df;
 
-    int dummycount = 0;
+    int packetReceivedCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +162,7 @@ public class OneScenario extends AppCompatActivity {
         BWStart = true;
 
         df = new DecimalFormat("#.00");
+        packetReceivedCount = 0;
 
         Dialog();
         startBluetooth();
@@ -530,13 +531,19 @@ public class OneScenario extends AppCompatActivity {
             if (msg.what == Constants.MessageConstants.ACK_READ) {
                 byte[] writeBuf = (byte[]) msg.obj;
                 Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
-                if (writeBuf[0] == 'R') {
+              /*  if (writeBuf[0] == 'R') {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
                     stopWatch.halt();
                     // Update Message Timing List and Reset The Timer
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
+                } */
+
+                if (writeBuf[0] == 'B') {
+                    Log.i(Constants.TAG, "Received BW Packet Confirmation");
+                    bandData.resetGlobalNumWriteBytes();
+                    bandData.resetAvgTime();
                 } else {
                     Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
                     stopWatch.halt();
@@ -557,7 +564,9 @@ public class OneScenario extends AppCompatActivity {
 
                     useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
                 }
-            } else if (msg.what == Constants.MessageConstants.ACK_WRITE) {
+            } else if (msg.what == Constants.MessageConstants.ACK_WRITE)
+
+            {
                 Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
                 Log.i(Constants.TAG, "---------------------");
             }
@@ -574,9 +583,12 @@ public class OneScenario extends AppCompatActivity {
                 // byte[] writeBuf = (byte[]) msg.obj;
                 // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
                 // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
-                dummycount++;
-               // Log.i(Constants.TAG, "BW Received Counter: " + dummycount);
-                } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
+                packetReceivedCount++;
+                if (packetReceivedCount >= 64) {
+                    ACKData.write(Constants.MessageConstants.BW_PACKET_RECEIVED.getBytes());
+                    packetReceivedCount = 0;
+                }
+            } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.GREEN);
                 FileSentBandwidth = ((double) bandData.getGlobalNumWriteBytes() / bandData.getTotalBandwidthDuration());
@@ -608,7 +620,7 @@ public class OneScenario extends AppCompatActivity {
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
                 }
-            } else if(msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK){
+            } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
                 GlobalBWPacketLoss = bandData.getPacketLoss(); // For 1st Scenario
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
                 if (GlobalBWPacketLoss == 0) {

@@ -48,6 +48,7 @@ public class Constants {
         public static final int BW_FAIL_TO_SEND = 12;
         public static final int BW_START_WRITE = 14;
         public static final int BW_PACKET_LOSS_CHECK = 15;
+        public static final String BW_PACKET_RECEIVED = "B";
 
         public static final String DISCOVERY_SUCCESS_MESSAGE = "Discoverability set to ON";
         public static final String DISCOVERY_FAIL_MESSAGE = "Discoverability failed";
