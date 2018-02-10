@@ -1,6 +1,7 @@
 package me.iologic.apps.dtn;
 
 import android.location.Location;
+import android.util.Log;
 
 /**
  * Created by vinee on 10-02-2018.
@@ -17,12 +18,14 @@ public class LightningMcQueen {
         double newLat = location.getLatitude();
         double newLon = location.getLongitude();
         if (location.hasSpeed()) {
+            Log.i(Constants.TAG, "I am in if condition of SPEED");
             float speed = location.getSpeed();
             return speed;
         } else {
             double distance = calculationBydistance(newLat, newLon, oldLat, oldLon);
             double timeDifference = newTime - curTime;
-            double speed = distance / (timeDifference * 1000.0);
+            double speed = distance / (timeDifference / 1000.0);
+            Log.i(Constants.TAG, "Speed: " + speed);
             curTime = newTime;
             oldLat = newLat;
             oldLon = newLon;
