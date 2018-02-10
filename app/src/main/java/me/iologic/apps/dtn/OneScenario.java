@@ -633,9 +633,9 @@ public class OneScenario extends AppCompatActivity {
                 }
             } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
                 double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
-                Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " packetLost: " + packetLost);
                 GlobalBWPacketLoss = packetLost;
                 String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
+                Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " packetLost: " + packetLost + " BWLossPercent: " + BWLossPercent);
                 if (GlobalBWPacketLoss == 0) {
                     BWPacketLossText.setTextColor(Color.GRAY);
                     BWPacketLossText.setText("0" + BWLossPercent);
