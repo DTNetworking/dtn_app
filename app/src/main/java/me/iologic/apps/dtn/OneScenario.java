@@ -113,6 +113,7 @@ public class OneScenario extends AppCompatActivity {
     int packetReceivedCount;
 
     LightningMcQueen speed;
+    double currentspeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,7 +172,7 @@ public class OneScenario extends AppCompatActivity {
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                double currentspeed = speed.getSpeed(location);
+                currentspeed = speed.getSpeed(location);
                 String showSpeed = currentspeed + " m/s";
                 speedText.setText(showSpeed);
                 // useFile.saveSpeedData(Constants.FileNames.LightningMcQueen, showSpeed);
@@ -572,6 +573,8 @@ public class OneScenario extends AppCompatActivity {
                 GlobalReceivedMessage = writeMessage;
                 ACKData.write(writeACK.getBytes());
                 // isCheckingBandwidth = false;
+                String showSpeed = currentspeed + " m/s";
+                useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
             }
         }
