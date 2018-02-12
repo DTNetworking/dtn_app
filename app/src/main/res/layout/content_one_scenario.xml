@@ -74,9 +74,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Enter Your Message"
-                android:inputType="textPersonName"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="138dp"/>
+                android:inputType="textPersonName" />
         </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 
         <Button
@@ -105,7 +103,7 @@
             android:id="@+id/messageStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
+            android:layout_weight="1"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
