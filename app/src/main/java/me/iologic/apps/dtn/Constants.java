@@ -62,5 +62,10 @@ public class Constants {
 
         public static final String BW_CONNECT_SERVER_SUCCESS = "Bandwidth connection is successful as a server";
         public static final String BW_CONNECT_CLIENT_SUCCESS = "Bandwidth connection is successful as a client";
+
+        public static final String CLIENT_CONNECTION_FAIL = "Client Connection Failed!";
+
+        public static final String SERVER_CONNECTION_SUCCESSFUL = "Server is successfully connected!";
+        public static final String SERVER_CONNECTION_FAIL = "Server failed to connect";
     }
 }

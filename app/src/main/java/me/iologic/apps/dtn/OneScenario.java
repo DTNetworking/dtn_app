@@ -32,6 +32,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.wang.avi.AVLoadingIndicatorView;
+
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -102,6 +104,7 @@ public class OneScenario extends AppCompatActivity {
     TextView BWPacketLossText;
     ProgressBar sendBWProgressBarView;
     TextView speedText;
+    AVLoadingIndicatorView aviView;
 
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
@@ -114,6 +117,7 @@ public class OneScenario extends AppCompatActivity {
 
     LightningMcQueen speed;
     double currentspeed;
+    Indicators btFindIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +149,7 @@ public class OneScenario extends AppCompatActivity {
         BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
         sendBWProgressBarView = (ProgressBar) findViewById(R.id.sendBWProgressBar);
         speedText = (TextView) findViewById(R.id.speed);
+        aviView = (AVLoadingIndicatorView) findViewById(R.id.avi);
 
         checkBandwidthText.setVisibility(View.GONE);
         BWPacketLossText.setVisibility(View.GONE);
@@ -214,6 +219,8 @@ public class OneScenario extends AppCompatActivity {
         df = new DecimalFormat("#.00");
         packetReceivedCount = 0;
 
+        btFindIndicator = new Indicators();
+
         writeBandwidthLossData();
 
         Dialog();
@@ -281,6 +288,18 @@ public class OneScenario extends AppCompatActivity {
                 }).create().show();
     }
 
+    public void startIndicator() {
+        // Start btFind Indicator
+        aviView.setVisibility(View.VISIBLE);
+        btFindIndicator.startAnim(aviView);
+    }
+
+    public void stopIndicator() {
+        // Start btFind Indicator
+        aviView.setVisibility(View.GONE);
+        btFindIndicator.stopAnim(aviView);
+    }
+
     protected void startBluetooth() {
         String btEnabledMessage = "Bluetooth is Enabled";
 
@@ -311,6 +330,8 @@ public class OneScenario extends AppCompatActivity {
         } else if (mBluetoothAdapter.isEnabled()) {
             btStatusText.setText("Bluetooth is already enabled!");
             setBtName();
+            startIndicator();
+
             Handler qBhandler = new Handler();
             qBhandler.postDelayed(new Runnable() {
                 @Override
@@ -375,7 +396,6 @@ public class OneScenario extends AppCompatActivity {
     public void connectDevice() {
 
         String btDeviceName = "DTN-";
-        CLIENT_CONNECTION_FAIL = "Client Connection Failed!";
 
         btClientConnectionStatus = new Handler() {
             @Override
@@ -383,6 +403,7 @@ public class OneScenario extends AppCompatActivity {
                 if (msg.arg1 == 1) {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
+                    stopIndicator();
                     currentStatusText.setText("CLIENT");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
@@ -448,7 +469,8 @@ public class OneScenario extends AppCompatActivity {
 
                 } else if (msg.arg1 == -1) {
                     if (toastShown == false) {
-                        Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+                        aviView.setIndicatorColor(Color.MAGENTA);
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
                     }
 
@@ -499,6 +521,7 @@ public class OneScenario extends AppCompatActivity {
             if (!(btDeviceConnectedGlobal == null)) {
                 CLIENT_CONNECTION_SUCCESSFUL = "Client Connected To:" + btDeviceConnectedGlobal.getName();
             } else {
+                aviView.setIndicatorColor(Color.DKGRAY);
                 Log.e("DTN", "No Device Found With Name DTN");
             }
         }
@@ -506,15 +529,13 @@ public class OneScenario extends AppCompatActivity {
 
     private void serverConnection() {
 
-        SERVER_CONNECTION_SUCCESSFUL = "Server is successfully connected!";
-        SERVER_CONNECTION_FAIL = "Server failed to connect";
-
         btServerConnectionStatus = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 if (msg.arg1 == 1) {
-                    Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
+                    stopIndicator();
                     currentStatusText.setText("SERVER");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
@@ -527,7 +548,8 @@ public class OneScenario extends AppCompatActivity {
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
                     streamData.start();
                 } else if (msg.arg1 == -1) {
-                    Toast toast = Toast.makeText(getApplicationContext(), SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+                    aviView.setIndicatorColor(Color.RED);
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                     toast.show();
                 } else if (msg.arg1 == 2) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
