@@ -54,6 +54,9 @@ public class OneScenario extends AppCompatActivity {
     BluetoothSocket SocketGlobal; // To store MAIN socket
     BluetoothSocket ACKSocketGlobal; // To store ACK socket
     BluetoothSocket BandSocketGlobal; // To store Bandwidth Socket
+    BluetoothSocket secondSocketGlobal; // To store MAIN socket
+    BluetoothSocket secondACKSocketGlobal; // To store ACK socket
+    BluetoothSocket secondBandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
 
@@ -565,6 +568,13 @@ public class OneScenario extends AppCompatActivity {
                     BandSocketGlobal = serverConnect.getBWSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     bandData.start();
+                }
+
+                //for 2nd connection
+                else if (msg.arg1 == 8) {
+
+                } else if (msg.arg1 == 9) {
+
                 }
             }
         };

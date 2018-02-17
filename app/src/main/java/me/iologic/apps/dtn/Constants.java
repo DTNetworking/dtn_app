@@ -67,5 +67,17 @@ public class Constants {
 
         public static final String SERVER_CONNECTION_SUCCESSFUL = "Server is successfully connected!";
         public static final String SERVER_CONNECTION_FAIL = "Server failed to connect";
+
+        //for 2nd connection
+        public static final String SECOND_ACK_CONNECT_SERVER_SUCCESS = "Acknowledgement connection is successful as a second server";
+        public static final String SECOND_ACK_CONNECT_CLIENT_SUCCESS = "Acknowledgement connection is successful as a second client";
+
+        public static final String SECOND_BW_CONNECT_SERVER_SUCCESS = "Bandwidth connection is successful as a second server";
+        public static final String SECOND_BW_CONNECT_CLIENT_SUCCESS = "Bandwidth connection is successful as a second client";
+
+        public static final String SECOND_CLIENT_CONNECTION_FAIL = "Second Client Connection Failed!";
+
+        public static final String SECOND_SERVER_CONNECTION_SUCCESSFUL = "Second Server is successfully connected!";
+        public static final String SECOND_SERVER_CONNECTION_FAIL = "Second Server failed to connect";
     }
 }
