@@ -18,6 +18,11 @@ class BluetoothConnectClientT extends Thread {
     private final BluetoothSocket mmSocket;
     private final BluetoothSocket mmACKClientSocket;
     private final BluetoothSocket mmBWClientSocket;
+
+    //second connection
+    private final BluetoothSocket secondMMSocket;
+    private final BluetoothSocket secondMMACKClientSocket;
+    private final BluetoothSocket secondMMBWClientSocket;
     private final BluetoothDevice mmDevice;
     BluetoothAdapter mBluetoothAdapter;
 
@@ -34,12 +39,22 @@ class BluetoothConnectClientT extends Thread {
     private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
     private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
 
+    //UUIDs for second connection
+    private static final UUID MY_SECOND_UUID = UUID.fromString("fa249bcd-e53c-4965-a9f9-d7ea5d6f0040");
+    private static final UUID SECOND_ACK_UUID = UUID.fromString("d9c13848-d7be-48a1-ac11-5f0c082791c7");
+    private static final UUID SECOND_BW_UUID = UUID.fromString("5c6ae5f9-cb04-4a71-9552-ffe426b02b99");
+
     public BluetoothConnectClientT(BluetoothDevice device, BluetoothAdapter getBluetoothAdapter, Handler getBtConnectionStatus) {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
         BluetoothSocket ACKtmp = null;
         BluetoothSocket BWtmp = null;
+
+        //temporary object for second connection
+        BluetoothSocket secondTmp = null;
+        BluetoothSocket secondACKTmp = null;
+        BluetoothSocket secondBWTmp = null;
         mmDevice = device;
 
         mBluetoothAdapter = getBluetoothAdapter;
@@ -57,6 +72,11 @@ class BluetoothConnectClientT extends Thread {
         mmSocket = tmp;
         mmACKClientSocket = ACKtmp;
         mmBWClientSocket = BWtmp;
+
+        //second connection
+        secondMMSocket = secondTmp;
+        secondMMACKClientSocket = secondACKTmp;
+        secondMMBWClientSocket = secondBWTmp;
 
         btConnectionACKStatusMsg = Message.obtain();
         btConnectionBWStatusMsg = Message.obtain();

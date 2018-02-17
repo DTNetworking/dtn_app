@@ -19,6 +19,10 @@ class BluetoothConnectT extends Thread {
     private final BluetoothServerSocket mmServerSocket;
     private final BluetoothServerSocket mmACKServerSocket;
     private final BluetoothServerSocket bandwidthSocket;
+    //for 2nd connection
+    private final BluetoothServerSocket secondMMServerSocket;
+    private final BluetoothServerSocket secondMMACKServerSocket;
+    private final BluetoothServerSocket secondBandwidthSocket;
     private BluetoothSocket ClientSocket, AckSocketGlobal, BWSocketGlobal;
     public static final String TAG = "DTNLogs";
     public static final String NAME = "DTNApp";
@@ -34,6 +38,11 @@ class BluetoothConnectT extends Thread {
     private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
     private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
 
+    //UUIDs for second connection
+    private static final UUID MY_SECOND_UUID = UUID.fromString("fa249bcd-e53c-4965-a9f9-d7ea5d6f0040");
+    private static final UUID SECOND_ACK_UUID = UUID.fromString("d9c13848-d7be-48a1-ac11-5f0c082791c7");
+    private static final UUID SECOND_BW_UUID = UUID.fromString("5c6ae5f9-cb04-4a71-9552-ffe426b02b99");
+
     public BluetoothConnectT(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
 
         btConnectionStatus = getBtConnectionStatus;
@@ -42,6 +51,11 @@ class BluetoothConnectT extends Thread {
         BluetoothServerSocket tmp = null;
         BluetoothServerSocket ACK_tmp = null;
         BluetoothServerSocket BW_tmp = null;
+
+        //temporary object for second connection
+        BluetoothServerSocket second_tmp = null;
+        BluetoothServerSocket second_ACK_tmp = null;
+        BluetoothServerSocket second_BW_tmp = null;
 
         try {
             // MY_UUID is the app's UUID string, also used by the client code. Allowing Insecure connections to avoid Pairing Key.
@@ -54,6 +68,11 @@ class BluetoothConnectT extends Thread {
         mmServerSocket = tmp;
         mmACKServerSocket = ACK_tmp;
         bandwidthSocket = BW_tmp;
+
+        //second connection initialization
+        secondMMServerSocket = second_tmp;
+        secondMMACKServerSocket = second_ACK_tmp;
+        secondBandwidthSocket = second_BW_tmp;
 
         btConnectionStatusMsg = Message.obtain();
         btConnectionACKStatusMsg = Message.obtain();
