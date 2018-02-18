@@ -74,7 +74,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="@string/enterMessage"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:maxLength="10" />
         </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 
         <Button
