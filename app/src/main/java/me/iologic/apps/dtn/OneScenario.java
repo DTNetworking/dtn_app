@@ -643,7 +643,7 @@ public class OneScenario extends AppCompatActivity {
                 useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
 
-                writeForSecondConnection(writeBuf);
+                writeForSecondConnection(writeMessage);
             }
         }
     };
@@ -808,13 +808,14 @@ public class OneScenario extends AppCompatActivity {
         });
     }
 
-    public void writeForSecondConnection(final byte[] writeReceviedBuf) {
+    public void writeForSecondConnection(String ReceivedString) {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
                 if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
-                    streamSecondData.writePackets(writeReceviedBuf);
-                    Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + writeReceviedBuf);
+                    streamSecondData.writePackets(ReceivedString.getBytes());
+                    Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
+                    Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
                     streamSecondData.flushOutStream();
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
