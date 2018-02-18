@@ -796,7 +796,8 @@ public class OneScenario extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
+                    String temp = EditMessageBox.getText() + "_";
+                    streamData.writePackets(temp.getBytes());
                     Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
                     streamData.flushOutStream();
                 } else {
