@@ -53,6 +53,7 @@ class BluetoothConnectT extends Thread {
     public BluetoothConnectT(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
 
         btConnectionStatus = getBtConnectionStatus;
+        secondBtConnectionStatus = getBtConnectionStatus;
         // Use a temporary object that is later assigned to mmServerSocket
         // because mmServerSocket is final.
         BluetoothServerSocket tmp = null;
