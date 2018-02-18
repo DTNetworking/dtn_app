@@ -75,6 +75,7 @@ public class Constants {
         public static final String SECOND_BW_CONNECT_SERVER_SUCCESS = "Bandwidth connection is successful as a second server";
         public static final String SECOND_BW_CONNECT_CLIENT_SUCCESS = "Bandwidth connection is successful as a second client";
 
+        public static final String SECOND_CLIENT_CONNECTION_SUCCESS = "Second Client Connection Success!";
         public static final String SECOND_CLIENT_CONNECTION_FAIL = "Second Client Connection Failed!";
 
         public static final String SECOND_SERVER_CONNECTION_SUCCESSFUL = "Second Server is successfully connected!";
