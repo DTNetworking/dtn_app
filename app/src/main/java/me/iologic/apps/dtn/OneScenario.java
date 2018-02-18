@@ -813,7 +813,7 @@ public class OneScenario extends AppCompatActivity {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
-        byte[] sendBytes = ReceivedString.substring(0,10).getBytes();
+        byte[] sendBytes = ReceivedString.substring(0,9).getBytes();
 
                 if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
                     streamSecondData.writePackets(sendBytes);
