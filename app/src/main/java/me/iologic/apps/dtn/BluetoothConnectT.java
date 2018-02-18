@@ -120,7 +120,7 @@ class BluetoothConnectT extends Thread {
 
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
-            try {
+    /*        try {
                 BWSocket = bandwidthSocket.accept();
                 BWSocketGlobal = BWSocket;
 
@@ -139,7 +139,7 @@ class BluetoothConnectT extends Thread {
                 secondBtConnectionStatus.sendMessage(secondBtConnectionBWStatusMsg);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "secondBWSocket's accept() method failed", e);
-            }
+            } */
 
             try {
                 pairingStartTime = System.nanoTime();
@@ -198,7 +198,7 @@ class BluetoothConnectT extends Thread {
 
             // ACK Part
 
-            try {
+      /*      try {
                 AckSocket = mmACKServerSocket.accept();
                 AckSocketGlobal = AckSocket;
 
@@ -217,7 +217,7 @@ class BluetoothConnectT extends Thread {
                 secondBtConnectionStatus.sendMessage(secondBtConnectionACKStatusMsg);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Second ACKSocket's accept() method failed", e);
-            }
+            } */
         }
     }
 

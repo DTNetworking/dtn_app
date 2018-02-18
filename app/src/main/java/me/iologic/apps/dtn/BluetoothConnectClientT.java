@@ -122,7 +122,7 @@ class BluetoothConnectClientT extends Thread {
         }
 
         // BW Part
-        try {
+  /*      try {
             mmBWClientSocket.connect();
         } catch (IOException e) {
             btConnectionBWStatusMsg.arg1 = -2;
@@ -159,7 +159,7 @@ class BluetoothConnectClientT extends Thread {
         btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
 
         secondBtConnectionBWStatusMsg.arg1 = 101;
-        secondBtConnectionStatus.sendMessage(secondBtConnectionBWStatusMsg);
+        secondBtConnectionStatus.sendMessage(secondBtConnectionBWStatusMsg); */
 
         try {
             // Connect to the remote device through the socket. This call blocks
@@ -221,7 +221,7 @@ class BluetoothConnectClientT extends Thread {
 
 
         // ACK Part
-        try {
+      /*  try {
             mmACKClientSocket.connect();
         } catch (IOException e) {
             btConnectionACKStatusMsg.arg1 = -2;
@@ -258,7 +258,7 @@ class BluetoothConnectClientT extends Thread {
         btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
 
         secondBtConnectionACKStatusMsg.arg1 = 9;
-        secondBtConnectionStatus.sendMessage(secondBtConnectionACKStatusMsg);
+        secondBtConnectionStatus.sendMessage(secondBtConnectionACKStatusMsg); */
     }
 
     public BluetoothSocket getClientSocket() {
