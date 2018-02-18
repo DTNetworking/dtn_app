@@ -599,6 +599,7 @@ public class OneScenario extends AppCompatActivity {
                 messageReceived.setText(tempReceivedString[0]);
                 // }
                 GlobalReceivedMessage = writeMessage;
+                writeMessage = "";
                 // ACKData.write(writeACK.getBytes());
                 // isCheckingBandwidth = false;
                 String showSpeed = currentspeed + " m/s";
