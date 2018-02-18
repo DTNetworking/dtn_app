@@ -57,6 +57,8 @@ public class OneScenario extends AppCompatActivity {
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
 
+    String writeMessage;
+
     String saveFileUUID;
 
     AlertDialog alertDialog;
@@ -222,6 +224,8 @@ public class OneScenario extends AppCompatActivity {
         btFindIndicator = new Indicators();
 
         // writeBandwidthLossData();
+
+        writeMessage = "";
 
         Dialog();
         startBluetooth();
@@ -587,7 +591,7 @@ public class OneScenario extends AppCompatActivity {
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
                 String writeACK = String.valueOf(msg.arg1);
-                String writeMessage = new String(writeBuf);
+                writeMessage = writeMessage + new String(writeBuf);
                 // if(!isCheckingBandwidth) {
                 String[] tempReceivedString = writeMessage.split("_");
                 Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
