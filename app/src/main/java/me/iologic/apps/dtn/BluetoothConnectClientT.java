@@ -90,10 +90,10 @@ class BluetoothConnectClientT extends Thread {
             }
 
             return;
-        } */
+        }
 
         btConnectionBWStatusMsg.arg1 = 100;
-        btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
+        btConnectionStatus.sendMessage(btConnectionBWStatusMsg); */
 
         try {
             // Connect to the remote device through the socket. This call blocks
