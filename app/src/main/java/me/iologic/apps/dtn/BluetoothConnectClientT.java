@@ -76,7 +76,7 @@ class BluetoothConnectClientT extends Thread {
         }
 
         // BW Part
-        try {
+   /*     try {
             mmBWClientSocket.connect();
         } catch (IOException e) {
             btConnectionBWStatusMsg.arg1 = -2;
@@ -90,7 +90,7 @@ class BluetoothConnectClientT extends Thread {
             }
 
             return;
-        }
+        } */
 
         btConnectionBWStatusMsg.arg1 = 100;
         btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
@@ -125,7 +125,7 @@ class BluetoothConnectClientT extends Thread {
         btConnectionStatus.sendMessage(btConnectionStatusMsg);
 
         // ACK Part
-        try {
+/*        try {
             mmACKClientSocket.connect();
         } catch (IOException e) {
             btConnectionACKStatusMsg.arg1 = -2;
@@ -142,7 +142,7 @@ class BluetoothConnectClientT extends Thread {
         }
 
         btConnectionACKStatusMsg.arg1 = 2;
-        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+        btConnectionStatus.sendMessage(btConnectionACKStatusMsg); */
     }
 
     public BluetoothSocket getClientSocket() {
