@@ -391,7 +391,7 @@ public class OneScenario extends AppCompatActivity {
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
                 } else {
-                    connectDevice();
+                   // connectDevice();
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
@@ -401,7 +401,7 @@ public class OneScenario extends AppCompatActivity {
         }
     };
 
-    public void connectDevice() {
+   /* public void connectDevice() {
 
         String btDeviceName = "DTN-";
 
@@ -471,11 +471,11 @@ public class OneScenario extends AppCompatActivity {
                     //      }
                     // };
 
-                    streamData.start();
-                    sendMsgBtn.setEnabled(true);
+                   // streamData.start();
+               //     sendMsgBtn.setEnabled(true);
 
 
-                } else if (msg.arg1 == -1) {
+               /* } else if (msg.arg1 == -1) {
                     if (toastShown == false) {
                         aviView.setIndicatorColor(Color.MAGENTA);
                         Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
@@ -539,7 +539,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.e("DTN", "No Device Found With Name DTN");
             }
         }
-    }
+    } */
 
     private void serverConnection() {
 
@@ -816,7 +816,7 @@ public class OneScenario extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    streamSecondData.write(writeReceviedBuf);
+                    streamSecondData.writePackets(writeReceviedBuf);
                     Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + writeReceviedBuf);
                     streamSecondData.flushOutStream();
                 } else {
