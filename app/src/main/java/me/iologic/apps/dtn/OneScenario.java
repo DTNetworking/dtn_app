@@ -395,7 +395,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void connectDevice() {
 
-        String btDeviceName = "DTN-";
+        String btDeviceName = "DTN-1641b121";
 
         btClientConnectionStatus = new Handler() {
             @Override
