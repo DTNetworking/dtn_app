@@ -589,7 +589,8 @@ public class OneScenario extends AppCompatActivity {
                 String writeACK = String.valueOf(msg.arg1);
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
-                //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
+                Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
+                Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(writeMessage);
                 // }
                 GlobalReceivedMessage = writeMessage;
