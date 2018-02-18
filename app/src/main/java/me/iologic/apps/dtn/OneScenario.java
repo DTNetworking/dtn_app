@@ -813,8 +813,10 @@ public class OneScenario extends AppCompatActivity {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
+        byte[] sendBytes = ReceivedString.substring(1,10).getBytes();
+
                 if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
-                    streamSecondData.writePackets(ReceivedString.getBytes());
+                    streamSecondData.writePackets(sendBytes);
                     Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
                     Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
                     streamSecondData.flushOutStream();
