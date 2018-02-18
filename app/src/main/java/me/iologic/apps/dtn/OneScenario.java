@@ -812,10 +812,7 @@ public class OneScenario extends AppCompatActivity {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
-        sendMsgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!(SocketGlobal == null)) {
+                if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
                     streamSecondData.writePackets(writeReceviedBuf);
                     Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + writeReceviedBuf);
                     streamSecondData.flushOutStream();
@@ -824,9 +821,6 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
                 }
             }
-
-        });
-    }
 
 
     @Override
