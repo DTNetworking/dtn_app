@@ -587,7 +587,7 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
-                String writeACK = String.valueOf(msg.arg1);
+                String writeACK = String.valueOf(msg.arg1) + writeBuf.length; // msg.arg1 = -1
                 String writeMessage =  new String(writeBuf);
                 // if(!isCheckingBandwidth) {
                 String[] tempReceivedString = writeMessage.split("_");
