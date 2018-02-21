@@ -26,4 +26,5 @@
     <string name="BWPacketLoss">Bandwidth Packet Loss</string>
     <string name="speed">Speed</string>
     <string name="MeterPerSecond">m/s</string>
+    <string name="delay2">Delay 2</string>
 </resources>
