@@ -199,7 +199,7 @@ class BluetoothConnectT extends Thread {
 
             // ACK Part
 
-      /*      try {
+            try {
                 AckSocket = mmACKServerSocket.accept();
                 AckSocketGlobal = AckSocket;
 
@@ -218,7 +218,7 @@ class BluetoothConnectT extends Thread {
                 secondBtConnectionStatus.sendMessage(secondBtConnectionACKStatusMsg);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Second ACKSocket's accept() method failed", e);
-            } */
+            }
         }
     }
 
@@ -233,6 +233,7 @@ class BluetoothConnectT extends Thread {
     public BluetoothSocket getACKSocket() {
         return AckSocketGlobal;
     }
+
     public BluetoothSocket getBWSocket() {
         return BWSocketGlobal;
     }
@@ -249,6 +250,7 @@ class BluetoothConnectT extends Thread {
     public BluetoothSocket getSecondACKSocket() {
         return secondAckSocketGlobal;
     }
+
     public BluetoothSocket getSecondBWSocket() {
         return secondBWSocketGlobal;
     }

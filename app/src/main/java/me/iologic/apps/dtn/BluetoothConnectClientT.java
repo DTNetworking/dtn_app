@@ -221,7 +221,7 @@ class BluetoothConnectClientT extends Thread {
 
 
         // ACK Part
-      /*  try {
+     /*   try {
             mmACKClientSocket.connect();
         } catch (IOException e) {
             btConnectionACKStatusMsg.arg1 = -2;
@@ -268,6 +268,7 @@ class BluetoothConnectClientT extends Thread {
     public BluetoothSocket getACKClientSocket() {
         return mmACKClientSocket;
     }
+
     public BluetoothSocket getBWClientSocket() {
         return mmBWClientSocket;
     }
@@ -280,6 +281,7 @@ class BluetoothConnectClientT extends Thread {
     public BluetoothSocket getSecondACKClientSocket() {
         return secondMMACKClientSocket;
     }
+
     public BluetoothSocket getSecondBWClientSocket() {
         return secondMMBWClientSocket;
     }

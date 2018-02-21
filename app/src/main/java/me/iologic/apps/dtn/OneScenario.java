@@ -105,6 +105,7 @@ public class OneScenario extends AppCompatActivity {
     TextView peerConnectTime;
     TextView bandwidthText;
     TextView delayText;
+    TextView delayText2;
     TextView checkBandwidthText;
     EditText EditMessageBox;
     Button sendMsgBtn;
@@ -152,6 +153,7 @@ public class OneScenario extends AppCompatActivity {
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         bandwidthText = (TextView) findViewById(R.id.bandwidth);
         delayText = (TextView) findViewById(R.id.delay);
+        delayText2 = (TextView) findViewById(R.id.delay2);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
         MsgPacketLossText = (TextView) findViewById(R.id.MsgPacketLoss);
         BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
@@ -401,14 +403,14 @@ public class OneScenario extends AppCompatActivity {
         }
     };
 
-   /* public void connectDevice() {
+ /*  public void connectDevice() {
 
         String btDeviceName = "DTN-";
 
         btClientConnectionStatus = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if (msg.arg1 == 1) {
+            /*    if (msg.arg1 == 1) {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     stopIndicator();
@@ -475,7 +477,9 @@ public class OneScenario extends AppCompatActivity {
                //     sendMsgBtn.setEnabled(true);
 
 
-               /* } else if (msg.arg1 == -1) {
+             //  }
+
+              /* if (msg.arg1 == -1) {
                     if (toastShown == false) {
                         aviView.setIndicatorColor(Color.MAGENTA);
                         Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
@@ -503,14 +507,14 @@ public class OneScenario extends AppCompatActivity {
                     ACKSocketGlobal = clientConnect.getACKClientSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
-                } else if (msg.arg1 == 100) {
+               /* } else if (msg.arg1 == 100) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
                     BandSocketGlobal = clientConnect.getBWClientSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
-                } else if (msg.arg1 == 101) {
+                    bandData.start(); */
+              /*  } else if (msg.arg1 == 101) {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT).show();
                 } else if (msg.arg1 == 8) {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_CLIENT_CONNECTION_SUCCESS, Toast.LENGTH_SHORT).show();
