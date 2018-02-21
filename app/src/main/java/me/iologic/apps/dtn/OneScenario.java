@@ -665,7 +665,7 @@ public class OneScenario extends AppCompatActivity {
                     // stopWatch.updateList();
                     // stopWatch.reset();
                     // byte[] writeACK = new byte[]{'R'};
-                    writeACKForSecondConnection("-1");
+                    writeACKForSecondConnection(writeBuf);
                 } else {
                     Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
                     stopWatch.halt();
@@ -673,7 +673,7 @@ public class OneScenario extends AppCompatActivity {
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
-                    writeACKForSecondConnection("10");
+                    writeACKForSecondConnection(writeBuf);
                 }
                 GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
                 String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
@@ -832,8 +832,8 @@ public class OneScenario extends AppCompatActivity {
         }
     }
 
-    public void writeACKForSecondConnection(String ReceivedString) {
-        ACKData.write(ReceivedString.getBytes());
+    public void writeACKForSecondConnection(byte[] ReceivedByte) {
+        ACKData.write(ReceivedByte);
         Toast.makeText(getApplicationContext(), "I sent the ACK which I received from the 3rd Phone!", Toast.LENGTH_SHORT);
     }
 
