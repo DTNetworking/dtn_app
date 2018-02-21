@@ -673,6 +673,7 @@ public class OneScenario extends AppCompatActivity {
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
+                    writeACKForSecondConnection("10");
                 }
                 GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
                 String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
