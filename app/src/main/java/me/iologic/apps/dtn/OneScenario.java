@@ -665,7 +665,7 @@ public class OneScenario extends AppCompatActivity {
                     // stopWatch.updateList();
                     // stopWatch.reset();
                     // byte[] writeACK = new byte[]{'R'};
-                    writeACKForSecondConnection("R");
+                    writeACKForSecondConnection("-1");
                 } else {
                     Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
                     stopWatch.halt();
