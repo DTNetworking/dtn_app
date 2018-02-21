@@ -143,7 +143,6 @@ class BluetoothConnectClientT extends Thread {
 
         btConnectionACKStatusMsg.arg1 = 2;
         btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
-        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
     }
 
     public BluetoothSocket getClientSocket() {
