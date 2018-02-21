@@ -393,7 +393,7 @@ public class OneScenario extends AppCompatActivity {
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
                 } else {
-                   // connectDevice();
+                    // connectDevice();
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
@@ -470,14 +470,14 @@ public class OneScenario extends AppCompatActivity {
                         } */
 
 
-                    //      }
-                    // };
+    //      }
+    // };
 
-                   // streamData.start();
-               //     sendMsgBtn.setEnabled(true);
+    // streamData.start();
+    //     sendMsgBtn.setEnabled(true);
 
 
-             //  }
+    //  }
 
               /* if (msg.arg1 == -1) {
                     if (toastShown == false) {
@@ -634,19 +634,18 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
-                String writeACK = String.valueOf(msg.arg1);
+                // String writeACK = String.valueOf(msg.arg1);
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
                 //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(writeMessage);
                 // }
                 GlobalReceivedMessage = writeMessage;
-               // ACKData.write(writeACK.getBytes());
+                // ACKData.write(writeACK.getBytes());
                 // isCheckingBandwidth = false;
                 String showSpeed = currentspeed + " m/s";
                 useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
-
                 writeForSecondConnection(writeMessage);
             }
         }
@@ -660,11 +659,13 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
                 if (writeBuf[0] == 'R') {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
-                    stopWatch.halt();
+                    //stopWatch.halt();
                     // Update Message Timing List and Reset The Timer
-                    useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
-                    stopWatch.updateList();
-                    stopWatch.reset();
+                    //useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
+                    // stopWatch.updateList();
+                    // stopWatch.reset();
+                    // byte[] writeACK = new byte[]{'R'};
+                    writeACKForSecondConnection("R");
                 } else {
                     Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
                     stopWatch.halt();
@@ -817,18 +818,23 @@ public class OneScenario extends AppCompatActivity {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
-        byte[] sendBytes = ReceivedString.substring(0,9).getBytes();
+        byte[] sendBytes = ReceivedString.substring(0, 9).getBytes();
 
-                if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
-                    streamSecondData.writePackets(sendBytes);
-                    Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
-                    Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
-                    streamSecondData.flushOutStream();
-                } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            }
+        if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
+            streamSecondData.writePackets(sendBytes);
+            Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
+            Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
+            streamSecondData.flushOutStream();
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
+    public void writeACKForSecondConnection(String ReceivedString) {
+        ACKData.write(ReceivedString.getBytes());
+        Toast.makeText(getApplicationContext(), "I sent the ACK which I received from the 3rd Phone!", Toast.LENGTH_SHORT);
+    }
 
 
     @Override
