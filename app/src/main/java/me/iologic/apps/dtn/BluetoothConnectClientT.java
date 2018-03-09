@@ -35,14 +35,15 @@ class BluetoothConnectClientT extends Thread {
     long pairingStartTime, pairingEndTime, duration;
     int retry;
 
-    private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
-    private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
-    private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
+    //third phone
+    private static final UUID MY_UUID = UUID.fromString("97cc3641-0698-4682-bd06-874d4fd51ce2");
+    private static final UUID ACK_UUID = UUID.fromString("5c814dcb-ffc8-4d16-bcb8-ba17541b1b68");
+    private static final UUID BW_UUID = UUID.fromString("f60a9944-7b40-4517-89e2-cd421420f7e1");
 
     //UUIDs for second connection
-    private static final UUID MY_SECOND_UUID = UUID.fromString("fa249bcd-e53c-4965-a9f9-d7ea5d6f0040");
-    private static final UUID SECOND_ACK_UUID = UUID.fromString("d9c13848-d7be-48a1-ac11-5f0c082791c7");
-    private static final UUID SECOND_BW_UUID = UUID.fromString("5c6ae5f9-cb04-4a71-9552-ffe426b02b99");
+    private static final UUID MY_SECOND_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345");
+    private static final UUID SECOND_ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050");
+    private static final UUID SECOND_BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1");
 
     public BluetoothConnectClientT(BluetoothDevice device, BluetoothAdapter getBluetoothAdapter, Handler getBtConnectionStatus) {
         // Use a temporary object that is later assigned to mmSocket
