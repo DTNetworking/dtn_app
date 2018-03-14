@@ -383,6 +383,7 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Discovery Period Finished");
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
+                    connectDevice();
                 } else {
                     connectDevice();
                 }
