@@ -650,6 +650,7 @@ public class OneScenario extends AppCompatActivity {
                 String showSpeed = currentspeed + " m/s";
                 useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
+                writeForSecondConnection(writeMessage);
             }
         }
     };
