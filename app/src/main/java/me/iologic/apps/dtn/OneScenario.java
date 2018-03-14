@@ -56,6 +56,7 @@ public class OneScenario extends AppCompatActivity {
     BluetoothSocket secondSocketGlobal; // To store MAIN socket
     BluetoothSocket secondACKSocketGlobal; // To store ACK socket
     BluetoothSocket BandSocketGlobal; // To store Bandwidth Socket
+    BluetoothSocket secondBandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
 
@@ -523,6 +524,34 @@ public class OneScenario extends AppCompatActivity {
                   //  BandSocketGlobal = clientConnect.getBWClientSocket();
                  //   bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                  //   bandData.start();
+                }
+
+                //for 2nd connection
+                else if (msg.arg1 == 8) {
+
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show();
+
+                    // 2nd connection
+                    secondSocketGlobal = serverConnect.getSecondServerSocket();
+                    streamSecondData = new SecondBluetoothBytesT(secondSocketGlobal, btMessageStatus);
+                    streamSecondData.start();
+
+
+                } else if (msg.arg1 == 9) {
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
+
+                    // 2nd Connection
+                    secondACKSocketGlobal = serverConnect.getSecondACKSocket();
+                    secondACKData = new SecondBluetoothACKBytesT(secondACKSocketGlobal, btACKStatus);
+                    secondACKData.start();
+
+                } else if (msg.arg1 == 10) {
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
+
+                    //secondBandSocketGlobal = serverConnect.getSecondBWSocket();
+                    //secondBandData = new SecondBandwidthBytesT(secondBandSocketGlobal, btBandStatus);
+                    //secondBandData.start();
+
                 }
 
                 toastShown = true;
