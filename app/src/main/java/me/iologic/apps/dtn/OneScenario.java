@@ -638,6 +638,8 @@ public class OneScenario extends AppCompatActivity {
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
+                    //byte[] writeACK = new byte[]{'R'};
+                    writeACKForSecondConnection(writeBuf);
                 } else {
                     Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
                     stopWatch.halt();
@@ -645,6 +647,7 @@ public class OneScenario extends AppCompatActivity {
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
+                    writeACKForSecondConnection(writeBuf);
                 }
                 GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
                 String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
