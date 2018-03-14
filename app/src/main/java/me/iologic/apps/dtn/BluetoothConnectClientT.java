@@ -30,7 +30,7 @@ class BluetoothConnectClientT extends Thread {
     long pairingStartTime, pairingEndTime, duration;
     int retry;
 
-    //UUIDs for second connection
+
     private static final UUID MY_UUID = UUID.fromString("085a7788-8a7e-4bb6-95e9-7c967912bf3f");
     private static final UUID ACK_UUID = UUID.fromString("928bef3c-e408-44f6-b339-06358055da16");
     private static final UUID BW_UUID = UUID.fromString("ddbb9433-d6c4-4fc5-b6a9-d96bdbc9d928");

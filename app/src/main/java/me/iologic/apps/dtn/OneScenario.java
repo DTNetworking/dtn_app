@@ -53,9 +53,16 @@ public class OneScenario extends AppCompatActivity {
     BluetoothDevice btDeviceConnectedGlobal; // To get Device Name
     BluetoothSocket SocketGlobal; // To store MAIN socket
     BluetoothSocket ACKSocketGlobal; // To store ACK socket
+    BluetoothSocket secondSocketGlobal; // To store MAIN socket
+    BluetoothSocket secondACKSocketGlobal; // To store ACK socket
     BluetoothSocket BandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
+
+    // 2nd Connection
+    SecondBluetoothBytesT streamSecondData;
+    SecondBluetoothACKBytesT secondACKData;
+    SecondBandwidthBytesT secondBandData;
 
     String saveFileUUID;
 
@@ -382,11 +389,23 @@ public class OneScenario extends AppCompatActivity {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStatusText.setText("Discovery Period Finished");
                 if (connectAsClient == false) {
-                    serverConnection(); // Let's start the Server
-                    connectDevice();
+                    final Thread Server = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            serverConnection(); // Let's start the Server
+                        }
+                    });
+
+                    final Thread Client = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            connectDevice();
+                        }
+                    });
                 } else {
                     connectDevice();
                 }
+
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             }
@@ -766,6 +785,27 @@ public class OneScenario extends AppCompatActivity {
         });
     }
 
+    public void writeForSecondConnection(String ReceivedString) {
+
+        NOT_YET_CONNECTED = "I am not yet connected to any phone";
+
+        byte[] sendBytes = ReceivedString.substring(0, 9).getBytes();
+
+        if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
+            streamSecondData.writePackets(sendBytes);
+            Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
+            Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
+            streamSecondData.flushOutStream();
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
+    public void writeACKForSecondConnection(byte[] ReceivedByte) {
+        ACKData.write(ReceivedByte);
+        Toast.makeText(getApplicationContext(), "I sent the ACK which I received from the 3rd Phone!", Toast.LENGTH_SHORT);
+    }
 
     @Override
     protected void onDestroy() {
