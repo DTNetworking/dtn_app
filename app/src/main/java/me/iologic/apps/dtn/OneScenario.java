@@ -221,7 +221,8 @@ public class OneScenario extends AppCompatActivity {
 
         btFindIndicator = new Indicators();
 
-        writeBandwidthLossData();
+        // writeBandwidthLossData();
+
 
         Dialog();
         startBluetooth();
@@ -382,7 +383,8 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Discovery Period Finished");
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
-                    connectDevice(); // start the client
+                } else {
+                    connectDevice();
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
@@ -394,7 +396,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void connectDevice() {
 
-        String btDeviceName = "DTN-";
+        String btDeviceName = "DTN-1641b121";
 
         btClientConnectionStatus = new Handler() {
             @Override
@@ -409,7 +411,7 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
-                    final Thread checkBandwidthT = new Thread(new Runnable() {
+              /*      final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
 
@@ -438,7 +440,7 @@ public class OneScenario extends AppCompatActivity {
                         }
                     });
 
-                    checkBandwidthT.start();
+                    checkBandwidthT.start(); */
 
 
                     // getDataHandler = new Handler() {
@@ -498,9 +500,9 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    BandSocketGlobal = clientConnect.getBWClientSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
+                  //  BandSocketGlobal = clientConnect.getBWClientSocket();
+                 //   bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                 //   bandData.start();
                 }
 
                 toastShown = true;
@@ -561,9 +563,9 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    BandSocketGlobal = serverConnect.getBWSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
+                //    BandSocketGlobal = serverConnect.getBWSocket();
+                  //  bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                 //   bandData.start();
                 }
             }
         };
@@ -586,10 +588,12 @@ public class OneScenario extends AppCompatActivity {
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
                 String writeACK = String.valueOf(msg.arg1);
-                String writeMessage = new String(writeBuf);
+                String writeMessage =  new String(writeBuf);
                 // if(!isCheckingBandwidth) {
-                //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
-                messageReceived.setText(writeMessage);
+                String[] tempReceivedString = writeMessage.split("_");
+                Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
+                Log.i(Constants.TAG, "Message Received: " + writeMessage);
+                messageReceived.setText(tempReceivedString[0]);
                 // }
                 GlobalReceivedMessage = writeMessage;
                 ACKData.write(writeACK.getBytes());
@@ -643,7 +647,7 @@ public class OneScenario extends AppCompatActivity {
         }
     };
 
-    private final Handler btBandStatus = new Handler() {
+   /* private final Handler btBandStatus = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == Constants.MessageConstants.BW_READ) {
@@ -739,7 +743,7 @@ public class OneScenario extends AppCompatActivity {
             BWPacketLossCheckStart = false;
             writeGlobalPacketLossT.start();
         }
-    }
+    } */
 
     public void sendMessage() {
 
@@ -749,7 +753,7 @@ public class OneScenario extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    streamData.write((EditMessageBox.getText().toString()).getBytes());
+                    streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
                     Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
                     streamData.flushOutStream();
                 } else {
