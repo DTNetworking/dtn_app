@@ -182,14 +182,17 @@ class BluetoothBytesT extends Thread {
 
     public double getPacketLoss(int EditWritten, String receivedNumBytes) {
         if (receivedNumBytes.length() > 1) {
-            if(receivedNumBytes != "") {
+
+            try {
                 int receivedNumBytesInt = Integer.parseInt(receivedNumBytes.trim());
                 double packetLost = ((double) (EditWritten - receivedNumBytesInt) / (double) EditWritten) * 100;
                 Log.i(Constants.TAG, "Packet Lost Msg: " + EditWritten + " " + Integer.valueOf(receivedNumBytesInt));
                 return packetLost;
+            } catch (NumberFormatException ex) {
+                Log.i(Constants.TAG, "Empty string entered/received");
             }
-        } else {
 
+        } else {
             double packetLost = ((double) (EditWritten - Integer.valueOf(receivedNumBytes)) / (double) EditWritten) * 100;
             Log.i(Constants.TAG, "Packet Lost Msg: " + EditWritten + " " + Integer.valueOf(receivedNumBytes));
             return packetLost;
@@ -199,8 +202,7 @@ class BluetoothBytesT extends Thread {
 
     }
 
-    public int getMessageReceivedBytes(String receivedNumBytes)
-    {
+    public int getMessageReceivedBytes(String receivedNumBytes) {
         if (receivedNumBytes.length() > 1) {
             int receivedNumBytesInt = Integer.parseInt(receivedNumBytes.trim());
             //Log.i(Constants.TAG, "Packet Lost Msg: " + Integer.valueOf(receivedNumBytesInt));
