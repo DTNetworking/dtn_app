@@ -182,10 +182,12 @@ class BluetoothBytesT extends Thread {
 
     public double getPacketLoss(int EditWritten, String receivedNumBytes) {
         if (receivedNumBytes.length() > 1) {
-            int receivedNumBytesInt = Integer.parseInt(receivedNumBytes.trim());
-            double packetLost = ((double) (EditWritten - receivedNumBytesInt) / (double) EditWritten) * 100;
-            Log.i(Constants.TAG, "Packet Lost Msg: " + EditWritten + " " + Integer.valueOf(receivedNumBytesInt));
-            return packetLost;
+            if(receivedNumBytes != "") {
+                int receivedNumBytesInt = Integer.parseInt(receivedNumBytes.trim());
+                double packetLost = ((double) (EditWritten - receivedNumBytesInt) / (double) EditWritten) * 100;
+                Log.i(Constants.TAG, "Packet Lost Msg: " + EditWritten + " " + Integer.valueOf(receivedNumBytesInt));
+                return packetLost;
+            }
         } else {
 
             double packetLost = ((double) (EditWritten - Integer.valueOf(receivedNumBytes)) / (double) EditWritten) * 100;
@@ -193,6 +195,20 @@ class BluetoothBytesT extends Thread {
             return packetLost;
         }
 
+        return -1000;
+
+    }
+
+    public int getMessageReceivedBytes(String receivedNumBytes)
+    {
+        if (receivedNumBytes.length() > 1) {
+            int receivedNumBytesInt = Integer.parseInt(receivedNumBytes.trim());
+            //Log.i(Constants.TAG, "Packet Lost Msg: " + Integer.valueOf(receivedNumBytesInt));
+            return receivedNumBytesInt;
+        } else {
+            //Log.i(Constants.TAG, "Packet Lost Msg: " + Integer.valueOf(receivedNumBytes));
+            return Integer.valueOf(receivedNumBytes);
+        }
     }
 
 

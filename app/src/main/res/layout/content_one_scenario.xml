@@ -191,7 +191,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:gravity="center"
                 android:text="@string/BWPacketLoss"
                 android:textSize="16sp" />
@@ -201,14 +201,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
-                android:layout_weight="2"
+                android:layout_weight="3"
                 android:gravity="center"
                 android:text="@string/MsgPacketLoss"
                 android:textSize="16sp" />
 
+            <TextView
+                android:id="@+id/bytesSent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="No. of bytes sent"
+                android:textColor="@android:color/holo_purple"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/bytesReceived"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="No. of bytes received"
+                android:textColor="@android:color/holo_blue_bright"
+                android:textSize="16sp" />
+
+
         </LinearLayout>
 
         <TextView
+            android:layout_marginTop="8dp"
             android:id="@+id/currentStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -104,6 +104,8 @@ public class OneScenario extends AppCompatActivity {
     TextView BWPacketLossText;
     ProgressBar sendBWProgressBarView;
     TextView speedText;
+    TextView bytesReceivedText;
+    TextView bytesSentText;
     AVLoadingIndicatorView aviView;
 
     boolean toastShown = false; // Client Re-Connection
@@ -126,14 +128,14 @@ public class OneScenario extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        }); */
 
         btStatusText = (TextView) findViewById(R.id.btStatus);
         peerStatusText = (TextView) findViewById(R.id.peerStatus);
@@ -149,6 +151,8 @@ public class OneScenario extends AppCompatActivity {
         BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
         sendBWProgressBarView = (ProgressBar) findViewById(R.id.sendBWProgressBar);
         speedText = (TextView) findViewById(R.id.speed);
+        bytesSentText = (TextView) findViewById(R.id.bytesSent);
+        bytesReceivedText = (TextView) findViewById(R.id.bytesReceived);
         aviView = (AVLoadingIndicatorView) findViewById(R.id.avi);
 
         checkBandwidthText.setVisibility(View.GONE);
@@ -500,9 +504,9 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                  //  BandSocketGlobal = clientConnect.getBWClientSocket();
-                 //   bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                 //   bandData.start();
+                    //  BandSocketGlobal = clientConnect.getBWClientSocket();
+                    //   bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    //   bandData.start();
                 }
 
                 toastShown = true;
@@ -563,9 +567,9 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                //    BandSocketGlobal = serverConnect.getBWSocket();
-                  //  bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                 //   bandData.start();
+                    //    BandSocketGlobal = serverConnect.getBWSocket();
+                    //  bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    //   bandData.start();
                 }
             }
         };
@@ -588,7 +592,7 @@ public class OneScenario extends AppCompatActivity {
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
                 String writeACK = String.valueOf(msg.arg1);
-                String writeMessage =  new String(writeBuf);
+                String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
                 String[] tempReceivedString = writeMessage.split("_");
                 Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
@@ -636,6 +640,9 @@ public class OneScenario extends AppCompatActivity {
                     MsgPacketLossText.setText(showMsgLossPercent);
                 }
 
+                // Show Sent & Received Bytes
+                bytesReceivedText.setText(Integer.toString(streamData.getMessageReceivedBytes("" + new String(writeBuf))));
+                bytesSentText.setText(Integer.toString(EditMessageBox.getText().length()));
                 useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
 
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE)
