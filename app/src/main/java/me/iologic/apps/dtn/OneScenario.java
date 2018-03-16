@@ -403,6 +403,9 @@ public class OneScenario extends AppCompatActivity {
                             connectDevice();
                         }
                     });
+
+                    Client.run();
+                    Server.run();
                 } else {
                     connectDevice();
                 }
@@ -527,25 +530,7 @@ public class OneScenario extends AppCompatActivity {
                 }
 
                 //for 2nd connection
-                else if (msg.arg1 == 8) {
-
-                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show();
-
-                    // 2nd connection
-                    secondSocketGlobal = serverConnect.getSecondServerSocket();
-                    streamSecondData = new SecondBluetoothBytesT(secondSocketGlobal, btMessageStatus);
-                    streamSecondData.start();
-
-
-                } else if (msg.arg1 == 9) {
-                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
-
-                    // 2nd Connection
-                    secondACKSocketGlobal = serverConnect.getSecondACKSocket();
-                    secondACKData = new SecondBluetoothACKBytesT(secondACKSocketGlobal, btACKStatus);
-                    secondACKData.start();
-
-                } else if (msg.arg1 == 10) {
+                 else if (msg.arg1 == 10) {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
 
                     //secondBandSocketGlobal = serverConnect.getSecondBWSocket();
@@ -615,6 +600,24 @@ public class OneScenario extends AppCompatActivity {
                 //    BandSocketGlobal = serverConnect.getBWSocket();
                   //  bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                  //   bandData.start();
+                }
+                //for 2nd connection
+                else if (msg.arg1 == 8) {
+
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show();
+
+                    // 2nd connection
+                    secondSocketGlobal = serverConnect.getSecondServerSocket();
+                    streamSecondData = new SecondBluetoothBytesT(secondSocketGlobal, btMessageStatus);
+                    streamSecondData.start();
+                }
+                else if (msg.arg1 == 9) {
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
+
+                    // 2nd Connection
+                    secondACKSocketGlobal = serverConnect.getSecondACKSocket();
+                    secondACKData = new SecondBluetoothACKBytesT(secondACKSocketGlobal, btACKStatus);
+                    secondACKData.start();
                 }
             }
         };
@@ -826,10 +829,11 @@ public class OneScenario extends AppCompatActivity {
 
         if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
             streamSecondData.writePackets(sendBytes);
-            Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
-            Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
+            Toast.makeText(getApplicationContext(), "Message Sent To 4th Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
+            Log.i(Constants.TAG, "Message Sent To 4th Phone: " + ReceivedString);
             streamSecondData.flushOutStream();
         } else {
+            Log.i(Constants.TAG, "Could not connect to 4th phone");
             Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
             toast.show();
         }
