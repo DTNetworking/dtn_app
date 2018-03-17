@@ -762,6 +762,7 @@ public class OneScenario extends AppCompatActivity {
                 if (!(SocketGlobal == null)) {
                     streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
                     Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
+                    useFile.saveMessage(Constants.FileNames.Message, EditMessageBox.getText().toString());
                     streamData.flushOutStream();
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);

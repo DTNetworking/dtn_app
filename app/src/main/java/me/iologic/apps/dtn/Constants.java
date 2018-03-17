@@ -20,6 +20,7 @@ public class Constants {
         public static final String MsgPacketLoss = "MsgPacketLoss";
         public static final String BWPacketLoss = "BWPacketLoss";
         public static final String Speed = "LightningMcQueen";
+        public static final String Message = "Message";
     }
 
     public interface Packet {
