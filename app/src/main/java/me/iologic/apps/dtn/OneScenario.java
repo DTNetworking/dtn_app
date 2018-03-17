@@ -598,6 +598,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
                 Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(tempReceivedString[0]);
+                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
                 // }
                 GlobalReceivedMessage = writeMessage;
                 ACKData.write(writeACK.getBytes());
@@ -762,7 +763,7 @@ public class OneScenario extends AppCompatActivity {
                 if (!(SocketGlobal == null)) {
                     streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
                     Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
-                    useFile.saveMessage(Constants.FileNames.Message, EditMessageBox.getText().toString());
+                    useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
                     streamData.flushOutStream();
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);

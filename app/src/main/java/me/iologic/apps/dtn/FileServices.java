@@ -232,7 +232,31 @@ public class FileServices {
 
         OutputStreamWriter osw = new OutputStreamWriter(fOut);
         try {
-            osw.write(ReceivedMessage + "\r\n");
+            osw.write("Message sent: " + ReceivedMessage + "\r\n");
+            osw.flush();
+            osw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    // Save Received Message To File
+    public void saveReceivedMessage(String ReceivedFileName, String ReceivedMessage) {
+        String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
+        dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
+
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(dataFile, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        OutputStreamWriter osw = new OutputStreamWriter(fOut);
+        try {
+            osw.write("Message received: " + ReceivedMessage + "\r\n");
             osw.flush();
             osw.close();
         } catch (IOException e) {
