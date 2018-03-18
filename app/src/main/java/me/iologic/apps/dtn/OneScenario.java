@@ -598,7 +598,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
                 Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(tempReceivedString[0]);
-                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
+                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString);
                 // }
                 GlobalReceivedMessage = writeMessage;
                 ACKData.write(writeACK.getBytes());
