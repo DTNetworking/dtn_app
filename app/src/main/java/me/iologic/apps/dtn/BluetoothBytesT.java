@@ -204,13 +204,18 @@ class BluetoothBytesT extends Thread {
 
     public int getMessageReceivedBytes(String receivedNumBytes) {
         if (receivedNumBytes.length() > 1) {
-            int receivedNumBytesInt = Integer.parseInt(receivedNumBytes.trim());
-            //Log.i(Constants.TAG, "Packet Lost Msg: " + Integer.valueOf(receivedNumBytesInt));
-            return receivedNumBytesInt;
+            try {
+                int receivedNumBytesInt = Integer.parseInt(receivedNumBytes.trim());
+                //Log.i(Constants.TAG, "Packet Lost Msg: " + Integer.valueOf(receivedNumBytesInt));
+                return receivedNumBytesInt;
+            }catch (NumberFormatException e){
+                Log.i(Constants.TAG, "No bytes received.");
+            }
         } else {
             //Log.i(Constants.TAG, "Packet Lost Msg: " + Integer.valueOf(receivedNumBytes));
             return Integer.valueOf(receivedNumBytes);
         }
+        return  -1;
     }
 
 
