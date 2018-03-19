@@ -3,8 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dtn_app.iml" filepath="$PROJECT_DIR$/dtn_app.iml" />
       <module fileurl="file://C:\Users\Abhishanth Padarthy\AndroidStudioProjects\dtn_app_git\dtn_app.iml" filepath="C:\Users\Abhishanth Padarthy\AndroidStudioProjects\dtn_app_git\dtn_app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/dtn_app_git.iml" filepath="$PROJECT_DIR$/dtn_app_git.iml" />
+      <module fileurl="file://C:\Users\vinee\AndroidStudioProjects\dtn_app\dtn_app_git.iml" filepath="C:\Users\vinee\AndroidStudioProjects\dtn_app\dtn_app_git.iml" />
     </modules>
   </component>
 </project>

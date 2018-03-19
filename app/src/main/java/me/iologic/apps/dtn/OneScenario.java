@@ -15,7 +15,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -825,7 +824,7 @@ public class OneScenario extends AppCompatActivity {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
-        byte[] sendBytes = ReceivedString.substring(0,9).getBytes();
+        byte[] sendBytes = ReceivedString.substring(0,10).getBytes();
 
         if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
             streamSecondData.writePackets(sendBytes);
