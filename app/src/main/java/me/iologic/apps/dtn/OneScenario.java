@@ -54,8 +54,16 @@ public class OneScenario extends AppCompatActivity {
     BluetoothSocket SocketGlobal; // To store MAIN socket
     BluetoothSocket ACKSocketGlobal; // To store ACK socket
     BluetoothSocket BandSocketGlobal; // To store Bandwidth Socket
+    BluetoothSocket secondSocketGlobal; // To store MAIN socket
+    BluetoothSocket secondACKSocketGlobal; // To store ACK socket
+    BluetoothSocket secondBandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     String getGoodOldName;
+
+    // 2nd Connection
+    SecondBluetoothBytesT streamSecondData;
+    SecondBluetoothACKBytesT secondACKData;
+    SecondBandwidthBytesT secondBandData;
 
     String saveFileUUID;
 
@@ -97,6 +105,7 @@ public class OneScenario extends AppCompatActivity {
     TextView peerConnectTime;
     TextView bandwidthText;
     TextView delayText;
+    TextView delayText2;
     TextView checkBandwidthText;
     EditText EditMessageBox;
     Button sendMsgBtn;
@@ -144,6 +153,7 @@ public class OneScenario extends AppCompatActivity {
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         bandwidthText = (TextView) findViewById(R.id.bandwidth);
         delayText = (TextView) findViewById(R.id.delay);
+        delayText2 = (TextView) findViewById(R.id.delay2);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
         MsgPacketLossText = (TextView) findViewById(R.id.MsgPacketLoss);
         BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
@@ -383,7 +393,7 @@ public class OneScenario extends AppCompatActivity {
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
                 } else {
-                    connectDevice();
+                    // connectDevice();
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
@@ -393,14 +403,14 @@ public class OneScenario extends AppCompatActivity {
         }
     };
 
-    public void connectDevice() {
+ /*  public void connectDevice() {
 
         String btDeviceName = "DTN-";
 
         btClientConnectionStatus = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if (msg.arg1 == 1) {
+            /*    if (msg.arg1 == 1) {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     stopIndicator();
@@ -460,14 +470,16 @@ public class OneScenario extends AppCompatActivity {
                         } */
 
 
-                    //      }
-                    // };
+    //      }
+    // };
 
-                    streamData.start();
-                    sendMsgBtn.setEnabled(true);
+    // streamData.start();
+    //     sendMsgBtn.setEnabled(true);
 
 
-                } else if (msg.arg1 == -1) {
+    //  }
+
+              /* if (msg.arg1 == -1) {
                     if (toastShown == false) {
                         aviView.setIndicatorColor(Color.MAGENTA);
                         Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
@@ -495,13 +507,19 @@ public class OneScenario extends AppCompatActivity {
                     ACKSocketGlobal = clientConnect.getACKClientSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
-                } else if (msg.arg1 == 100) {
+               /* } else if (msg.arg1 == 100) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
                     BandSocketGlobal = clientConnect.getBWClientSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
+                    bandData.start(); */
+              /*  } else if (msg.arg1 == 101) {
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT).show();
+                } else if (msg.arg1 == 8) {
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_CLIENT_CONNECTION_SUCCESS, Toast.LENGTH_SHORT).show();
+                } else if (msg.arg1 == 9) {
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
                 }
 
                 toastShown = true;
@@ -525,7 +543,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.e("DTN", "No Device Found With Name DTN");
             }
         }
-    }
+    } */
 
     private void serverConnection() {
 
@@ -547,6 +565,7 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = serverConnect.getServerSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
                     streamData.start();
+
                 } else if (msg.arg1 == -1) {
                     aviView.setIndicatorColor(Color.RED);
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
@@ -558,6 +577,7 @@ public class OneScenario extends AppCompatActivity {
                     ACKSocketGlobal = serverConnect.getACKSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
+
                 } else if (msg.arg1 == 3) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
@@ -565,6 +585,34 @@ public class OneScenario extends AppCompatActivity {
                     BandSocketGlobal = serverConnect.getBWSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     bandData.start();
+                }
+
+                //for 2nd connection
+                else if (msg.arg1 == 8) {
+
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show();
+
+                    // 2nd connection
+                    secondSocketGlobal = serverConnect.getSecondServerSocket();
+                    streamSecondData = new SecondBluetoothBytesT(secondSocketGlobal, btMessageStatus);
+                    streamSecondData.start();
+
+
+                } else if (msg.arg1 == 9) {
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
+
+                    // 2nd Connection
+                    secondACKSocketGlobal = serverConnect.getSecondACKSocket();
+                    secondACKData = new SecondBluetoothACKBytesT(secondACKSocketGlobal, btACKStatus);
+                    secondACKData.start();
+
+                } else if (msg.arg1 == 10) {
+                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
+
+                    secondBandSocketGlobal = serverConnect.getSecondBWSocket();
+                    secondBandData = new SecondBandwidthBytesT(secondBandSocketGlobal, btBandStatus);
+                    secondBandData.start();
+
                 }
             }
         };
@@ -586,18 +634,19 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
-                String writeACK = String.valueOf(msg.arg1);
+                // String writeACK = String.valueOf(msg.arg1);
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
                 //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 messageReceived.setText(writeMessage);
                 // }
                 GlobalReceivedMessage = writeMessage;
-                ACKData.write(writeACK.getBytes());
+                // ACKData.write(writeACK.getBytes());
                 // isCheckingBandwidth = false;
                 String showSpeed = currentspeed + " m/s";
                 useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
+                writeForSecondConnection(writeMessage);
             }
         }
     };
@@ -610,11 +659,13 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
                 if (writeBuf[0] == 'R') {
                     Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
-                    stopWatch.halt();
+                    //stopWatch.halt();
                     // Update Message Timing List and Reset The Timer
-                    useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
-                    stopWatch.updateList();
-                    stopWatch.reset();
+                    //useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
+                    // stopWatch.updateList();
+                    // stopWatch.reset();
+                    // byte[] writeACK = new byte[]{'R'};
+                    writeACKForSecondConnection(writeBuf);
                 } else {
                     Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
                     stopWatch.halt();
@@ -622,6 +673,7 @@ public class OneScenario extends AppCompatActivity {
                     useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
                     stopWatch.updateList();
                     stopWatch.reset();
+                    writeACKForSecondConnection(writeBuf);
                 }
                 GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
                 String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
@@ -750,7 +802,8 @@ public class OneScenario extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    streamData.writePackets(EditMessageBox.getText().toString().getBytes());
+                    String temp = EditMessageBox.getText() + "_";
+                    streamData.writePackets(temp.getBytes());
                     Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
                     streamData.flushOutStream();
                 } else {
@@ -760,6 +813,28 @@ public class OneScenario extends AppCompatActivity {
             }
 
         });
+    }
+
+    public void writeForSecondConnection(String ReceivedString) {
+
+        NOT_YET_CONNECTED = "I am not yet connected to any phone";
+
+        byte[] sendBytes = ReceivedString.substring(0,9).getBytes();
+
+        if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
+            streamSecondData.writePackets(sendBytes);
+            Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
+            Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
+            streamSecondData.flushOutStream();
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
+    public void writeACKForSecondConnection(byte[] ReceivedByte) {
+        ACKData.write(ReceivedByte);
+        Toast.makeText(getApplicationContext(), "I sent the ACK which I received from the 3rd Phone!", Toast.LENGTH_SHORT);
     }
 
 

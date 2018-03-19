@@ -24,28 +24,37 @@ class BluetoothConnectT extends Thread {
     private final BluetoothServerSocket secondMMACKServerSocket;
     private final BluetoothServerSocket secondBandwidthSocket;
     private BluetoothSocket ClientSocket, AckSocketGlobal, BWSocketGlobal;
+    private BluetoothSocket secondClientSocket, secondAckSocketGlobal, secondBWSocketGlobal;//for 2nd connection
     public static final String TAG = "DTNLogs";
     public static final String NAME = "DTNApp";
 
-    long pairingStartTime, pairingEndTime, duration;
+    long pairingStartTime, pairingEndTime, duration, secondPairingStartTime, secondPairingEndTime, secondDuration;
 
     Handler btConnectionStatus;
     Message btConnectionStatusMsg;
     Message btConnectionACKStatusMsg;
     Message btConnectionBWStatusMsg;
 
+    //for 2nd connection
+    Handler secondBtConnectionStatus;
+    Message secondBtConnectionStatusMsg;
+    Message secondBtConnectionACKStatusMsg;
+    Message secondBtConnectionBWStatusMsg;
+
     private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
     private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
     private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
 
     //UUIDs for second connection
-    private static final UUID MY_SECOND_UUID = UUID.fromString("fa249bcd-e53c-4965-a9f9-d7ea5d6f0040");
-    private static final UUID SECOND_ACK_UUID = UUID.fromString("d9c13848-d7be-48a1-ac11-5f0c082791c7");
-    private static final UUID SECOND_BW_UUID = UUID.fromString("5c6ae5f9-cb04-4a71-9552-ffe426b02b99");
+    private static final UUID MY_SECOND_UUID = UUID.fromString("085a7788-8a7e-4bb6-95e9-7c967912bf3f");
+    private static final UUID SECOND_ACK_UUID = UUID.fromString("928bef3c-e408-44f6-b339-06358055da16");
+    private static final UUID SECOND_BW_UUID = UUID.fromString("ddbb9433-d6c4-4fc5-b6a9-d96bdbc9d928");
+
 
     public BluetoothConnectT(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
 
         btConnectionStatus = getBtConnectionStatus;
+        secondBtConnectionStatus = getBtConnectionStatus;
         // Use a temporary object that is later assigned to mmServerSocket
         // because mmServerSocket is final.
         BluetoothServerSocket tmp = null;
@@ -65,6 +74,17 @@ class BluetoothConnectT extends Thread {
         } catch (IOException e) {
             Log.e(TAG, "Socket's listen() method failed", e);
         }
+
+        //for 2nd connection
+        try {
+            // MY_UUID is the app's UUID string, also used by the client code. Allowing Insecure connections to avoid Pairing Key.
+            second_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME, MY_SECOND_UUID);
+            second_ACK_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME, SECOND_ACK_UUID);
+            second_BW_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME, SECOND_BW_UUID);
+        } catch (IOException e) {
+            Log.e(TAG, "Socket's listen() method failed during second connection", e);
+        }
+
         mmServerSocket = tmp;
         mmACKServerSocket = ACK_tmp;
         bandwidthSocket = BW_tmp;
@@ -77,6 +97,11 @@ class BluetoothConnectT extends Thread {
         btConnectionStatusMsg = Message.obtain();
         btConnectionACKStatusMsg = Message.obtain();
         btConnectionBWStatusMsg = Message.obtain();
+
+        //for 2nd connection
+        secondBtConnectionStatusMsg = Message.obtain();
+        secondBtConnectionACKStatusMsg = Message.obtain();
+        secondBtConnectionBWStatusMsg = Message.obtain();
     }
 
     public void run() {
@@ -86,9 +111,18 @@ class BluetoothConnectT extends Thread {
         ClientSocket = null;
         AckSocketGlobal = null;
         BWSocketGlobal = null;
+
+        //for 2nd connection
+        BluetoothSocket secondSocket = null;
+        BluetoothSocket secondAckSocket = null;
+        BluetoothSocket secondBWSocket = null;
+        secondClientSocket = null;
+        secondAckSocketGlobal = null;
+        secondBWSocketGlobal = null;
+
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
-            try {
+    /*        try {
                 BWSocket = bandwidthSocket.accept();
                 BWSocketGlobal = BWSocket;
 
@@ -97,6 +131,17 @@ class BluetoothConnectT extends Thread {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
             }
+
+            //for 2nd connection
+            try {
+                secondBWSocket = secondBandwidthSocket.accept();
+                secondBWSocketGlobal = secondBWSocket;
+
+                secondBtConnectionBWStatusMsg.arg1 = 10;
+                secondBtConnectionStatus.sendMessage(secondBtConnectionBWStatusMsg);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "secondBWSocket's accept() method failed", e);
+            } */
 
             try {
                 pairingStartTime = System.nanoTime();
@@ -115,6 +160,27 @@ class BluetoothConnectT extends Thread {
                 Log.e(TAG, "Socket's accept() method failed", e);
                 btConnectionStatusMsg.arg1 = -1;
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
+                break;
+            }
+
+            //for 2nd connection
+            try {
+                secondPairingStartTime = System.nanoTime();
+                secondSocket = secondMMServerSocket.accept();
+                if (secondSocket.isConnected()) {
+                    secondPairingEndTime = System.nanoTime();
+                }
+                secondDuration = (secondPairingEndTime - secondPairingStartTime);
+
+                secondClientSocket = secondSocket;
+                secondBtConnectionStatusMsg.arg1 = 8;
+                secondBtConnectionStatusMsg.arg2 = (int) (duration / 1000000);
+                secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
+
+            } catch (IOException e) {
+                Log.e(TAG, "Second Socket's accept() method failed", e);
+                secondBtConnectionStatusMsg.arg1 = -1;
+                secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
                 break;
             }
 
@@ -143,6 +209,17 @@ class BluetoothConnectT extends Thread {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "ACKSocket's accept() method failed", e);
             }
+
+            //for 2nd connection
+            try {
+                secondAckSocket = secondMMACKServerSocket.accept();
+                secondAckSocketGlobal = secondAckSocket;
+
+                secondBtConnectionACKStatusMsg.arg1 = 9;
+                secondBtConnectionStatus.sendMessage(secondBtConnectionACKStatusMsg);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Second ACKSocket's accept() method failed", e);
+            }
         }
     }
 
@@ -157,8 +234,26 @@ class BluetoothConnectT extends Thread {
     public BluetoothSocket getACKSocket() {
         return AckSocketGlobal;
     }
+
     public BluetoothSocket getBWSocket() {
         return BWSocketGlobal;
+    }
+
+    //for 2nd connection
+    public BluetoothServerSocket get_secondMMsocket() {
+        return secondMMServerSocket;
+    }
+
+    public BluetoothSocket getSecondServerSocket() {
+        return secondClientSocket;
+    }
+
+    public BluetoothSocket getSecondACKSocket() {
+        return secondAckSocketGlobal;
+    }
+
+    public BluetoothSocket getSecondBWSocket() {
+        return secondBWSocketGlobal;
     }
 
     // Closes the connect socket and causes the thread to finish.
@@ -169,6 +264,15 @@ class BluetoothConnectT extends Thread {
             bandwidthSocket.close();
         } catch (IOException e) {
             Log.e(TAG, "Could not close the connect socket", e);
+        }
+
+        //for 2nd connection
+        try {
+            secondMMServerSocket.close();
+            secondMMACKServerSocket.close();
+            secondBandwidthSocket.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Could not close the second connect socket", e);
         }
     }
 }
