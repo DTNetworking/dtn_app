@@ -594,11 +594,11 @@ public class OneScenario extends AppCompatActivity {
                 String writeACK = String.valueOf(msg.arg1);
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
-                //String[] tempReceivedString = writeMessage.split("_");
+                String[] tempReceivedString = writeMessage.split("_");
                 Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
                 Log.i(Constants.TAG, "Message Received: " + writeMessage);
-                messageReceived.setText(writeMessage);
-                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, writeMessage);
+                messageReceived.setText(tempReceivedString[0]);
+                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
                 // }
                 GlobalReceivedMessage = writeMessage;
                 ACKData.write(writeACK.getBytes());
