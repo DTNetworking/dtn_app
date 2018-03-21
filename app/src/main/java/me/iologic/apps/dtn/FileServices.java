@@ -243,7 +243,7 @@ public class FileServices {
     }
 
     // Save Received Message To File
-    public void saveReceivedMessage(String ReceivedFileName, String[] ReceivedMessage) {
+    public void saveReceivedMessage(String ReceivedFileName, String ReceivedMessage) {
         String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
         dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
 
