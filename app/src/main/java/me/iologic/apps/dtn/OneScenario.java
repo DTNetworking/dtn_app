@@ -827,7 +827,7 @@ public class OneScenario extends AppCompatActivity {
         byte[] sendBytes = ReceivedString.substring(0,9).getBytes();
 
         if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
-            streamSecondData.writePackets(sendBytes);
+            streamSecondData.write(sendBytes);
             Toast.makeText(getApplicationContext(), "Message Sent To 4th Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
             Log.i(Constants.TAG, "Message Sent To 4th Phone: " + ReceivedString);
             streamSecondData.flushOutStream();
