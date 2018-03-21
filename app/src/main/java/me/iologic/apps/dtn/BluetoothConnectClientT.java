@@ -30,9 +30,9 @@ class BluetoothConnectClientT extends Thread {
     long pairingStartTime, pairingEndTime, duration;
     int retry;
 
-    private static final UUID MY_UUID = UUID.fromString("fa249bcd-e53c-4965-a9f9-d7ea5d6f0040"); // UUID is uniquely generated
-    private static final UUID ACK_UUID = UUID.fromString("d9c13848-d7be-48a1-ac11-5f0c082791c7");// UUID is uniquely generated
-    private static final UUID BW_UUID = UUID.fromString("5c6ae5f9-cb04-4a71-9552-ffe426b02b99"); // UUID is uniquely generated
+    private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
+    private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
+    private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
 
     public BluetoothConnectClientT(BluetoothDevice device, BluetoothAdapter getBluetoothAdapter, Handler getBtConnectionStatus) {
         // Use a temporary object that is later assigned to mmSocket
