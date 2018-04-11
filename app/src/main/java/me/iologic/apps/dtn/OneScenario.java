@@ -48,7 +48,6 @@ public class OneScenario extends AppCompatActivity {
     boolean connectAsClient = true;
     int noOfPeers = 0;
     BluetoothConnectT serverConnect;
-    BluetoothSecondConnectT serverSecondConnect;
     BluetoothConnectClientT clientConnect;
     BluetoothBytesT streamData;
     BandwidthBytesT bandData;
@@ -638,7 +637,7 @@ public class OneScenario extends AppCompatActivity {
                     changeDividerColorT.start();
 
                     // 2nd connection
-                    secondSocketGlobal = serverSecondConnect.getSecondServerSocket();
+                    secondSocketGlobal = serverConnect.getSecondServerSocket();
                     streamSecondData = new SecondBluetoothBytesT(secondSocketGlobal, btMessageStatus);
                     streamSecondData.start();
 
@@ -647,14 +646,14 @@ public class OneScenario extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
 
                     // 2nd Connection
-                    secondACKSocketGlobal = serverSecondConnect.getSecondACKSocket();
+                    secondACKSocketGlobal = serverConnect.getSecondACKSocket();
                     secondACKData = new SecondBluetoothACKBytesT(secondACKSocketGlobal, btACKStatus);
                     secondACKData.start();
 
                 } else if (msg.arg1 == 10) {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
 
-                    secondBandSocketGlobal = serverSecondConnect.getSecondBWSocket();
+                    secondBandSocketGlobal = serverConnect.getSecondBWSocket();
                     secondBandData = new SecondBandwidthBytesT(secondBandSocketGlobal, btBandStatus);
                     secondBandData.start();
 
@@ -664,9 +663,7 @@ public class OneScenario extends AppCompatActivity {
 
 
         serverConnect = new BluetoothConnectT(mBluetoothAdapter, btServerConnectionStatus);
-        serverSecondConnect = new BluetoothSecondConnectT(mBluetoothAdapter, btServerConnectionStatus);
         serverConnect.start();
-        serverSecondConnect.start();
     }
 
     private final Handler btMessageStatus = new Handler() {

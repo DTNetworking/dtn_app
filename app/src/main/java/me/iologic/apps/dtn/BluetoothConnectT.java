@@ -19,6 +19,7 @@ class BluetoothConnectT extends Thread {
     private final BluetoothServerSocket mmServerSocket;
     private final BluetoothServerSocket mmACKServerSocket;
     private final BluetoothServerSocket bandwidthSocket;
+
     //for 2nd connection
     private final BluetoothServerSocket secondMMServerSocket;
     private final BluetoothServerSocket secondMMACKServerSocket;
@@ -237,6 +238,23 @@ class BluetoothConnectT extends Thread {
 
     public BluetoothSocket getBWSocket() {
         return BWSocketGlobal;
+    }
+
+    //for 2nd connection
+    public BluetoothServerSocket get_secondMMsocket() {
+        return secondMMServerSocket;
+    }
+
+    public BluetoothSocket getSecondServerSocket() {
+        return secondClientSocket;
+    }
+
+    public BluetoothSocket getSecondACKSocket() {
+        return secondAckSocketGlobal;
+    }
+
+    public BluetoothSocket getSecondBWSocket() {
+        return secondBWSocketGlobal;
     }
 
     // Closes the connect socket and causes the thread to finish.
