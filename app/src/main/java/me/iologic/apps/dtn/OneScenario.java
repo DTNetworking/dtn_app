@@ -628,6 +628,7 @@ public class OneScenario extends AppCompatActivity {
                         public void run() {
                             while (true) {
                                 if (isFirstPhoneConnected) {
+                                    currentStatusText.setVisibility(View.GONE);
                                     divView.setBackgroundColor(Color.parseColor("#FF00FF00"));
                                 }
                             }
@@ -639,6 +640,7 @@ public class OneScenario extends AppCompatActivity {
                     // 2nd connection
                     secondSocketGlobal = serverConnect.getSecondServerSocket();
                     streamSecondData = new SecondBluetoothBytesT(secondSocketGlobal, btMessageStatus);
+                    Log.i(Constants.TAG, "Second Connection Started!");
                     streamSecondData.start();
 
 

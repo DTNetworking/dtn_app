@@ -144,63 +144,62 @@ class BluetoothConnectT extends Thread {
                 Log.e(Constants.TAG, "secondBWSocket's accept() method failed", e);
             } */
 
-            try {
-                pairingStartTime = System.nanoTime();
-                socket = mmServerSocket.accept();
-                if (socket.isConnected()) {
-                    pairingEndTime = System.nanoTime();
+            Thread firstConnectT = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        pairingStartTime = System.nanoTime();
+                        BluetoothSocket socket = mmServerSocket.accept();
+                        if (socket.isConnected()) {
+                            pairingEndTime = System.nanoTime();
+                        }
+                        duration = (pairingEndTime - pairingStartTime);
+
+                        ClientSocket = socket;
+                        btConnectionStatusMsg.arg1 = 1;
+                        btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
+                        btConnectionStatus.sendMessage(btConnectionStatusMsg);
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "Socket's accept() method failed", e);
+                        btConnectionStatusMsg.arg1 = -1;
+                        btConnectionStatus.sendMessage(btConnectionStatusMsg);
+                    }
                 }
-                duration = (pairingEndTime - pairingStartTime);
-
-                ClientSocket = socket;
-                btConnectionStatusMsg.arg1 = 1;
-                btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
-                btConnectionStatus.sendMessage(btConnectionStatusMsg);
-
-            } catch (IOException e) {
-                Log.e(TAG, "Socket's accept() method failed", e);
-                btConnectionStatusMsg.arg1 = -1;
-                btConnectionStatus.sendMessage(btConnectionStatusMsg);
-                break;
-            }
+            };
 
             //for 2nd connection
-            try {
-                secondPairingStartTime = System.nanoTime();
-                secondSocket = secondMMServerSocket.accept();
-                if (secondSocket.isConnected()) {
-                    secondPairingEndTime = System.nanoTime();
+            Thread secondConnectT = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        secondPairingStartTime = System.nanoTime();
+                        BluetoothSocket secondSocket = secondMMServerSocket.accept();
+                        if (secondSocket.isConnected()) {
+                            secondPairingEndTime = System.nanoTime();
+                            Log.i(Constants.TAG, "Second Server Connected!");
+                        }
+                        secondDuration = (secondPairingEndTime - secondPairingStartTime);
+
+                        Log.i(Constants.TAG, "Second Server Connected Socket Given!");
+
+                        secondClientSocket = secondSocket;
+                        secondBtConnectionStatusMsg.arg1 = 8;
+                        secondBtConnectionStatusMsg.arg2 = (int) (duration / 1000000);
+                        secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "Second Socket's accept() method failed", e);
+                        secondBtConnectionStatusMsg.arg1 = -1;
+                        secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
+                    }
                 }
-                secondDuration = (secondPairingEndTime - secondPairingStartTime);
+            };
 
-                secondClientSocket = secondSocket;
-                secondBtConnectionStatusMsg.arg1 = 8;
-                secondBtConnectionStatusMsg.arg2 = (int) (duration / 1000000);
-                secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
-
-            } catch (IOException e) {
-                Log.e(TAG, "Second Socket's accept() method failed", e);
-                secondBtConnectionStatusMsg.arg1 = -1;
-                secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
-                break;
-            }
-
-          /*  if (socket != null) {
-                // A connection was accepted. Perform work associated with
-                // the connection in a separate thread.
-                //  manageMyConnectedSocket(socket); (TBD)
-                try {
-                    mmServerSocket.close();
-                } catch (IOException e) {
-
-                    Log.e(TAG, "Could not close the connect socket", e);
-                }
-
-                break;
-            } */
+            firstConnectT.start();
+            secondConnectT.start();
 
             // ACK Part
-
             try {
                 AckSocket = mmACKServerSocket.accept();
                 AckSocketGlobal = AckSocket;
@@ -211,7 +210,6 @@ class BluetoothConnectT extends Thread {
                 Log.e(Constants.TAG, "ACKSocket's accept() method failed", e);
             }
 
-            //for 2nd connection
             try {
                 secondAckSocket = secondMMACKServerSocket.accept();
                 secondAckSocketGlobal = secondAckSocket;
@@ -221,8 +219,11 @@ class BluetoothConnectT extends Thread {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Second ACKSocket's accept() method failed", e);
             }
+
+
         }
     }
+    //for 2nd connection
 
     public BluetoothServerSocket get_mmsocket() {
         return mmServerSocket;
