@@ -26,6 +26,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -46,6 +48,7 @@ public class OneScenario extends AppCompatActivity {
     boolean connectAsClient = true;
     int noOfPeers = 0;
     BluetoothConnectT serverConnect;
+    BluetoothSecondConnectT serverSecondConnect;
     BluetoothConnectClientT clientConnect;
     BluetoothBytesT streamData;
     BandwidthBytesT bandData;
@@ -88,6 +91,7 @@ public class OneScenario extends AppCompatActivity {
     boolean BWStart, BWPacketLossCheckStart;
     double GlobalMsgPacketLoss;
     double GlobalBWPacketLoss;
+    boolean isFirstPhoneConnected;
 
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
@@ -102,10 +106,12 @@ public class OneScenario extends AppCompatActivity {
     TextView peerStatusText;
     TextView messageReceived;
     TextView currentStatusText;
+    TextView currentStatusConText;
+    TextView currentStatusSecPhoneText;
+    TextView currentStatusSecConnectedText;
     TextView peerConnectTime;
     TextView bandwidthText;
     TextView delayText;
-    TextView delayText2;
     TextView checkBandwidthText;
     EditText EditMessageBox;
     Button sendMsgBtn;
@@ -114,6 +120,9 @@ public class OneScenario extends AppCompatActivity {
     ProgressBar sendBWProgressBarView;
     TextView speedText;
     AVLoadingIndicatorView aviView;
+    View divView;
+
+    Animation animCrossFadeIn, animCrossFadeOut, animBlink;
 
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
@@ -135,31 +144,25 @@ public class OneScenario extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         btStatusText = (TextView) findViewById(R.id.btStatus);
         peerStatusText = (TextView) findViewById(R.id.peerStatus);
         messageReceived = (TextView) findViewById(R.id.messageStatus);
         EditMessageBox = (EditText) findViewById(R.id.messageBox);
         sendMsgBtn = (Button) findViewById(R.id.sendMsg);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
+        currentStatusConText = (TextView) findViewById(R.id.currentStatusConnected);
+        currentStatusSecPhoneText = (TextView) findViewById(R.id.currentStatusForSecondCon);
+        currentStatusSecConnectedText = (TextView) findViewById(R.id.currentStatusForSecondConnected);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         bandwidthText = (TextView) findViewById(R.id.bandwidth);
         delayText = (TextView) findViewById(R.id.delay);
-        delayText2 = (TextView) findViewById(R.id.delay2);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
         MsgPacketLossText = (TextView) findViewById(R.id.MsgPacketLoss);
         BWPacketLossText = (TextView) findViewById(R.id.BWPacketLoss);
         sendBWProgressBarView = (ProgressBar) findViewById(R.id.sendBWProgressBar);
         speedText = (TextView) findViewById(R.id.speed);
         aviView = (AVLoadingIndicatorView) findViewById(R.id.avi);
+        divView = (View) findViewById(R.id.divider);
 
         checkBandwidthText.setVisibility(View.GONE);
         BWPacketLossText.setVisibility(View.GONE);
@@ -167,6 +170,13 @@ public class OneScenario extends AppCompatActivity {
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
         sendMsgBtn.setEnabled(false);
+
+        animCrossFadeIn = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.fade_in);
+        animCrossFadeOut = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.fade_out);
+        animBlink = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.blink);
 
         btServerConnectionStatus = new Handler();
         btClientConnectionStatus = new Handler();
@@ -554,7 +564,18 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     stopIndicator();
-                    currentStatusText.setText("SERVER");
+                    isFirstPhoneConnected = true;
+                    currentStatusConText.setText(R.string.server);
+                    currentStatusConText.setVisibility(View.VISIBLE);
+                    // start fade in animation
+                    currentStatusConText.startAnimation(animCrossFadeIn);
+
+                    // start fade out animation
+                    currentStatusText.startAnimation(animCrossFadeOut);
+
+                    // Start blink for second connection
+                    currentStatusSecPhoneText.startAnimation(animBlink);
+
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     bandwidthText.setVisibility(View.GONE);
@@ -592,8 +613,32 @@ public class OneScenario extends AppCompatActivity {
 
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show();
 
+                    currentStatusText.startAnimation(animBlink);
+
+                    currentStatusSecConnectedText.setText(R.string.server);
+
+                    currentStatusSecConnectedText.setVisibility(View.VISIBLE);
+                    // start fade in animation
+                    currentStatusSecConnectedText.startAnimation(animCrossFadeIn);
+
+                    // start fade out animation
+                    currentStatusSecPhoneText.startAnimation(animCrossFadeOut);
+
+                    Thread changeDividerColorT = new Thread() {
+                        @Override
+                        public void run() {
+                            while (true) {
+                                if (isFirstPhoneConnected) {
+                                    divView.setBackgroundColor(Color.parseColor("#FF00FF00"));
+                                }
+                            }
+                        }
+                    };
+
+                    changeDividerColorT.start();
+
                     // 2nd connection
-                    secondSocketGlobal = serverConnect.getSecondServerSocket();
+                    secondSocketGlobal = serverSecondConnect.getSecondServerSocket();
                     streamSecondData = new SecondBluetoothBytesT(secondSocketGlobal, btMessageStatus);
                     streamSecondData.start();
 
@@ -602,14 +647,14 @@ public class OneScenario extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
 
                     // 2nd Connection
-                    secondACKSocketGlobal = serverConnect.getSecondACKSocket();
+                    secondACKSocketGlobal = serverSecondConnect.getSecondACKSocket();
                     secondACKData = new SecondBluetoothACKBytesT(secondACKSocketGlobal, btACKStatus);
                     secondACKData.start();
 
                 } else if (msg.arg1 == 10) {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
 
-                    secondBandSocketGlobal = serverConnect.getSecondBWSocket();
+                    secondBandSocketGlobal = serverSecondConnect.getSecondBWSocket();
                     secondBandData = new SecondBandwidthBytesT(secondBandSocketGlobal, btBandStatus);
                     secondBandData.start();
 
@@ -619,7 +664,9 @@ public class OneScenario extends AppCompatActivity {
 
 
         serverConnect = new BluetoothConnectT(mBluetoothAdapter, btServerConnectionStatus);
+        serverSecondConnect = new BluetoothSecondConnectT(mBluetoothAdapter, btServerConnectionStatus);
         serverConnect.start();
+        serverSecondConnect.start();
     }
 
     private final Handler btMessageStatus = new Handler() {
@@ -819,7 +866,7 @@ public class OneScenario extends AppCompatActivity {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
-        byte[] sendBytes = ReceivedString.substring(0,10).getBytes();
+        byte[] sendBytes = ReceivedString.substring(0, 10).getBytes();
 
         if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
             streamSecondData.write(sendBytes);

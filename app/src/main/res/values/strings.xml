@@ -1,18 +1,16 @@
 <resources>
     <string name="app_name">DTN</string>
     <string name="action_msgTime">Time</string>
-    <string name="OneScenarioText">1st Scenario</string>
-    <string name="SecondScenarioText">2nd Scenario</string>
-    <string name="ThirdScenarioText">3rd Scenario</string>
-    <string name="FourthScenarioText">4th Scenario</string>
-    <string name="FifthScenarioText">5th Scenario</string>
-    <string name="SixthScenarioText">6th Scenario</string>
+    <string name="OneScenarioText">Start Scenario</string>
     <string name="title_activity_one_scenario">OneScenario</string>
+    <string name="nodeType">Mobile Node</string>
+    <string name="featureSet">• 2 Connections At Once\n• Packets Forwarder\n</string>
+    <string name="copyright">© Abhishanth Padarthy | Vineeth Penugonda</string>
+    <string name="server">Server</string>
     <string name="btConnectFail">No Device Found!</string>
     <string name="btConnectSuccess">Connected To:</string>
     <string name="peersNotFound">No Peers Found!</string>
     <string name="peersInVicinity">Peers In Vicinity:</string>
-    <string name="copyright">© Abhishanth Padarthy | Vineeth Penugonda</string>
     <string name="pairingTime">Pairing Time</string>
     <string name="delay">Delay</string>
     <string name="bandwidth">Bandwidth</string>
