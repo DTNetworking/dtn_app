@@ -1,18 +1,17 @@
 <resources>
     <string name="app_name">DTN</string>
     <string name="action_msgTime">Time</string>
-    <string name="OneScenarioText">1st Scenario</string>
-    <string name="SecondScenarioText">2nd Scenario</string>
-    <string name="ThirdScenarioText">3rd Scenario</string>
-    <string name="FourthScenarioText">4th Scenario</string>
-    <string name="FifthScenarioText">5th Scenario</string>
-    <string name="SixthScenarioText">6th Scenario</string>
+    <string name="OneScenarioText">Start Scenario</string>
     <string name="title_activity_one_scenario">OneScenario</string>
+    <string name="nodeType">Static Node</string>
+    <string name="featureSet">• Only 1 Connection At Once\n• Source/Destination\n</string>
     <string name="btConnectFail">No Device Found!</string>
     <string name="btConnectSuccess">Connected To:</string>
     <string name="peersNotFound">No Peers Found!</string>
     <string name="peersInVicinity">Peers In Vicinity:</string>
     <string name="copyright">© Abhishanth Padarthy | Vineeth Penugonda</string>
+    <string name="sendTxT">Send Text</string>
+    <string name="sendImage">Send Image</string>
     <string name="pairingTime">Pairing Time</string>
     <string name="delay">Delay</string>
     <string name="bandwidth">Bandwidth</string>
@@ -26,4 +25,7 @@
     <string name="BWPacketLoss">Bandwidth Packet Loss</string>
     <string name="speed">Speed</string>
     <string name="MeterPerSecond">m/s</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

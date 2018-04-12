@@ -50,7 +50,7 @@
         app:layout_constraintVertical_bias="0.611" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/dataSelLinearLayout"
         android:layout_width="0dp"
         android:layout_height="58dp"
         android:layout_marginBottom="9dp"
@@ -85,7 +85,14 @@
             android:layout_weight="1"
             android:text="@string/send" />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_image_select"/>
+
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -98,7 +105,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        app:layout_constraintTop_toBottomOf="@+id/dataSelLinearLayout">
 
         <TextView
             android:id="@+id/messageStatus"
@@ -232,14 +239,15 @@
         </LinearLayout>
 
         <TextView
-            android:layout_marginTop="8dp"
             android:id="@+id/currentStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
             android:layout_weight="0"
             android:text="@string/currentStatus"
             android:textAlignment="center"
             android:textSize="20sp" />
     </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>
