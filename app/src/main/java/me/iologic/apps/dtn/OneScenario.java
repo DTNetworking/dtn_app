@@ -19,9 +19,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -31,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -103,7 +101,7 @@ public class OneScenario extends AppCompatActivity {
     TextView delayText;
     TextView checkBandwidthText;
     EditText EditMessageBox;
-    Button sendMsgBtn;
+    ImageButton sendMsgBtn;
     TextView MsgPacketLossText;
     TextView BWPacketLossText;
     ProgressBar sendBWProgressBarView;
@@ -147,7 +145,7 @@ public class OneScenario extends AppCompatActivity {
         peerStatusText = (TextView) findViewById(R.id.peerStatus);
         messageReceived = (TextView) findViewById(R.id.messageStatus);
         EditMessageBox = (EditText) findViewById(R.id.messageBox);
-        sendMsgBtn = (Button) findViewById(R.id.sendMsg);
+        sendMsgBtn = (ImageButton) findViewById(R.id.sendMsg);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         bandwidthText = (TextView) findViewById(R.id.bandwidth);
@@ -408,7 +406,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void connectDevice() {
 
-        String btDeviceName = "DTN-1641b121";
+        String btDeviceName = "DTN-";
 
         btClientConnectionStatus = new Handler() {
             @Override

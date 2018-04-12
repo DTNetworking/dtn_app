@@ -36,6 +36,7 @@ public class Constants {
     public interface Permissions {
         public static final int PERMISSION_REQUEST_CODE = 200;
         public static final int REQUEST_ENABLE_BT = 1;
+        public static final int READ_REQUEST_CODE = 42;
     }
 
     // Defines several constants used when transmitting messages between the
