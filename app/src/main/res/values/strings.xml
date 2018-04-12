@@ -4,7 +4,7 @@
     <string name="OneScenarioText">Start Scenario</string>
     <string name="title_activity_one_scenario">OneScenario</string>
     <string name="nodeType">Mobile Node</string>
-    <string name="featureSet">• 2 Connections At Once\n• Packets Forwarder\n</string>
+    <string name="featureSet">• Can Connect 2 Connections At Once\n• Packets Forwarder\n</string>
     <string name="copyright">© Abhishanth Padarthy | Vineeth Penugonda</string>
     <string name="server">Server</string>
     <string name="btConnectFail">No Device Found!</string>
