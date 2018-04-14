@@ -28,6 +28,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -133,6 +135,8 @@ public class OneScenario extends AppCompatActivity {
     LightningMcQueen speed;
     double currentspeed;
     Indicators btFindIndicator;
+
+    Animation animFadeIn, animFadeOut, animSlideOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,6 +250,10 @@ public class OneScenario extends AppCompatActivity {
 
         // writeBandwidthLossData();
 
+        animFadeIn = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.fade_in);
+        animSlideOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out);
+
 
         Dialog();
         startBluetooth();
@@ -333,10 +341,11 @@ public class OneScenario extends AppCompatActivity {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        getGoodOldName = mBluetoothAdapter.getName(); // For replacing name when Activity Exits
+
         if (mBluetoothAdapter == null) {
             btStatusText.setText("Bluetooth Not Found!");
         } else if (!mBluetoothAdapter.isEnabled()) {
-            getGoodOldName = mBluetoothAdapter.getName(); // For replacing name when Activity Exits
             mBluetoothAdapter.enable();
             //   Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
@@ -408,6 +417,8 @@ public class OneScenario extends AppCompatActivity {
                 Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStatusText.setText("Discovery Period Finished");
+                peerStatusText.startAnimation(animSlideOut);
+                peerStatusText.setVisibility(View.GONE);
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
                 } else {
@@ -620,6 +631,10 @@ public class OneScenario extends AppCompatActivity {
                 String[] tempReceivedString = writeMessage.split("_");
                 Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
                 Log.i(Constants.TAG, "Message Received: " + writeMessage);
+                if (messageReceived.getVisibility() != View.VISIBLE) {
+                    messageReceived.setVisibility(View.VISIBLE);
+                }
+                messageReceived.startAnimation(animFadeIn);
                 messageReceived.setText(tempReceivedString[0]);
                 useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
                 // }

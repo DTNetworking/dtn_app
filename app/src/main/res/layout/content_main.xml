@@ -16,6 +16,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/apexmk2_regular"
         android:text="@string/nodeType"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/OneScenario"
