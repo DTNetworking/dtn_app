@@ -19,11 +19,11 @@ class BluetoothConnectT extends Thread {
     private final BluetoothServerSocket mmServerSocket;
     private final BluetoothServerSocket mmACKServerSocket;
     private final BluetoothServerSocket bandwidthSocket;
-
     //for 2nd connection
     private final BluetoothServerSocket secondMMServerSocket;
     private final BluetoothServerSocket secondMMACKServerSocket;
     private final BluetoothServerSocket secondBandwidthSocket;
+
     private BluetoothSocket ClientSocket, AckSocketGlobal, BWSocketGlobal;
     private BluetoothSocket secondClientSocket, secondAckSocketGlobal, secondBWSocketGlobal;//for 2nd connection
     public static final String TAG = "DTNLogs";
@@ -106,7 +106,7 @@ class BluetoothConnectT extends Thread {
     }
 
     public void run() {
-        final BluetoothSocket socket = null;
+        BluetoothSocket socket = null;
         BluetoothSocket AckSocket = null;
         BluetoothSocket BWSocket = null;
         ClientSocket = null;
