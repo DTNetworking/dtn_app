@@ -1,5 +1,6 @@
 package me.iologic.apps.dtn;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -12,6 +13,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,7 +41,10 @@ import com.wang.avi.AVLoadingIndicatorView;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
+
+import static me.iologic.apps.dtn.Constants.Permissions.READ_REQUEST_CODE;
 
 public class OneScenario extends AppCompatActivity {
 
@@ -70,6 +75,7 @@ public class OneScenario extends AppCompatActivity {
 
     FileServices useFile;
     File tempFile;
+    ImageData img;
 
     double FileSentBandwidth;
     Handler getDataHandler;
@@ -82,6 +88,8 @@ public class OneScenario extends AppCompatActivity {
     boolean BWStart, BWPacketLossCheckStart;
     double GlobalMsgPacketLoss;
     double GlobalBWPacketLoss;
+
+    Uri ImageUri;
 
 
     private static String SERVER_CONNECTION_SUCCESSFUL;
@@ -102,6 +110,7 @@ public class OneScenario extends AppCompatActivity {
     TextView checkBandwidthText;
     EditText EditMessageBox;
     ImageButton sendMsgBtn;
+    ImageButton sendImgBtn;
     TextView MsgPacketLossText;
     TextView BWPacketLossText;
     ProgressBar sendBWProgressBarView;
@@ -146,6 +155,7 @@ public class OneScenario extends AppCompatActivity {
         messageReceived = (TextView) findViewById(R.id.messageStatus);
         EditMessageBox = (EditText) findViewById(R.id.messageBox);
         sendMsgBtn = (ImageButton) findViewById(R.id.sendMsg);
+        sendImgBtn = (ImageButton) findViewById(R.id.sendImg);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         bandwidthText = (TextView) findViewById(R.id.bandwidth);
@@ -167,6 +177,7 @@ public class OneScenario extends AppCompatActivity {
         btStatusText.setSelected(true); // For Horizontal Scrolling
         messageReceived.setSelected(true); // For Horizontal Scrolling
         sendMsgBtn.setEnabled(false);
+        sendImgBtn.setEnabled(false);
 
         btServerConnectionStatus = new Handler();
         btClientConnectionStatus = new Handler();
@@ -180,6 +191,8 @@ public class OneScenario extends AppCompatActivity {
         useFile = new FileServices(getApplicationContext(), saveFileUUID);
 
         speed = new LightningMcQueen();
+
+        img = new ImageData();
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this
@@ -237,6 +250,7 @@ public class OneScenario extends AppCompatActivity {
         Dialog();
         startBluetooth();
         sendMessage();
+        sendImage();
     }
 
     @Override
@@ -253,6 +267,9 @@ public class OneScenario extends AppCompatActivity {
             case R.id.action_msgTime:
                 showMsgTimeList();
                 return true;
+            case R.id.action_showImage:
+                Intent intent = new Intent(this, ImageViewer.class);
+                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -315,11 +332,11 @@ public class OneScenario extends AppCompatActivity {
         String btEnabledMessage = "Bluetooth is Enabled";
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        getGoodOldName = mBluetoothAdapter.getName(); // For replacing name when Activity Exits
 
         if (mBluetoothAdapter == null) {
             btStatusText.setText("Bluetooth Not Found!");
         } else if (!mBluetoothAdapter.isEnabled()) {
+            getGoodOldName = mBluetoothAdapter.getName(); // For replacing name when Activity Exits
             mBluetoothAdapter.enable();
             //   Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
@@ -778,6 +795,89 @@ public class OneScenario extends AppCompatActivity {
             }
 
         });
+    }
+
+    public void sendImage() {
+
+        NOT_YET_CONNECTED = "I am not yet connected to any phone";
+
+        sendImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!(SocketGlobal == null)) {
+                    performFileSearch();
+                } else {
+                    Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+
+        });
+    }
+
+    public void performFileSearch() {
+
+        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
+        // browser.
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+        // Filter to only show results that can be "opened", such as a
+        // file (as opposed to a list of contacts or timezones)
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        // Filter to show only images, using the image MIME data type.
+        // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+        // To search for all documents available via installed storage providers,
+        // it would be "*/*".
+        intent.setType("image/*");
+
+        startActivityForResult(intent, READ_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent resultData) {
+
+        // The ACTION_OPEN_DOCUMENT intent was sent with the request code
+        // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
+        // response to some other intent, and the code below shouldn't run at all.
+
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // The document selected by the user won't be returned in the intent.
+            // Instead, a URI to that document will be contained in the return intent
+            // provided to this method as a parameter.
+            // Pull that URI using resultData.getData().
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                // ImageUri = uri;
+                Log.i(Constants.TAG, "Uri: " + uri.toString());
+                byte[] ImgBytes = img.ImageToBytes(RealPathUtil.getRealPath(getApplicationContext(), uri)); // Converting Image To Bytes
+                Log.i(Constants.TAG, "ImgBytes: " + ImgBytes.length + " " + ImgBytes.toString());
+                if (ImgBytes != null) {
+                    streamData.write(ImgBytes);
+                    // final Handler handler = new Handler();
+                    // handler.postDelayed(new Runnable() {
+                    //     @Override
+                    //      public void run() {
+                    streamData.write("#&1".getBytes()); // End of stream
+                    //      }
+                    //   }, 10);
+                    streamData.flushOutStream();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Image URI is null", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private static byte[] trimByteArray(byte[] bytes, int allPacketSizes) {
+        int i = bytes.length - 1;
+        while (i >= allPacketSizes && bytes[i] == 0) {
+            --i;
+        }
+
+        return Arrays.copyOf(bytes, i + 1);
     }
 
 

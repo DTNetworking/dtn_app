@@ -12,6 +12,7 @@
     <string name="copyright">© Abhishanth Padarthy | Vineeth Penugonda</string>
     <string name="sendTxT">Send Text</string>
     <string name="sendImage">Send Image</string>
+    <string name="showImage">Image</string>
     <string name="pairingTime">Pairing Time</string>
     <string name="delay">Delay</string>
     <string name="intercontacttime">Inter Contact Time</string>

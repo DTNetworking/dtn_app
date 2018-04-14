@@ -22,6 +22,7 @@ public class Constants {
         public static final String Speed = "LightningMcQueen";
         public static final String SentMessage = "SentMessage";
         public static final String ReceivedMessage = "ReceivedMessage";
+        public static final String receivedImageFileName = "Img";
     }
 
     public interface Packet {
