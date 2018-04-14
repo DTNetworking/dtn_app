@@ -220,10 +220,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:text="@string/currentStatus"
                 android:layout_alignEnd="@+id/currentStatus"
-                android:textSize="20sp"
-                android:visibility="gone" />
+                android:textSize="20sp" />
 
             <View
                 android:id="@+id/divider"
@@ -232,7 +230,7 @@
                 android:background="#e62c33"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_toRightOf="@+id/currentStatus"/>
+                android:layout_toRightOf="@+id/currentStatusConnected" />
 
             <TextView
                 android:id="@+id/currentStatusForSecondCon"
@@ -251,7 +249,7 @@
                 android:text="@string/currentStatus"
                 android:textSize="20sp"
                 android:visibility="gone"
-                android:layout_alignStart="@+id/currentStatusForSecondCon"/>
+                android:layout_toRightOf="@+id/divider"/>
 
 
 

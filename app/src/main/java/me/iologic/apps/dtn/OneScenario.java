@@ -571,10 +571,7 @@ public class OneScenario extends AppCompatActivity {
 
                     // start fade out animation
                     currentStatusText.startAnimation(animCrossFadeOut);
-
-                    // Start blink for second connection
-                    currentStatusSecPhoneText.startAnimation(animBlink);
-
+                    
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     bandwidthText.setVisibility(View.GONE);
@@ -622,6 +619,8 @@ public class OneScenario extends AppCompatActivity {
 
                     // start fade out animation
                     currentStatusSecPhoneText.startAnimation(animCrossFadeOut);
+
+                    currentStatusSecPhoneText.setVisibility(View.GONE);
 
                     Thread changeDividerColorT = new Thread() {
                         @Override
