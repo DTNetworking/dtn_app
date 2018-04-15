@@ -1,18 +1,12 @@
 package me.iologic.apps.dtn;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
-
-import java.io.File;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -30,8 +24,6 @@ public class ImageViewer extends AppCompatActivity {
      * user interaction before hiding the system UI.
      */
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    private ImageView mImageView;
 
     /**
      * Some older devices needs a small delay between UI widget updates
@@ -114,7 +106,6 @@ public class ImageViewer extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-        mImageView = (ImageView) findViewById(R.id.imageView);
     }
 
     @Override
@@ -125,9 +116,6 @@ public class ImageViewer extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
-
-        Bitmap myBitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath() + File.separator + "img000.jpg");
-        mImageView.setImageBitmap(myBitmap);
     }
 
     private void toggle() {
