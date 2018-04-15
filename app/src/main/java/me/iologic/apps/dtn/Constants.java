@@ -72,4 +72,9 @@ public class Constants {
         public static final String SERVER_CONNECTION_SUCCESSFUL = "Server is successfully connected!";
         public static final String SERVER_CONNECTION_FAIL = "Server failed to connect";
     }
+
+    public interface EmulationMessages {
+        public static final String CLIENTCONNECT_NOT_CONNECTED = "Socket is not open yet";
+        public static final String CLIENTCONNECT_GETTING_DISCONNECTED = "The main socket which is used to send/receive messages is being disconnected now. I will try to re-connect.";
+    }
 }

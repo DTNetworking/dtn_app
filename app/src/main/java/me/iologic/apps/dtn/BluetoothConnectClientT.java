@@ -28,7 +28,6 @@ class BluetoothConnectClientT extends Thread {
     Message btConnectionBWStatusMsg;
 
     long pairingStartTime, pairingEndTime, duration;
-    int retry;
 
     private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
     private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
@@ -58,22 +57,14 @@ class BluetoothConnectClientT extends Thread {
         mmACKClientSocket = ACKtmp;
         mmBWClientSocket = BWtmp;
 
+        btConnectionStatusMsg = Message.obtain();
         btConnectionACKStatusMsg = Message.obtain();
         btConnectionBWStatusMsg = Message.obtain();
-
-        retry = 0;
     }
 
     public void run() {
         // Cancel discovery because it otherwise slows down the connection.
         mBluetoothAdapter.cancelDiscovery();
-
-        btConnectionStatusMsg = Message.obtain();
-
-        if (retry != 0) {
-            Log.i(Constants.TAG, "I am re-trying to connect to the DTN device. " + android.os.Process.myTid() + " Retry: " + retry);
-        } else { // Log.i(Constants.TAG, "I am connecting to the DTN device for the first time");
-        }
 
         // BW Part
    /*     try {
@@ -95,34 +86,16 @@ class BluetoothConnectClientT extends Thread {
         btConnectionBWStatusMsg.arg1 = 100;
         btConnectionStatus.sendMessage(btConnectionBWStatusMsg); */
 
-        try {
-            // Connect to the remote device through the socket. This call blocks
-            // until it succeeds or throws an exception.
-            pairingStartTime = System.nanoTime();
-            mmSocket.connect();
-            pairingEndTime = System.nanoTime();
-            duration = (pairingEndTime - pairingStartTime);
-        } catch (IOException connectException) {
-            btConnectionStatusMsg.arg1 = -1;
-            btConnectionStatus.sendMessage(btConnectionStatusMsg);
-            //  Log.i(Constants.TAG, "Connect Exception:" + connectException);
-
-            // Unable to connect; close the socket and return.
-            try {
-                mmSocket.close();
-            } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
+        Thread firstClientConnectT = new Thread() {
+            public void run() {
+                while (true) {
+                    clientConnect();
+                    btConnectionStatusMsg = Message.obtain();
+                }
             }
+        };
 
-            return;
-        }
-
-        retry++;
-
-        btConnectionStatusMsg.arg1 = 1;
-        btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
-
-        btConnectionStatus.sendMessage(btConnectionStatusMsg);
+        firstClientConnectT.start();
 
         // ACK Part
 //     try {
@@ -145,6 +118,38 @@ class BluetoothConnectClientT extends Thread {
 //        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
     }
 
+    public void clientConnect() {
+        try {
+            // Connect to the remote device through the socket. This call blocks
+            // until it succeeds or throws an exception.
+            pairingStartTime = System.nanoTime();
+            mmSocket.connect();
+            pairingEndTime = System.nanoTime();
+            duration = (pairingEndTime - pairingStartTime);
+
+        } catch (IOException connectException) {
+            btConnectionStatusMsg = Message.obtain();
+            btConnectionStatusMsg.arg1 = -1;
+            btConnectionStatus.sendMessage(btConnectionStatusMsg);
+            closemmSocket();
+        }
+
+        if (mmSocket.isConnected()) {
+            btConnectionStatusMsg.arg1 = 1;
+            btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
+
+            btConnectionStatus.sendMessage(btConnectionStatusMsg);
+        }
+    }
+
+    public void closemmSocket() {
+        try {
+            mmSocket.close();
+        } catch (IOException error) {
+            Log.i(Constants.TAG, "mmSocket is disconnected");
+        }
+    }
+
     public BluetoothSocket getClientSocket() {
         return mmSocket;
     }
@@ -152,6 +157,7 @@ class BluetoothConnectClientT extends Thread {
     public BluetoothSocket getACKClientSocket() {
         return mmACKClientSocket;
     }
+
     public BluetoothSocket getBWClientSocket() {
         return mmBWClientSocket;
     }

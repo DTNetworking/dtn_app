@@ -13,6 +13,7 @@
     <string name="sendTxT">Send Text</string>
     <string name="sendImage">Send Image</string>
     <string name="showImage">Image</string>
+    <string name="connReconnect">Connection Reconnect</string>
     <string name="pairingTime">Pairing Time</string>
     <string name="delay">Delay</string>
     <string name="intercontacttime">Inter Contact Time</string>

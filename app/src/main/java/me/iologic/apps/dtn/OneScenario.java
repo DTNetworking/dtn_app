@@ -278,6 +278,13 @@ public class OneScenario extends AppCompatActivity {
             case R.id.action_showImage:
                 Intent intent = new Intent(this, ImageViewer.class);
                 startActivity(intent);
+            case R.id.action_connectionReconnect:
+                if (streamData != null) {
+                    Toast.makeText(getApplicationContext(), Constants.EmulationMessages.CLIENTCONNECT_GETTING_DISCONNECTED, Toast.LENGTH_SHORT).show();
+                    clientConnect.closemmSocket();
+                } else {
+                    Toast.makeText(getApplicationContext(), Constants.EmulationMessages.CLIENTCONNECT_NOT_CONNECTED, Toast.LENGTH_SHORT).show();
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
