@@ -125,24 +125,24 @@ class BluetoothConnectClientT extends Thread {
         btConnectionStatus.sendMessage(btConnectionStatusMsg);
 
         // ACK Part
-     try {
-            mmACKClientSocket.connect();
-        } catch (IOException e) {
-            btConnectionACKStatusMsg.arg1 = -2;
-            btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
-            Log.e(Constants.TAG, "I could not connect to ACK Socket on the server side");
-            try {
-                mmACKClientSocket.close();
-            } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
-
-            }
-
-            return;
-        }
-
-        btConnectionACKStatusMsg.arg1 = 2;
-        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+//     try {
+//            mmACKClientSocket.connect();
+//        } catch (IOException e) {
+//            btConnectionACKStatusMsg.arg1 = -2;
+//            btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+//            Log.e(Constants.TAG, "I could not connect to ACK Socket on the server side");
+//            try {
+//                mmACKClientSocket.close();
+//            } catch (IOException closeException) {
+//                Log.e(TAG, "Could not close the client socket", closeException);
+//
+//            }
+//
+//            return;
+//        }
+//
+//        btConnectionACKStatusMsg.arg1 = 2;
+//        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
     }
 
     public BluetoothSocket getClientSocket() {
