@@ -216,8 +216,8 @@ class BluetoothConnectT extends Thread {
             }
         };
 
-        firstACKT.start();
-        secondACKT.start();
+        // firstACKT.start();
+       // secondACKT.start();
     }
 
     //for 1st connection
