@@ -143,7 +143,10 @@ class BluetoothConnectT extends Thread {
         Thread firstConnectT = new Thread() {
             @Override
             public void run() {
-                startFirstConnectionSocket();
+                while (true) {
+                    startFirstConnectionSocket();
+                    btConnectionStatusMsg = Message.obtain(); // Get new message object for every re-trial of connection.
+                }
             }
         };
 
@@ -217,7 +220,7 @@ class BluetoothConnectT extends Thread {
         };
 
         // firstACKT.start();
-       // secondACKT.start();
+        // secondACKT.start();
     }
 
     //for 1st connection
@@ -274,7 +277,6 @@ class BluetoothConnectT extends Thread {
             btConnectionStatusMsg.arg1 = -1;
             btConnectionStatus.sendMessage(btConnectionStatusMsg);
             closefirstConnectSocket();
-            startFirstConnectionSocket();
         }
     }
 
