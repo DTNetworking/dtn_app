@@ -275,9 +275,6 @@ public class OneScenario extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle Item Selection
         switch (item.getItemId()) {
-            case R.id.action_contactTime:
-                showContactTimeList();
-                return true;
             case R.id.action_msgTime:
                 showMsgTimeList();
                 return true;
@@ -291,6 +288,10 @@ public class OneScenario extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), Constants.EmulationMessages.CLIENTCONNECT_NOT_CONNECTED, Toast.LENGTH_SHORT).show();
                 }
+            case R.id.interContactTime:
+                Intent interContactTimeIntent = new Intent(this, ContactTimeListView.class);
+                interContactTimeIntent.putExtra("contactTimeListArray", contactTimeList);
+                startActivity(interContactTimeIntent);
             default:
                 return super.onOptionsItemSelected(item);
         }

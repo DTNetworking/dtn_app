@@ -29,6 +29,17 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
+                                      <entry key="clipartAsset">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="url" value="jar:file:/usr/local/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_hourglass_empty_black_24dp.xml" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                       <entry key="image">
                                         <value>
                                           <PersistentState>
@@ -44,9 +55,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="imageAsset" value="/media/vineethp/ShareTheData/Downloads/FDM/micro_texture_black_over_surface2.jpg" />
-                                      <entry key="outputName" value="ic_action_bar" />
+                                      <entry key="outputName" value="ic_inter_contact_time" />
                                       <entry key="theme" value="HOLO_DARK" />
                                     </map>
                                   </option>
