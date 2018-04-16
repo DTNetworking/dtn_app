@@ -20,4 +20,10 @@
         android:orderInCategory="102"
         android:title="@string/action_msgTime"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_contactTime"
+        android:icon="@drawable/ic_hourglass_empty_white_24dp"
+        android:orderInCategory="103"
+        android:title="Inter Contact Time"
+        app:showAsAction="always" />
 </menu>

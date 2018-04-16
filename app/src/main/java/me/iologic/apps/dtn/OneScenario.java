@@ -64,6 +64,7 @@ public class OneScenario extends AppCompatActivity {
     BluetoothSocket ACKSocketGlobal; // To store ACK socket
     BluetoothSocket BandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
+    ArrayList<ContactTimeList> contactTimeList = new ArrayList<>();
     String getGoodOldName;
 
     String saveFileUUID;
@@ -90,6 +91,8 @@ public class OneScenario extends AppCompatActivity {
     boolean BWStart, BWPacketLossCheckStart;
     double GlobalMsgPacketLoss;
     double GlobalBWPacketLoss;
+
+    long connection1StartTime, connection1EndTime, duration;
 
     Uri ImageUri;
 
@@ -272,6 +275,9 @@ public class OneScenario extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle Item Selection
         switch (item.getItemId()) {
+            case R.id.action_contactTime:
+                showContactTimeList();
+                return true;
             case R.id.action_msgTime:
                 showMsgTimeList();
                 return true;
@@ -288,6 +294,12 @@ public class OneScenario extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void showContactTimeList(){
+        alertDialogOpened = true;
+        AlertDialog.Builder showContactTimeList = new AlertDialog.Builder(OneScenario.this);
+        showContactTimeList.setTitle("Inter Contact Timings");
     }
 
     public void showMsgTimeList() {
@@ -450,6 +462,7 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     stopIndicator();
+                    connection1StartTime = System.nanoTime();
                     currentStatusText.setText("CLIENT");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
@@ -518,6 +531,12 @@ public class OneScenario extends AppCompatActivity {
                         aviView.setIndicatorColor(Color.MAGENTA);
                         Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
+                        connection1EndTime = System.nanoTime();
+                        duration = connection1EndTime - connection1StartTime;
+
+                        //list
+                        ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), Long.toString(connection1StartTime), Long.toString(duration));
+                        contactTimeList.add(device1);
                     }
 
                     if (deviceConnected == false) {
@@ -597,6 +616,7 @@ public class OneScenario extends AppCompatActivity {
                     aviView.setIndicatorColor(Color.RED);
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                     toast.show();
+
                 } else if (msg.arg1 == 2) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
