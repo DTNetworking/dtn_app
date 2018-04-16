@@ -288,7 +288,7 @@ public class OneScenario extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), Constants.EmulationMessages.CLIENTCONNECT_NOT_CONNECTED, Toast.LENGTH_SHORT).show();
                 }
-            case R.id.interContactTime:
+            case R.id.action_intercontactTime:
                 Intent interContactTimeIntent = new Intent(this, ContactTimeListView.class);
                 interContactTimeIntent.putExtra("contactTimeListArray", contactTimeList);
                 startActivity(interContactTimeIntent);
