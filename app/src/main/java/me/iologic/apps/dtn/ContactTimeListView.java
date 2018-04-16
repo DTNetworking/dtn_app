@@ -17,7 +17,7 @@ public class ContactTimeListView extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        ArrayList<ContactTimeList> ReceivedContactTimeList = extras.getParcelable("contactTimeListArray");
+        ArrayList<ContactTimeList> ReceivedContactTimeList = getIntent().getParcelableArrayListExtra("contactTimeListArray");
 
         ContactTimeListAdapter adapter = new ContactTimeListAdapter(this, R.layout.adapter_view_layout, ReceivedContactTimeList);
         myListView.setAdapter(adapter);
