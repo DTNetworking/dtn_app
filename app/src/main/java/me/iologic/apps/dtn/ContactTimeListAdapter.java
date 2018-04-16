@@ -9,16 +9,18 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactTimeListAdapter extends ArrayAdapter<ContactTimeList> {
     private static final String TAG = "ContactListAdapter";
     private Context mContext;
+    int mResource;
 
-    public ContactTimeListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<ContactTimeList> objects, Context mContext) {
+    public ContactTimeListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<ContactTimeList> objects) {
         super(context, resource, objects);
-        this.mContext = mContext;
-        this.resource = mResource;
+        mContext = context;
+        mResource = resource;
     }
 
     @NonNull
