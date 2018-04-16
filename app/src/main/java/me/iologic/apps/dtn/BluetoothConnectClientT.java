@@ -88,10 +88,10 @@ class BluetoothConnectClientT extends Thread {
 
         Thread firstClientConnectT = new Thread() {
             public void run() {
-                while (true) {
+                //while (true) {
                     clientConnect();
                     btConnectionStatusMsg = Message.obtain();
-                }
+                //}
             }
         };
 
