@@ -476,7 +476,7 @@ public class OneScenario extends AppCompatActivity {
                 ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
                 contactTimeList.add(device1);
 
-                Toast.makeText(getApplicationContext(), (R.string.deviceTxT + connectedDeviceName + R.string.deviceDisconnected), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is connected!"), Toast.LENGTH_SHORT).show();
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
