@@ -41,9 +41,11 @@ import android.widget.Toast;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.UUID;
 
 import static me.iologic.apps.dtn.Constants.Permissions.READ_REQUEST_CODE;
@@ -66,7 +68,7 @@ public class OneScenario extends AppCompatActivity {
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     ArrayList<ContactTimeList> contactTimeList = new ArrayList<>();
     String getGoodOldName;
-
+    String currentDateTime;
     String saveFileUUID;
 
     AlertDialog alertDialog;
@@ -456,7 +458,7 @@ public class OneScenario extends AppCompatActivity {
                 //Log.e(Constants.TAG, "Disconnected..............");
 
                 //list
-                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), Long.toString(connection1StartTime), Long.toString(duration));
+                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, Long.toString(duration));
                 contactTimeList.add(device1);
             }
 
@@ -475,6 +477,8 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     stopIndicator();
+                    currentDateTime = DateFormat.getDateTimeInstance().format(new Date());
+
                     connection1StartTime = System.nanoTime();
                     currentStatusText.setText("CLIENT");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
