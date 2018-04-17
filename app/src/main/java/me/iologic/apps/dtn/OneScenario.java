@@ -463,10 +463,10 @@ public class OneScenario extends AppCompatActivity {
                 long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
                 if(durationInSeconds < 60) {
                     interConnectTime = durationInSeconds;
-                    interConnectTimeTxt = interConnectTime + "seconds";
+                    interConnectTimeTxt = interConnectTime + " seconds";
                 } else {
                     interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
-                    interConnectTimeTxt = interConnectTime + "minutes";
+                    interConnectTimeTxt = interConnectTime + " minutes";
                 }
 
                 //Log.e(Constants.TAG, "Disconnected..............");
