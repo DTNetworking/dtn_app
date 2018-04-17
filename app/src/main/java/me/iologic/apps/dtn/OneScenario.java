@@ -59,6 +59,7 @@ public class OneScenario extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter; // The Only Bluetooth Adapter Used.
     boolean connectAsClient = true;
     int noOfPeers = 0;
+    String connectedDeviceName;
     BluetoothConnectT serverConnect;
     BluetoothConnectClientT clientConnect;
     BluetoothBytesT streamData;
@@ -115,6 +116,7 @@ public class OneScenario extends AppCompatActivity {
     TextView messageReceived;
     TextView currentStatusText;
     TextView peerConnectTime;
+    TextView interContactTimeTxTView;
     TextView bandwidthText;
     TextView delayText;
     TextView checkBandwidthText;
@@ -173,6 +175,7 @@ public class OneScenario extends AppCompatActivity {
         sendImgBtn = (ImageButton) findViewById(R.id.sendImg);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
+        interContactTimeTxTView = (TextView) findViewById(R.id.interContactTime);
         bandwidthText = (TextView) findViewById(R.id.bandwidth);
         delayText = (TextView) findViewById(R.id.delay);
         checkBandwidthText = (TextView) findViewById(R.id.checkBandwidthStatus);
@@ -456,12 +459,12 @@ public class OneScenario extends AppCompatActivity {
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
-            } else if(btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)){
+            } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
                 Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                 connection1EndTime = System.nanoTime();
                 duration = connection1EndTime - connection1StartTime;
                 long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
-                if(durationInSeconds < 60) {
+                if (durationInSeconds < 60) {
                     interConnectTime = durationInSeconds;
                     interConnectTimeTxt = interConnectTime + " seconds";
                 } else {
@@ -469,525 +472,522 @@ public class OneScenario extends AppCompatActivity {
                     interConnectTimeTxt = interConnectTime + " minutes";
                 }
 
-                //Log.e(Constants.TAG, "Disconnected..............");
-
-                //list
-                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
-                contactTimeList.add(device1);
+                Toast.makeText(getApplicationContext(), (R.string.deviceTxT + connectedDeviceName + R.string.deviceDisconnected), Toast.LENGTH_SHORT).show();
+                peerStatusText.setText("No of Peers Found: " + noOfPeers);
             }
-
-            peerStatusText.setText("No of Peers Found: " + noOfPeers);
         }
+
     };
 
-    public void connectDevice() {
+        public void connectDevice() {
 
-        String btDeviceName = "DTN-";
+            String btDeviceName = "DTN-";
 
-        btClientConnectionStatus = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.arg1 == 1) {
-                    Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
-                    toast.show();
-                    stopIndicator();
-                    currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
-
-                    connection1StartTime = System.nanoTime();
-                    currentStatusText.setText("CLIENT");
-                    peerConnectTime.setText((long) msg.arg2 + " msec");
-                    useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
-                    SocketGlobal = clientConnect.getClientSocket();
-                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
-
-                    final Thread checkBandwidthT = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            // Check Bandwidth
-                            if (!useFile.checkFileExists(Constants.testFileName)) {
-                                tempFile = useFile.createTemporaryFile(Constants.testFileName);
-                                useFile.fillTempFile(tempFile);
-                            } else {
-                                tempFile = useFile.returnFile(Constants.testFileName);
-                            }
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    checkBandwidthText.setVisibility(View.VISIBLE);
-                                    checkBandwidthText.setTextColor(Color.MAGENTA);
-                                }
-                            });
-                            bandData.checkBandwidth(useFile, tempFile);
-                            FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
-                            Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
-                            getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
-                            Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
-                        }
-                    });
-
-                    checkBandwidthT.start();
-
-
-                    getDataHandler = new Handler() {
-                        @Override
-                        public void handleMessage(Message msg) {
-                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                            String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-                            bandwidthText.setText(bandwidth);
-                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
-
-                            try {
-                                checkBandwidthT.sleep(1000);
-                                checkBandwidthT.run();
-                            } catch (InterruptedException SleepE) {
-                                Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
-                            }
-
-                        }
-
-                    };
-
-                    streamData.start();
-                    sendMsgBtn.setEnabled(true);
-
-                    // Check if mmSocket is connected or not
-
-                    Thread checkStreamDataConnectedT = new Thread() {
-                        public void run() {
-                            while (true) {
-                                if (clientConnect != null) {
-                                    boolean getConnectionStatus = clientConnect.checkIfmmSocketIsConnected();
-                                   // Log.i(Constants.TAG, "Yes I am " + getConnectionStatus);
-                                    if(getConnectionStatus == true){
-                                        Message btClientConnectionStatusMsg = Message.obtain();
-                                        btClientConnectionStatusMsg.arg1 = 200;
-                                        btClientConnectionStatus.sendMessage(btClientConnectionStatusMsg);
-                                    }
-                                }
-                            }
-                        }
-                    };
-
-
-                    checkStreamDataConnectedT.start();
-
-
-                } else if (msg.arg1 == -1) {
-                    if (toastShown == false) {
-                        aviView.setIndicatorColor(Color.MAGENTA);
-                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+            btClientConnectionStatus = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (msg.arg1 == 1) {
+                        Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                         toast.show();
+                        stopIndicator();
+                        currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
 
-                    }
+                        connection1StartTime = System.nanoTime();
+                        currentStatusText.setText("CLIENT");
+                        peerConnectTime.setText((long) msg.arg2 + " msec");
+                        useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
+                        SocketGlobal = clientConnect.getClientSocket();
+                        streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
-                    if (deviceConnected == false) {
-                        final Runnable r = new Runnable() {
+                        final Thread checkBandwidthT = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                clientConnect.run(); // Keep Trying To Connect If It Fails.
+
+                                // Check Bandwidth
+                                if (!useFile.checkFileExists(Constants.testFileName)) {
+                                    tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                                    useFile.fillTempFile(tempFile);
+                                } else {
+                                    tempFile = useFile.returnFile(Constants.testFileName);
+                                }
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        checkBandwidthText.setVisibility(View.VISIBLE);
+                                        checkBandwidthText.setTextColor(Color.MAGENTA);
+                                    }
+                                });
+                                bandData.checkBandwidth(useFile, tempFile);
+                                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
+                                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
+                                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+                                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+                                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
                             }
-                        };
+                        });
+
+                        checkBandwidthT.start();
 
 
-                        retryConnectionHandler.postDelayed(r, 5000); // 5000 = 5 Secs. Does it do any good?
-
-                    }
-
-
-                } else if (msg.arg1 == 2) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    ACKSocketGlobal = clientConnect.getACKClientSocket();
-                    ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
-                    ACKData.start();
-                } else if (msg.arg1 == 100) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    BandSocketGlobal = clientConnect.getBWClientSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
-                } else if(msg.arg1 == 200){
-                   // Toast.makeText(getApplicationContext(), "Yes I am disconnected", Toast.LENGTH_LONG).show();
-                }
-
-                toastShown = true;
-            }
-        };
-
-        for (BluetoothDevice btDevice : btDevicesFoundList) {
-            Log.i(Constants.TAG, "BtNullDevicefound " + btDevice.equals(null));
-            if (!(btDevice.equals(null) && !(btDevice.getName().equals("null")) && !(btDevice.getName().equals(null)))) {
-                if ((btDevice.getName().contains(btDeviceName))) {
-                    btDeviceConnectedGlobal = btDevice;
-                    clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
-                    clientConnect.start();
-                }
-
-            }
-            if (!(btDeviceConnectedGlobal == null)) {
-                CLIENT_CONNECTION_SUCCESSFUL = "Client Connected To:" + btDeviceConnectedGlobal.getName();
-            } else {
-                aviView.setIndicatorColor(Color.DKGRAY);
-                Log.e("DTN", "No Device Found With Name DTN");
-            }
-        }
-    }
-
-    ;
-
-    private void serverConnection() {
-
-        btServerConnectionStatus = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.arg1 == 1) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
-                    toast.show();
-                    stopIndicator();
-                    currentStatusText.setText("SERVER");
-                    peerConnectTime.setText((long) msg.arg2 + " msec");
-                    useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
-                    bandwidthText.setVisibility(View.GONE);
-                    sendBWProgressBarView.setVisibility(View.GONE);
-                    BWPacketLossText.setVisibility(View.GONE);
-                    sendMsgBtn.setEnabled(true);
-
-                    SocketGlobal = serverConnect.getServerSocket();
-                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
-                    streamData.start();
-                } else if (msg.arg1 == -1) {
-                    aviView.setIndicatorColor(Color.RED);
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                } else if (msg.arg1 == 2) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    ACKSocketGlobal = serverConnect.getACKSocket();
-                    ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
-                    ACKData.start();
-                } else if (msg.arg1 == 3) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    BandSocketGlobal = serverConnect.getBWSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
-                }
-            }
-        };
-
-
-        serverConnect = new BluetoothConnectT(mBluetoothAdapter, btServerConnectionStatus);
-        serverConnect.start();
-    }
-
-    private final Handler btMessageStatus = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == Constants.MessageConstants.MESSAGE_WRITE) {
-                btStatusText.setText("Message is sent");
-            } else if (msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
-                String statusMessage = bundle.getString("status");
-                btStatusText.setText(statusMessage);
-            } else if ((msg.what == Constants.MessageConstants.MESSAGE_READ)) {
-                btStatusText.setText("Message received");
-                byte[] writeBuf = (byte[]) msg.obj;
-                // byte[] writeACK = new byte[]{'R'};
-                String writeACK = String.valueOf(msg.arg1);
-                String writeMessage = new String(writeBuf);
-                // if(!isCheckingBandwidth) {
-                String[] tempReceivedString = writeMessage.split("_");
-                Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
-                Log.i(Constants.TAG, "Message Received: " + writeMessage);
-                if (messageReceived.getVisibility() != View.VISIBLE) {
-                    messageReceived.setVisibility(View.VISIBLE);
-                }
-                messageReceived.startAnimation(animFadeIn);
-                messageReceived.setText(tempReceivedString[0]);
-                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
-                // }
-                GlobalReceivedMessage = writeMessage;
-                ACKData.write(writeACK.getBytes());
-                // isCheckingBandwidth = false;
-                String showSpeed = currentspeed + " m/s";
-                useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
-                Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
-            }
-        }
-    };
-
-    private final Handler btACKStatus = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == Constants.MessageConstants.ACK_READ) {
-                byte[] writeBuf = (byte[]) msg.obj;
-                Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
-                if (writeBuf[0] == 'R') {
-                    Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
-                    stopWatch.halt();
-                    // Update Message Timing List and Reset The Timer
-                    useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
-                    stopWatch.updateList();
-                    stopWatch.reset();
-                } else {
-                    Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
-                    stopWatch.halt();
-                    // Update Message Timing List and Reset The Timer
-                    useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
-                    stopWatch.updateList();
-                    stopWatch.reset();
-                }
-                GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
-                String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
-                if (GlobalMsgPacketLoss == 0) {
-                    MsgPacketLossText.setTextColor(Color.GRAY);
-                    MsgPacketLossText.setText("0" + showMsgLossPercent);
-                } else {
-                    MsgPacketLossText.setTextColor(Color.RED);
-                    MsgPacketLossText.setText(showMsgLossPercent);
-                }
-
-                // Show Sent & Received Bytes
-                bytesReceivedText.setText(Integer.toString(streamData.getMessageReceivedBytes("" + new String(writeBuf))));
-                bytesSentText.setText(Integer.toString(EditMessageBox.getText().length()));
-                useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
-
-            } else if (msg.what == Constants.MessageConstants.ACK_WRITE)
-
-            {
-                Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
-                Log.i(Constants.TAG, "---------------------");
-            }
-        }
-    };
-
-    private final Handler btBandStatus = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == Constants.MessageConstants.BW_READ) {
-                // byte[] writeBuf = (byte[]) msg.obj;
-                // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
-                // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
-                // byte[] writeBuf = (byte[]) msg.obj;
-                // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
-                // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
-            } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
-                // Do Nothing
-                checkBandwidthText.setTextColor(Color.parseColor("#566680"));
-                FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
-                // Log.i(Constants.TAG, "Bandwidth Duration: " + bandData.getTotalBandwidthDuration());
-                // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-                globalBandwidth = bandwidth;
-                bandwidthText.setText(bandwidth);
-                getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
-                progressBarHandler.sendEmptyMessage(msg.arg1);
-                checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
-            } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
-                final Thread writeBandwidthToFileT = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
                         getDataHandler = new Handler() {
                             @Override
                             public void handleMessage(Message msg) {
-                                useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth);
+                                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                                bandwidthText.setText(bandwidth);
+                                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+
+                                try {
+                                    checkBandwidthT.sleep(1000);
+                                    checkBandwidthT.run();
+                                } catch (InterruptedException SleepE) {
+                                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+                                }
+
+                            }
+
+                        };
+
+                        streamData.start();
+                        sendMsgBtn.setEnabled(true);
+
+                        // Check if mmSocket is connected or not
+
+                        Thread checkStreamDataConnectedT = new Thread() {
+                            public void run() {
+                                while (true) {
+                                    if (clientConnect != null) {
+                                        boolean getConnectionStatus = clientConnect.checkIfmmSocketIsConnected();
+                                        // Log.i(Constants.TAG, "Yes I am " + getConnectionStatus);
+                                        if (getConnectionStatus == true) {
+                                            Message btClientConnectionStatusMsg = Message.obtain();
+                                            btClientConnectionStatusMsg.arg1 = 200;
+                                            btClientConnectionStatus.sendMessage(btClientConnectionStatusMsg);
+                                        }
+                                    }
+                                }
                             }
                         };
-                        Looper.loop();
+
+
+                        checkStreamDataConnectedT.start();
+
+
+                    } else if (msg.arg1 == -1) {
+                        if (toastShown == false) {
+                            aviView.setIndicatorColor(Color.MAGENTA);
+                            Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+                            toast.show();
+
+                        }
+
+                        if (deviceConnected == false) {
+                            final Runnable r = new Runnable() {
+                                @Override
+                                public void run() {
+                                    clientConnect.run(); // Keep Trying To Connect If It Fails.
+                                }
+                            };
+
+
+                            retryConnectionHandler.postDelayed(r, 5000); // 5000 = 5 Secs. Does it do any good?
+
+                        }
+
+
+                    } else if (msg.arg1 == 2) {
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                        toast.show();
+
+                        ACKSocketGlobal = clientConnect.getACKClientSocket();
+                        ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
+                        ACKData.start();
+                    } else if (msg.arg1 == 100) {
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                        toast.show();
+
+                        BandSocketGlobal = clientConnect.getBWClientSocket();
+                        bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                        bandData.start();
+                    } else if (msg.arg1 == 200) {
+                        // Toast.makeText(getApplicationContext(), "Yes I am disconnected", Toast.LENGTH_LONG).show();
                     }
 
-                });
+                    toastShown = true;
+                }
+            };
 
-                final Thread sendBWProgressBarT = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        progressBarHandler = new Handler() {
-                            @Override
-                            public void handleMessage(Message msg) {
-                                sendBWProgressBarView.setProgress(msg.what);
-                            }
-                        };
-                        Looper.loop();
+            for (BluetoothDevice btDevice : btDevicesFoundList) {
+                Log.i(Constants.TAG, "BtNullDevicefound " + btDevice.equals(null));
+                if (!(btDevice.equals(null) && !(btDevice.getName().equals("null")) && !(btDevice.getName().equals(null)))) {
+                    if ((btDevice.getName().contains(btDeviceName))) {
+                        btDeviceConnectedGlobal = btDevice;
+                        clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
+                        clientConnect.start();
                     }
-                });
 
-                if (msg.arg1 == 1 && BWStart) {
-                    BWStart = false;
-                    checkBandwidthText.setText(R.string.checkingBandwidth);
-                    writeBandwidthToFileT.start();
-                    sendBWProgressBarView.setVisibility(View.VISIBLE);
-                    sendBWProgressBarT.start();
                 }
-            } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
-                double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
-                GlobalBWPacketLoss = packetLost;
-                writeBWPacketLossHandler.sendEmptyMessage((int) GlobalBWPacketLoss); // Send Anything
-                String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
-
-                if (msg.arg1 != 16) {
-                    //Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " BWLossPercent: " + BWLossPercent);
-                    BWPacketLossText.setTextColor(Color.RED);
-                    BWPacketLossText.setText(BWLossPercent);
+                if (!(btDeviceConnectedGlobal == null)) {
+                    CLIENT_CONNECTION_SUCCESSFUL = "Client Connected To:" + btDeviceConnectedGlobal.getName();
+                    connectedDeviceName = btDeviceConnectedGlobal.getName();
                 } else {
-                    BWPacketLossText.setTextColor(Color.GRAY);
-                    BWPacketLossText.setText("0" + BWLossPercent);
+                    aviView.setIndicatorColor(Color.DKGRAY);
+                    Log.e("DTN", "No Device Found With Name DTN");
                 }
             }
         }
-    };
 
-    public void writeBandwidthLossData() {
-        final Thread writeGlobalPacketLossT = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                writeBWPacketLossHandler = new Handler() {
-                    @Override
-                    public void handleMessage(Message msg) {
-                        useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
+        ;
+
+        private void serverConnection() {
+
+            btServerConnectionStatus = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (msg.arg1 == 1) {
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
+                        toast.show();
+                        stopIndicator();
+                        currentStatusText.setText("SERVER");
+                        peerConnectTime.setText((long) msg.arg2 + " msec");
+                        useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
+                        bandwidthText.setVisibility(View.GONE);
+                        sendBWProgressBarView.setVisibility(View.GONE);
+                        BWPacketLossText.setVisibility(View.GONE);
+                        sendMsgBtn.setEnabled(true);
+
+                        SocketGlobal = serverConnect.getServerSocket();
+                        streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
+                        streamData.start();
+                    } else if (msg.arg1 == -1) {
+                        aviView.setIndicatorColor(Color.RED);
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+                        toast.show();
+
+                    } else if (msg.arg1 == 2) {
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
+                        toast.show();
+
+                        ACKSocketGlobal = serverConnect.getACKSocket();
+                        ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
+                        ACKData.start();
+                    } else if (msg.arg1 == 3) {
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
+                        toast.show();
+
+                        BandSocketGlobal = serverConnect.getBWSocket();
+                        bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                        bandData.start();
                     }
-                };
-                Looper.loop();
-            }
-        });
+                }
+            };
 
-        if (BWPacketLossCheckStart) {
-            BWPacketLossCheckStart = false;
-            writeGlobalPacketLossT.start();
+
+            serverConnect = new BluetoothConnectT(mBluetoothAdapter, btServerConnectionStatus);
+            serverConnect.start();
         }
-    }
 
-    public void sendMessage() {
-
-        NOT_YET_CONNECTED = "I am not yet connected to any phone";
-
-        sendMsgBtn.setOnClickListener(new View.OnClickListener() {
+        private final Handler btMessageStatus = new Handler() {
             @Override
-            public void onClick(View view) {
-                if (!(SocketGlobal == null)) {
-                    streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
-                    Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
-                    useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
-                    streamData.flushOutStream();
-                } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
-                    toast.show();
+            public void handleMessage(Message msg) {
+                if (msg.what == Constants.MessageConstants.MESSAGE_WRITE) {
+                    btStatusText.setText("Message is sent");
+                } else if (msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
+                    String statusMessage = bundle.getString("status");
+                    btStatusText.setText(statusMessage);
+                } else if ((msg.what == Constants.MessageConstants.MESSAGE_READ)) {
+                    btStatusText.setText("Message received");
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // byte[] writeACK = new byte[]{'R'};
+                    String writeACK = String.valueOf(msg.arg1);
+                    String writeMessage = new String(writeBuf);
+                    // if(!isCheckingBandwidth) {
+                    String[] tempReceivedString = writeMessage.split("_");
+                    Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
+                    Log.i(Constants.TAG, "Message Received: " + writeMessage);
+                    if (messageReceived.getVisibility() != View.VISIBLE) {
+                        messageReceived.setVisibility(View.VISIBLE);
+                    }
+                    messageReceived.startAnimation(animFadeIn);
+                    messageReceived.setText(tempReceivedString[0]);
+                    useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
+                    // }
+                    GlobalReceivedMessage = writeMessage;
+                    ACKData.write(writeACK.getBytes());
+                    // isCheckingBandwidth = false;
+                    String showSpeed = currentspeed + " m/s";
+                    useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
+                    Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
                 }
             }
+        };
 
-        });
-    }
-
-    public void sendImage() {
-
-        NOT_YET_CONNECTED = "I am not yet connected to any phone";
-
-        sendImgBtn.setOnClickListener(new View.OnClickListener() {
+        private final Handler btACKStatus = new Handler() {
             @Override
-            public void onClick(View view) {
-                if (!(SocketGlobal == null)) {
-                    performFileSearch();
-                } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
-                    toast.show();
+            public void handleMessage(Message msg) {
+                if (msg.what == Constants.MessageConstants.ACK_READ) {
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    Log.i(Constants.TAG, "I received writeBuf(ACK_READ): " + new String(writeBuf));
+                    if (writeBuf[0] == 'R') {
+                        Log.i(Constants.TAG, "I am inside the if condition in ACK writeBuf");
+                        stopWatch.halt();
+                        // Update Message Timing List and Reset The Timer
+                        useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
+                        stopWatch.updateList();
+                        stopWatch.reset();
+                    } else {
+                        Log.i(Constants.TAG, "I am inside the else condition in ACK writeBuf");
+                        stopWatch.halt();
+                        // Update Message Timing List and Reset The Timer
+                        useFile.saveDelayData(Constants.FileNames.Delay, stopWatch.getGlobalTime());
+                        stopWatch.updateList();
+                        stopWatch.reset();
+                    }
+                    GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
+                    String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
+                    if (GlobalMsgPacketLoss == 0) {
+                        MsgPacketLossText.setTextColor(Color.GRAY);
+                        MsgPacketLossText.setText("0" + showMsgLossPercent);
+                    } else {
+                        MsgPacketLossText.setTextColor(Color.RED);
+                        MsgPacketLossText.setText(showMsgLossPercent);
+                    }
+
+                    // Show Sent & Received Bytes
+                    bytesReceivedText.setText(Integer.toString(streamData.getMessageReceivedBytes("" + new String(writeBuf))));
+                    bytesSentText.setText(Integer.toString(EditMessageBox.getText().length()));
+                    useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
+
+                } else if (msg.what == Constants.MessageConstants.ACK_WRITE)
+
+                {
+                    Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
+                    Log.i(Constants.TAG, "---------------------");
                 }
             }
+        };
 
-        });
-    }
+        private final Handler btBandStatus = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == Constants.MessageConstants.BW_READ) {
+                    // byte[] writeBuf = (byte[]) msg.obj;
+                    // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
+                    // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+                    // byte[] writeBuf = (byte[]) msg.obj;
+                    // Log.i(Constants.TAG, "BW Received: " + new String(writeBuf));
+                    // Log.i(Constants.TAG, "BW Size: " + writeBuf.length);
+                } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
+                    // Do Nothing
+                    checkBandwidthText.setTextColor(Color.parseColor("#566680"));
+                    FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
+                    // Log.i(Constants.TAG, "Bandwidth Duration: " + bandData.getTotalBandwidthDuration());
+                    // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                    String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                    globalBandwidth = bandwidth;
+                    bandwidthText.setText(bandwidth);
+                    getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
+                    progressBarHandler.sendEmptyMessage(msg.arg1);
+                    checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
+                } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
+                    final Thread writeBandwidthToFileT = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Looper.prepare();
+                            getDataHandler = new Handler() {
+                                @Override
+                                public void handleMessage(Message msg) {
+                                    useFile.saveBWData(Constants.FileNames.Bandwidth, globalBandwidth);
+                                }
+                            };
+                            Looper.loop();
+                        }
 
-    public void performFileSearch() {
+                    });
 
-        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
-        // browser.
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    final Thread sendBWProgressBarT = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Looper.prepare();
+                            progressBarHandler = new Handler() {
+                                @Override
+                                public void handleMessage(Message msg) {
+                                    sendBWProgressBarView.setProgress(msg.what);
+                                }
+                            };
+                            Looper.loop();
+                        }
+                    });
 
-        // Filter to only show results that can be "opened", such as a
-        // file (as opposed to a list of contacts or timezones)
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    if (msg.arg1 == 1 && BWStart) {
+                        BWStart = false;
+                        checkBandwidthText.setText(R.string.checkingBandwidth);
+                        writeBandwidthToFileT.start();
+                        sendBWProgressBarView.setVisibility(View.VISIBLE);
+                        sendBWProgressBarT.start();
+                    }
+                } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
+                    double packetLost = ((double) (Constants.Packet.BW_COUNTER - msg.arg1) / (double) (Constants.Packet.BW_COUNTER)) * 100;
+                    GlobalBWPacketLoss = packetLost;
+                    writeBWPacketLossHandler.sendEmptyMessage((int) GlobalBWPacketLoss); // Send Anything
+                    String BWLossPercent = df.format(GlobalBWPacketLoss) + " %";
 
-        // Filter to show only images, using the image MIME data type.
-        // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
-        // To search for all documents available via installed storage providers,
-        // it would be "*/*".
-        intent.setType("image/*");
+                    if (msg.arg1 != 16) {
+                        //Log.i(Constants.TAG, "msg.arg1: " + msg.arg1 + " BWLossPercent: " + BWLossPercent);
+                        BWPacketLossText.setTextColor(Color.RED);
+                        BWPacketLossText.setText(BWLossPercent);
+                    } else {
+                        BWPacketLossText.setTextColor(Color.GRAY);
+                        BWPacketLossText.setText("0" + BWLossPercent);
+                    }
+                }
+            }
+        };
 
-        startActivityForResult(intent, READ_REQUEST_CODE);
-    }
+        public void writeBandwidthLossData() {
+            final Thread writeGlobalPacketLossT = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    writeBWPacketLossHandler = new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            useFile.savePacketLossData(Constants.FileNames.BWPacketLoss, GlobalBWPacketLoss);
+                        }
+                    };
+                    Looper.loop();
+                }
+            });
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 Intent resultData) {
+            if (BWPacketLossCheckStart) {
+                BWPacketLossCheckStart = false;
+                writeGlobalPacketLossT.start();
+            }
+        }
 
-        // The ACTION_OPEN_DOCUMENT intent was sent with the request code
-        // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
-        // response to some other intent, and the code below shouldn't run at all.
+        public void sendMessage() {
 
-        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            // The document selected by the user won't be returned in the intent.
-            // Instead, a URI to that document will be contained in the return intent
-            // provided to this method as a parameter.
-            // Pull that URI using resultData.getData().
-            Uri uri = null;
-            if (resultData != null) {
-                uri = resultData.getData();
-                // ImageUri = uri;
-                Log.i(Constants.TAG, "Uri: " + uri.toString());
-                byte[] ImgBytes = img.ImageToBytes(RealPathUtil.getRealPath(getApplicationContext(), uri)); // Converting Image To Bytes
-                Log.i(Constants.TAG, "ImgBytes: " + ImgBytes.length + " " + ImgBytes.toString());
-                if (ImgBytes != null) {
-                    streamData.write(ImgBytes);
-                    // final Handler handler = new Handler();
-                    // handler.postDelayed(new Runnable() {
-                    //     @Override
-                    //      public void run() {
-                    streamData.write("#&1".getBytes()); // End of stream
-                    //      }
-                    //   }, 10);
-                    streamData.flushOutStream();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Image URI is null", Toast.LENGTH_SHORT).show();
+            NOT_YET_CONNECTED = "I am not yet connected to any phone";
+
+            sendMsgBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!(SocketGlobal == null)) {
+                        streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
+                        Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
+                        useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
+                        streamData.flushOutStream();
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+
+            });
+        }
+
+        public void sendImage() {
+
+            NOT_YET_CONNECTED = "I am not yet connected to any phone";
+
+            sendImgBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!(SocketGlobal == null)) {
+                        performFileSearch();
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+
+            });
+        }
+
+        public void performFileSearch() {
+
+            // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
+            // browser.
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+            // Filter to only show results that can be "opened", such as a
+            // file (as opposed to a list of contacts or timezones)
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+            // Filter to show only images, using the image MIME data type.
+            // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+            // To search for all documents available via installed storage providers,
+            // it would be "*/*".
+            intent.setType("image/*");
+
+            startActivityForResult(intent, READ_REQUEST_CODE);
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode,
+                                     Intent resultData) {
+
+            // The ACTION_OPEN_DOCUMENT intent was sent with the request code
+            // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
+            // response to some other intent, and the code below shouldn't run at all.
+
+            if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+                // The document selected by the user won't be returned in the intent.
+                // Instead, a URI to that document will be contained in the return intent
+                // provided to this method as a parameter.
+                // Pull that URI using resultData.getData().
+                Uri uri = null;
+                if (resultData != null) {
+                    uri = resultData.getData();
+                    // ImageUri = uri;
+                    Log.i(Constants.TAG, "Uri: " + uri.toString());
+                    byte[] ImgBytes = img.ImageToBytes(RealPathUtil.getRealPath(getApplicationContext(), uri)); // Converting Image To Bytes
+                    Log.i(Constants.TAG, "ImgBytes: " + ImgBytes.length + " " + ImgBytes.toString());
+                    if (ImgBytes != null) {
+                        streamData.write(ImgBytes);
+                        // final Handler handler = new Handler();
+                        // handler.postDelayed(new Runnable() {
+                        //     @Override
+                        //      public void run() {
+                        streamData.write("#&1".getBytes()); // End of stream
+                        //      }
+                        //   }, 10);
+                        streamData.flushOutStream();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Image URI is null", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }
+
+        private static byte[] trimByteArray(byte[] bytes, int allPacketSizes) {
+            int i = bytes.length - 1;
+            while (i >= allPacketSizes && bytes[i] == 0) {
+                --i;
+            }
+
+            return Arrays.copyOf(bytes, i + 1);
+        }
+
+
+        @Override
+        protected void onDestroy() {
+            mBluetoothAdapter.setName(getGoodOldName);
+            mBluetoothAdapter.disable();
+            if (alertDialogOpened == true) {
+                alertDialog.dismiss();
+            }
+            if (clientConnect != null) {
+                clientConnect.cancel();
+            }
+            if (serverConnect != null) {
+                serverConnect.cancel();
+            }
+            super.onDestroy();
+            // Don't forget to unregister the ACTION_FOUND receiver.
+            unregisterReceiver(mReceiver);
+        }
+
+
     }
-
-    private static byte[] trimByteArray(byte[] bytes, int allPacketSizes) {
-        int i = bytes.length - 1;
-        while (i >= allPacketSizes && bytes[i] == 0) {
-            --i;
-        }
-
-        return Arrays.copyOf(bytes, i + 1);
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        mBluetoothAdapter.setName(getGoodOldName);
-        mBluetoothAdapter.disable();
-        if (alertDialogOpened == true) {
-            alertDialog.dismiss();
-        }
-        if(clientConnect!=null) {
-            clientConnect.cancel();
-        }
-        if(serverConnect!= null){
-            serverConnect.cancel();
-        }
-        super.onDestroy();
-        // Don't forget to unregister the ACTION_FOUND receiver.
-        unregisterReceiver(mReceiver);
-    }
-
-
-}

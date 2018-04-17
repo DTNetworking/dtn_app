@@ -30,6 +30,8 @@
     <string name="MeterPerSecond">m/s</string>
     <string name="DateAndTime">Date and Time</string>
     <string name="InterContactTime">Inter Contact Time</string>
+    <string name="deviceTxT">Device</string>
+    <string name="deviceDisconnected">is  disconnected!</string>
 
     <string name="title_activity_image_viewer">ImageViewer</string>
     <string name="dummy_button">Refresh</string>
