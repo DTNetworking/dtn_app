@@ -139,6 +139,7 @@ public class OneScenario extends AppCompatActivity {
     DecimalFormat df;
 
     long interConnectTime;
+    String interConnectTimeTxt;
 
     int packetReceivedCount;
 
@@ -462,14 +463,16 @@ public class OneScenario extends AppCompatActivity {
                 long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
                 if(durationInSeconds < 60) {
                     interConnectTime = durationInSeconds;
+                    interConnectTimeTxt = interConnectTime + "seconds";
                 } else {
                     interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
+                    interConnectTimeTxt = interConnectTime + "minutes";
                 }
 
                 //Log.e(Constants.TAG, "Disconnected..............");
 
                 //list
-                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, Long.toString(interConnectTime));
+                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
                 contactTimeList.add(device1);
             }
 
