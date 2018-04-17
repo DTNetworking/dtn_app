@@ -954,7 +954,12 @@ public class OneScenario extends AppCompatActivity {
         if (alertDialogOpened == true) {
             alertDialog.dismiss();
         }
-        clientConnect.cancel();
+        if(clientConnect!=null) {
+            clientConnect.cancel();
+        }
+        if(serverConnect!= null){
+            serverConnect.cancel();
+        }
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
