@@ -115,7 +115,7 @@ class BluetoothConnectT extends Thread {
 
             // ACK Part
 
-      /*      try {
+            try {
                 AckSocket = mmACKServerSocket.accept();
                 AckSocketGlobal = AckSocket;
 
@@ -123,7 +123,7 @@ class BluetoothConnectT extends Thread {
                 btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "ACKSocket's accept() method failed", e);
-            } */
+            } 
         }
     }
 
