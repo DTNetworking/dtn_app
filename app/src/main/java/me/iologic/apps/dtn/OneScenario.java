@@ -251,7 +251,7 @@ public class OneScenario extends AppCompatActivity {
 
         btFindIndicator = new Indicators();
 
-        // writeBandwidthLossData();
+        writeBandwidthLossData();
 
         animFadeIn = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.fade_in);
@@ -490,11 +490,11 @@ public class OneScenario extends AppCompatActivity {
                                 }
                             });
                             bandData.checkBandwidth(useFile, tempFile);
-                            //  FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
-                            //  Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
-                            //    getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
-                            // Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                            //  Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
+                            FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
+                            Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
+                            getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+                            Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
                         }
                     });
 
@@ -530,7 +530,12 @@ public class OneScenario extends AppCompatActivity {
                             while (true) {
                                 if (clientConnect != null) {
                                     boolean getConnectionStatus = clientConnect.checkIfmmSocketIsConnected();
-                                    Log.e(Constants.TAG, "Yes I am " + getConnectionStatus);
+                                    Log.i(Constants.TAG, "Yes I am " + getConnectionStatus);
+                                    if(getConnectionStatus == false){
+                                        Message btClientConnectionStatusMsg = Message.obtain();
+                                        btClientConnectionStatusMsg.arg1 = 200;
+                                        btClientConnectionStatus.sendMessage(btClientConnectionStatusMsg);
+                                    }
                                 }
                             }
                         }
@@ -580,11 +585,12 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    //  BandSocketGlobal = clientConnect.getBWClientSocket();
-                    //   bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    //   bandData.start();
+                    BandSocketGlobal = clientConnect.getBWClientSocket();
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData.start();
+                } else if(msg.arg1 == 200){
+                   // Toast.makeText(getApplicationContext(), "Yes I am disconnected", Toast.LENGTH_LONG).show();
                 }
-
                 toastShown = true;
             }
         };

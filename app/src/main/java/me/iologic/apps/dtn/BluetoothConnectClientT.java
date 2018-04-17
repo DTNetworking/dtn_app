@@ -59,6 +59,8 @@ class BluetoothConnectClientT extends Thread {
         mmACKClientSocket = ACKtmp;
         mmBWClientSocket = BWtmp;
 
+        isAlreadyConnected = false;
+
         btConnectionStatusMsg = Message.obtain();
         btConnectionACKStatusMsg = Message.obtain();
         btConnectionBWStatusMsg = Message.obtain();
@@ -137,6 +139,7 @@ class BluetoothConnectClientT extends Thread {
         }
 
         if (mmSocket.isConnected()) {
+            isAlreadyConnected = true;
             btConnectionStatusMsg.arg1 = 1;
             btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
 
@@ -145,6 +148,7 @@ class BluetoothConnectClientT extends Thread {
     }
 
     public boolean checkIfmmSocketIsConnected() {
+        Log.i(Constants.TAG, "Checking: " + mmSocket.isConnected() + " " + isAlreadyConnected);
         if (mmSocket.isConnected() ^ isAlreadyConnected) {
             return true;
         } else {
