@@ -43,10 +43,13 @@ import com.wang.avi.AVLoadingIndicatorView;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static me.iologic.apps.dtn.Constants.Permissions.READ_REQUEST_CODE;
 
@@ -134,6 +137,8 @@ public class OneScenario extends AppCompatActivity {
     StopWatch stopWatch;
 
     DecimalFormat df;
+
+    long interConnectTime;
 
     int packetReceivedCount;
 
@@ -454,11 +459,17 @@ public class OneScenario extends AppCompatActivity {
                 Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                 connection1EndTime = System.nanoTime();
                 duration = connection1EndTime - connection1StartTime;
+                long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
+                if(durationInSeconds < 60) {
+                    interConnectTime = durationInSeconds;
+                } else {
+                    interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
+                }
 
                 //Log.e(Constants.TAG, "Disconnected..............");
 
                 //list
-                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, Long.toString(duration));
+                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, Long.toString(interConnectTime));
                 contactTimeList.add(device1);
             }
 
@@ -477,7 +488,7 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     stopIndicator();
-                    currentDateTime = DateFormat.getDateTimeInstance().format(new Date());
+                    currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
 
                     connection1StartTime = System.nanoTime();
                     currentStatusText.setText("CLIENT");
