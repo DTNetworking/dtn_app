@@ -69,7 +69,7 @@ class BluetoothConnectClientT extends Thread {
         mBluetoothAdapter.cancelDiscovery();
 
         // BW Part
-   /*     try {
+        try {
             mmBWClientSocket.connect();
         } catch (IOException e) {
             btConnectionBWStatusMsg.arg1 = -2;
@@ -86,7 +86,7 @@ class BluetoothConnectClientT extends Thread {
         }
 
         btConnectionBWStatusMsg.arg1 = 100;
-        btConnectionStatus.sendMessage(btConnectionBWStatusMsg); */
+        btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
 
         Thread firstClientConnectT = new Thread() {
             public void run() {

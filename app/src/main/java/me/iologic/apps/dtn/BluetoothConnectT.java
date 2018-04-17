@@ -69,7 +69,7 @@ class BluetoothConnectT extends Thread {
         BWSocketGlobal = null;
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
-         /*   try {
+            try {
                 BWSocket = bandwidthSocket.accept();
                 BWSocketGlobal = BWSocket;
 
@@ -77,7 +77,7 @@ class BluetoothConnectT extends Thread {
                 btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
-            } */
+            }
 
             try {
                 pairingStartTime = System.nanoTime();
