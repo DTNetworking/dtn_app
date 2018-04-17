@@ -75,7 +75,7 @@ class BluetoothConnectT extends Thread {
 
                 btConnectionBWStatusMsg.arg1 = 3;
                 btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
-                btConnectionStatusMsg = Message.obtain();
+                btConnectionBWStatusMsg = Message.obtain();
             } catch (IOException e) {
                 Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
             }
@@ -92,7 +92,7 @@ class BluetoothConnectT extends Thread {
                 btConnectionStatusMsg.arg1 = 1;
                 btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
-
+                btConnectionStatusMsg = Message.obtain();
             } catch (IOException e) {
                 Log.e(TAG, "Socket's accept() method failed", e);
                 btConnectionStatusMsg.arg1 = -1;
@@ -122,6 +122,7 @@ class BluetoothConnectT extends Thread {
 
                 btConnectionACKStatusMsg.arg1 = 2;
                 btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+                btConnectionACKStatusMsg = Message.obtain();
             } catch (IOException e) {
                 Log.e(Constants.TAG, "ACKSocket's accept() method failed", e);
             }
