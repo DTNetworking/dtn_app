@@ -29,6 +29,8 @@ class BluetoothConnectClientT extends Thread {
 
     long pairingStartTime, pairingEndTime, duration;
 
+    boolean isAlreadyConnected;
+
     private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
     private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
     private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
@@ -89,8 +91,8 @@ class BluetoothConnectClientT extends Thread {
         Thread firstClientConnectT = new Thread() {
             public void run() {
                 //while (true) {
-                    clientConnect();
-                    btConnectionStatusMsg = Message.obtain();
+                clientConnect();
+                btConnectionStatusMsg = Message.obtain();
                 //}
             }
         };
@@ -140,6 +142,15 @@ class BluetoothConnectClientT extends Thread {
 
             btConnectionStatus.sendMessage(btConnectionStatusMsg);
         }
+    }
+
+    public boolean checkIfmmSocketIsConnected() {
+        if (mmSocket.isConnected() ^ isAlreadyConnected) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public void closemmSocket() {

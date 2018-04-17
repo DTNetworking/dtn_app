@@ -297,7 +297,7 @@ public class OneScenario extends AppCompatActivity {
         }
     }
 
-    public void showContactTimeList(){
+    public void showContactTimeList() {
         alertDialogOpened = true;
         AlertDialog.Builder showContactTimeList = new AlertDialog.Builder(OneScenario.this);
         showContactTimeList.setTitle("Inter Contact Timings");
@@ -526,6 +526,22 @@ public class OneScenario extends AppCompatActivity {
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
 
+                    // Check if streamData is connected or not
+
+                    Thread checkStreamDataConnectedT = new Thread() {
+                        public void run() {
+                            while (true) {
+                                if(clientConnect!=null) {
+                                    boolean getConnectionStatus = clientConnect.checkIfmmSocketIsConnected();
+                                    Log.e(Constants.TAG, "Yes I am " + getConnectionStatus);
+                                }
+                            }
+                        }
+                    };
+
+
+                    checkStreamDataConnectedT.start();
+
 
                 } else if (msg.arg1 == -1) {
                     if (toastShown == false) {
@@ -534,6 +550,8 @@ public class OneScenario extends AppCompatActivity {
                         toast.show();
                         connection1EndTime = System.nanoTime();
                         duration = connection1EndTime - connection1StartTime;
+
+                        Log.e(Constants.TAG, "Disconnected..............");
 
                         //list
                         ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), Long.toString(connection1StartTime), Long.toString(duration));
@@ -591,7 +609,7 @@ public class OneScenario extends AppCompatActivity {
                 Log.e("DTN", "No Device Found With Name DTN");
             }
         }
-    }
+    };
 
     private void serverConnection() {
 
