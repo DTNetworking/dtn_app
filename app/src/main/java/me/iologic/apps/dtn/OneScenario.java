@@ -234,6 +234,8 @@ public class OneScenario extends AppCompatActivity {
         // Register for broadcasts when a device is discovered.
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         registerReceiver(mReceiver, filter);
 
         stopWatch = new StopWatch(delayText);
@@ -446,6 +448,8 @@ public class OneScenario extends AppCompatActivity {
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
+            } else if(btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)){
+                Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
@@ -530,8 +534,8 @@ public class OneScenario extends AppCompatActivity {
                             while (true) {
                                 if (clientConnect != null) {
                                     boolean getConnectionStatus = clientConnect.checkIfmmSocketIsConnected();
-                                    Log.i(Constants.TAG, "Yes I am " + getConnectionStatus);
-                                    if(getConnectionStatus == false){
+                                   // Log.i(Constants.TAG, "Yes I am " + getConnectionStatus);
+                                    if(getConnectionStatus == true){
                                         Message btClientConnectionStatusMsg = Message.obtain();
                                         btClientConnectionStatusMsg.arg1 = 200;
                                         btClientConnectionStatus.sendMessage(btClientConnectionStatusMsg);
@@ -592,6 +596,7 @@ public class OneScenario extends AppCompatActivity {
                     ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), Long.toString(connection1StartTime), Long.toString(duration));
                     contactTimeList.add(device1);
                 }
+
                 toastShown = true;
             }
         };

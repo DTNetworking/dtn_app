@@ -102,7 +102,7 @@ class BluetoothConnectClientT extends Thread {
         firstClientConnectT.start();
 
         // ACK Part
-     try {
+        try {
             mmACKClientSocket.connect();
         } catch (IOException e) {
             btConnectionACKStatusMsg.arg1 = -2;
@@ -148,7 +148,7 @@ class BluetoothConnectClientT extends Thread {
     }
 
     public boolean checkIfmmSocketIsConnected() {
-        Log.i(Constants.TAG, "Checking: " + mmSocket.isConnected() + " " + isAlreadyConnected);
+        // Log.i(Constants.TAG, "Checking: " + mmSocket.isConnected() + " " + isAlreadyConnected);
         if (mmSocket.isConnected() ^ isAlreadyConnected) {
             return true;
         } else {
@@ -180,9 +180,17 @@ class BluetoothConnectClientT extends Thread {
     // Closes the client socket and causes the thread to finish.
     public void cancel() {
         try {
-            mmSocket.close();
-            mmACKClientSocket.close();
-            mmBWClientSocket.close();
+            if (mmSocket != null) {
+                mmSocket.close();
+            }
+            if (mmACKClientSocket != null) {
+                mmACKClientSocket.close();
+            }
+
+            if (mmBWClientSocket != null) {
+                mmBWClientSocket.close();
+            }
+
         } catch (IOException e) {
             Log.e(TAG, "Could not close the client socket", e);
         }
