@@ -23,14 +23,14 @@
         
         <TextView
             android:gravity="center"
-            android:text="Connection Started Time"
+            android:text="@string/DateAndTime"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:id="@+id/connectionStartedTime"/>
+            android:id="@+id/dateAndTime"/>
 
         <TextView
             android:gravity="center"
-            android:text="Inter Contact Time"
+            android:text="@string/InterContactTime"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:id="@+id/interContactTime"/>

@@ -5,12 +5,12 @@ import android.os.Parcelable;
 
 public class ContactTimeList implements Parcelable{
     private String deviceName;
-    private String deviceConnectedTime;
+    private String dateAndTime;
     private String interContactTime;
 
-    public ContactTimeList(String deviceName, String deviceConnectedTime, String interContactTime){
+    public ContactTimeList(String deviceName, String dateAndTime, String interContactTime){
         this.deviceName = deviceName;
-        this.deviceConnectedTime = deviceConnectedTime;
+        this.dateAndTime = dateAndTime;
         this.interContactTime = interContactTime;
     }
 
@@ -20,7 +20,7 @@ public class ContactTimeList implements Parcelable{
      */
     public ContactTimeList (Parcel parcel) {
         this.deviceName = parcel.readString();
-        this.deviceConnectedTime = parcel.readString();
+        this.dateAndTime = parcel.readString();
         this.interContactTime = parcel.readString();
     }
 
@@ -33,8 +33,8 @@ public class ContactTimeList implements Parcelable{
         return deviceName;
     }
 
-    public String getDeviceConnectedTime() {
-        return deviceConnectedTime;
+    public String getDateAndTime() {
+        return dateAndTime;
     }
 
     public String getInterContactTime() {
@@ -45,8 +45,8 @@ public class ContactTimeList implements Parcelable{
         this.deviceName = deviceName;
     }
 
-    public void setDeviceConnectedTime(String deviceConnectedTime) {
-        this.deviceConnectedTime = deviceConnectedTime;
+    public void setDateAndTime(String dateAndTime) {
+        this.dateAndTime = dateAndTime;
     }
 
     public void setInterContactTime(String interContactTime) {
@@ -57,7 +57,7 @@ public class ContactTimeList implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(deviceName);
-        dest.writeString(deviceConnectedTime);
+        dest.writeString(dateAndTime);
         dest.writeString(interContactTime);
     }
 

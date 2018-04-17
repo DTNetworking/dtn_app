@@ -27,7 +27,7 @@ public class ContactTimeListAdapter extends ArrayAdapter<ContactTimeList> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         String deviceName = getItem(position).getDeviceName();
-        String deviceConnectedTime = getItem(position).getDeviceConnectedTime();
+        String deviceConnectedTime = getItem(position).getDateAndTime();
         String interContactTime = getItem(position).getInterContactTime();
 
         ContactTimeList contactTimeList = new ContactTimeList(deviceName, deviceConnectedTime, interContactTime);
@@ -36,11 +36,11 @@ public class ContactTimeListAdapter extends ArrayAdapter<ContactTimeList> {
         convertView = inflater.inflate(mResource, parent, false);
 
         TextView tvDeciveName = (TextView) convertView.findViewById(R.id.deviceName);
-        TextView tvDeviceConnectedTime = (TextView) convertView.findViewById(R.id.connectionStartedTime);
+        TextView tvDateAndTimeTime = (TextView) convertView.findViewById(R.id.dateAndTime);
         TextView tvInterContactTime = (TextView) convertView.findViewById(R.id.interContactTime);
 
         tvDeciveName.setText(deviceName);
-        tvDeviceConnectedTime.setText(deviceConnectedTime);
+        tvDateAndTimeTime.setText(deviceConnectedTime);
         tvInterContactTime.setText(interContactTime);
 
         return  convertView;

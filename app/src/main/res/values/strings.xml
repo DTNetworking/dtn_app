@@ -28,6 +28,8 @@
     <string name="BWPacketLoss">Bandwidth Packet Loss</string>
     <string name="speed">Speed</string>
     <string name="MeterPerSecond">m/s</string>
+    <string name="DateAndTime">Date and Time</string>
+    <string name="InterContactTime">Inter Contact Time</string>
 
     <string name="title_activity_image_viewer">ImageViewer</string>
     <string name="dummy_button">Refresh</string>
