@@ -550,14 +550,7 @@ public class OneScenario extends AppCompatActivity {
                         aviView.setIndicatorColor(Color.MAGENTA);
                         Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
                         toast.show();
-                        connection1EndTime = System.nanoTime();
-                        duration = connection1EndTime - connection1StartTime;
 
-                        Log.e(Constants.TAG, "Disconnected..............");
-
-                        //list
-                        ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), Long.toString(connection1StartTime), Long.toString(duration));
-                        contactTimeList.add(device1);
                     }
 
                     if (deviceConnected == false) {
@@ -590,6 +583,14 @@ public class OneScenario extends AppCompatActivity {
                     bandData.start();
                 } else if(msg.arg1 == 200){
                    // Toast.makeText(getApplicationContext(), "Yes I am disconnected", Toast.LENGTH_LONG).show();
+                    connection1EndTime = System.nanoTime();
+                    duration = connection1EndTime - connection1StartTime;
+
+                    Log.e(Constants.TAG, "Disconnected..............");
+
+                    //list
+                    ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), Long.toString(connection1StartTime), Long.toString(duration));
+                    contactTimeList.add(device1);
                 }
                 toastShown = true;
             }
