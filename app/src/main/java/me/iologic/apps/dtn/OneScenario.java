@@ -652,9 +652,9 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    //    BandSocketGlobal = serverConnect.getBWSocket();
-                    //  bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    //   bandData.start();
+                    BandSocketGlobal = serverConnect.getBWSocket();
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData.start();
                 }
             }
         };

@@ -147,9 +147,9 @@ class BluetoothConnectT extends Thread {
     // Closes the connect socket and causes the thread to finish.
     public void cancel() {
         try {
-            mmServerSocket.close();
-            mmACKServerSocket.close();
-            bandwidthSocket.close();
+            ClientSocket.close();
+            AckSocketGlobal.close();
+            BWSocketGlobal.close();
         } catch (IOException e) {
             Log.e(TAG, "Could not close the connect socket", e);
         }
