@@ -461,8 +461,7 @@ public class OneScenario extends AppCompatActivity {
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-               BluetoothSocket clientConnectionSocket = clientConnect.getClientSocket();
-                if (clientConnectionSocket == null) {
+                if (clientConnect == null) {
                     Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                     connection1EndTime = System.nanoTime();
                     duration = connection1EndTime - connection1StartTime;
