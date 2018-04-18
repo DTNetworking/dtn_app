@@ -460,7 +460,7 @@ public class OneScenario extends AppCompatActivity {
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                if (clientConnect.getClientSocket() == null) {
+                if (clientConnect.getClientSocket().equals(null)) {
                     Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                     connection1EndTime = System.nanoTime();
                     duration = connection1EndTime - connection1StartTime;
