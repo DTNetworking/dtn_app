@@ -433,7 +433,6 @@ public class OneScenario extends AppCompatActivity {
 
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Nullable
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -462,7 +461,8 @@ public class OneScenario extends AppCompatActivity {
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                if (clientConnect.getClientSocket().equals(null)) {
+               BluetoothSocket clientConnectionSocket = clientConnect.getClientSocket();
+                if (clientConnectionSocket == null) {
                     Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                     connection1EndTime = System.nanoTime();
                     duration = connection1EndTime - connection1StartTime;
