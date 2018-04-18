@@ -339,7 +339,7 @@ class BluetoothConnectT extends Thread {
 
     public void closefirstACKSocket() {
         try {
-            AckSocketGlobal.close();
+            mmACKServerSocket.close();
         } catch (IOException e) {
             Log.e(Constants.TAG, "closefirstConnectSocket disconnected");
         }
@@ -347,7 +347,7 @@ class BluetoothConnectT extends Thread {
 
     public void closesecondACKSocket() {
         try {
-            secondAckSocketGlobal.close();
+            secondMMACKServerSocket.close();
         } catch (IOException e) {
             Log.e(Constants.TAG, "closesecondConnectSocket disconnected");
         }
@@ -355,7 +355,7 @@ class BluetoothConnectT extends Thread {
 
     public void closefirstBWSocket() {
         try {
-            BWSocketGlobal.close();
+            bandwidthSocket.close();
         } catch (IOException e) {
             Log.e(Constants.TAG, "closefirstConnectSocket disconnected");
         }
@@ -363,7 +363,7 @@ class BluetoothConnectT extends Thread {
 
     public void closesecondBWSocket() {
         try {
-            secondBWSocketGlobal.close();
+            secondBandwidthSocket.close();
         } catch (IOException e) {
             Log.e(Constants.TAG, "closesecondConnectSocket disconnected");
         }
