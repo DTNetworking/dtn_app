@@ -196,7 +196,7 @@ public class FileServices {
 
     // Save Inter Contact Time Details To File
     public void saveInterContactTime(String ReceivedFileName, String ReceivedDeviceName, String ReceivedDateAndTime, String ReceivedDuration) {
-        String saveFileName = ReceivedFileName + "--" + ".txt";
+        String saveFileName = ReceivedFileName + ".txt";
         dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
 
         FileOutputStream fOut = null;
