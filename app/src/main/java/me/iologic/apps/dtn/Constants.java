@@ -1,5 +1,7 @@
 package me.iologic.apps.dtn;
 
+import java.util.UUID;
+
 /**
  * Created by vinee on 16-01-2018.
  */
@@ -77,5 +79,9 @@ public class Constants {
     public interface EmulationMessages {
         public static final String CLIENTCONNECT_NOT_CONNECTED = "Socket is not open yet";
         public static final String CLIENTCONNECT_GETTING_DISCONNECTED = "The main socket which is used to send/receive messages is being disconnected now. I will try to re-connect.";
+    }
+
+    public interface UUIDs {
+        public static final UUID mmSocket_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
     }
 }

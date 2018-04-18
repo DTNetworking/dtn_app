@@ -61,8 +61,13 @@ public class OneScenario extends AppCompatActivity {
     boolean connectAsClient = true;
     int noOfPeers = 0;
     String connectedDeviceName;
+
+
     BluetoothConnectT serverConnect;
     BluetoothConnectClientT clientConnect;
+    BluetoothConnectCmmSocket clientMessageSConnect;
+
+
     BluetoothBytesT streamData;
     BandwidthBytesT bandData;
     BluetoothACKBytesT ACKData;
@@ -460,6 +465,7 @@ public class OneScenario extends AppCompatActivity {
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
+                Toast.makeText(getApplicationContext(), "Device is connected!", Toast.LENGTH_SHORT).show();
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
                     Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                     connection1EndTime = System.nanoTime();
@@ -502,10 +508,11 @@ public class OneScenario extends AppCompatActivity {
                     currentStatusText.setText("CLIENT");
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
-                    SocketGlobal = clientConnect.getClientSocket();
+                    SocketGlobal = clientMessageSConnect.getClientSocket();
+                    //SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
-                    final Thread checkBandwidthT = new Thread(new Runnable() {
+                /*    final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
 
@@ -531,53 +538,32 @@ public class OneScenario extends AppCompatActivity {
                             Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
                             Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
                         }
-                    });
+                    }); */
 
-                    checkBandwidthT.start();
-
-
-                    getDataHandler = new Handler() {
-                        @Override
-                        public void handleMessage(Message msg) {
-                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                            String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-                            bandwidthText.setText(bandwidth);
-                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
-
-                            try {
-                                checkBandwidthT.sleep(1000);
-                                checkBandwidthT.run();
-                            } catch (InterruptedException SleepE) {
-                                Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
-                            }
-
-                        }
-
-                    };
+//                    checkBandwidthT.start();
+//
+//
+//                    getDataHandler = new Handler() {
+//                        @Override
+//                        public void handleMessage(Message msg) {
+//                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+//                            String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+//                            bandwidthText.setText(bandwidth);
+//                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+//
+//                            try {
+//                                checkBandwidthT.sleep(1000);
+//                                checkBandwidthT.run();
+//                            } catch (InterruptedException SleepE) {
+//                                Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+//                            }
+//
+//                        }
+//
+//                    };
 
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
-
-                    // Check if mmSocket is connected or not
-
-                    Thread checkStreamDataConnectedT = new Thread() {
-                        public void run() {
-                            while (true) {
-                                if (clientConnect != null) {
-                                    boolean getConnectionStatus = clientConnect.checkIfmmSocketIsConnected();
-                                    // Log.i(Constants.TAG, "Yes I am " + getConnectionStatus);
-                                    if (getConnectionStatus == true) {
-                                        Message btClientConnectionStatusMsg = Message.obtain();
-                                        btClientConnectionStatusMsg.arg1 = 200;
-                                        btClientConnectionStatus.sendMessage(btClientConnectionStatusMsg);
-                                    }
-                                }
-                            }
-                        }
-                    };
-
-
-                    checkStreamDataConnectedT.start();
 
 
                 } else if (msg.arg1 == -1) {
@@ -629,8 +615,8 @@ public class OneScenario extends AppCompatActivity {
             if (!(btDevice.equals(null) && !(btDevice.getName().equals("null")) && !(btDevice.getName().equals(null)))) {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
-                    clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
-                    clientConnect.start();
+                    clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus);
+                    clientMessageSConnect.run();
                 }
 
             }
@@ -984,8 +970,8 @@ public class OneScenario extends AppCompatActivity {
         if (alertDialogOpened == true) {
             alertDialog.dismiss();
         }
-        if (clientConnect != null) {
-            clientConnect.cancel();
+        if (clientMessageSConnect != null) {
+            clientMessageSConnect.cancel();
         }
         if (serverConnect != null) {
             serverConnect.cancel();

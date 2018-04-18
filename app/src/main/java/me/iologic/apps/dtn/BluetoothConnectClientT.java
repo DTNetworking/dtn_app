@@ -91,48 +91,48 @@ class BluetoothConnectClientT extends Thread {
         btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
 
 
-        try {
-            // Connect to the remote device through the socket. This call blocks
-            // until it succeeds or throws an exception.
-            pairingStartTime = System.nanoTime();
-            mmSocket.connect();
-            pairingEndTime = System.nanoTime();
-            duration = (pairingEndTime - pairingStartTime);
-
-        } catch (IOException connectException) {
-            btConnectionStatusMsg = Message.obtain();
-            btConnectionStatusMsg.arg1 = -1;
-            btConnectionStatus.sendMessage(btConnectionStatusMsg);
-            closemmSocket();
-        }
-
-        if (mmSocket.isConnected()) {
-            isAlreadyConnected = true;
-            btConnectionStatusMsg.arg1 = 1;
-            btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
-
-            btConnectionStatus.sendMessage(btConnectionStatusMsg);
-        }
+//        try {
+//            // Connect to the remote device through the socket. This call blocks
+//            // until it succeeds or throws an exception.
+//            pairingStartTime = System.nanoTime();
+//            mmSocket.connect();
+//            pairingEndTime = System.nanoTime();
+//            duration = (pairingEndTime - pairingStartTime);
+//
+//        } catch (IOException connectException) {
+//            btConnectionStatusMsg = Message.obtain();
+//            btConnectionStatusMsg.arg1 = -1;
+//            btConnectionStatus.sendMessage(btConnectionStatusMsg);
+//            closemmSocket();
+//        }
+//
+//        if (mmSocket.isConnected()) {
+//            isAlreadyConnected = true;
+//            btConnectionStatusMsg.arg1 = 1;
+//            btConnectionStatusMsg.arg2 = (int) (duration / 1000000);
+//
+//            btConnectionStatus.sendMessage(btConnectionStatusMsg);
+//        }
 
         // ACK Part
-        try {
-            mmACKClientSocket.connect();
-        } catch (IOException e) {
-            btConnectionACKStatusMsg.arg1 = -2;
-            btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
-            Log.e(Constants.TAG, "I could not connect to ACK Socket on the server side");
-            try {
-                mmACKClientSocket.close();
-            } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
-
-            }
-
-            return;
-        }
-
-        btConnectionACKStatusMsg.arg1 = 2;
-        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+//        try {
+//            mmACKClientSocket.connect();
+//        } catch (IOException e) {
+//            btConnectionACKStatusMsg.arg1 = -2;
+//            btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+//            Log.e(Constants.TAG, "I could not connect to ACK Socket on the server side");
+//            try {
+//                mmACKClientSocket.close();
+//            } catch (IOException closeException) {
+//                Log.e(TAG, "Could not close the client socket", closeException);
+//
+//            }
+//
+//            return;
+//        }
+//
+//        btConnectionACKStatusMsg.arg1 = 2;
+//        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
     }
 
     public boolean checkIfmmSocketIsConnected() {
@@ -168,9 +168,6 @@ class BluetoothConnectClientT extends Thread {
     // Closes the client socket and causes the thread to finish.
     public void cancel() {
         try {
-            if (mmSocket != null) {
-                mmSocket.close();
-            }
             if (mmACKClientSocket != null) {
                 mmACKClientSocket.close();
             }

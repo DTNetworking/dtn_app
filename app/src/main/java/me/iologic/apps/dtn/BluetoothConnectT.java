@@ -30,9 +30,10 @@ class BluetoothConnectT extends Thread {
     Message btConnectionACKStatusMsg;
     Message btConnectionBWStatusMsg;
 
-    private static final UUID MY_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
-    private static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050"); // UUID is uniquely generated
-    private static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1"); // UUID is uniquely generated
+    //UUIDs for second connection
+    private static final UUID MY_UUID = Constants.UUIDs.mmSocket_UUID;
+    private static final UUID ACK_UUID = UUID.fromString("928bef3c-e408-44f6-b339-06358055da16");
+    private static final UUID BW_UUID = UUID.fromString("ddbb9433-d6c4-4fc5-b6a9-d96bdbc9d928");
 
     public BluetoothConnectT(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
 
@@ -70,17 +71,6 @@ class BluetoothConnectT extends Thread {
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
             try {
-                BWSocket = bandwidthSocket.accept();
-                BWSocketGlobal = BWSocket;
-
-                btConnectionBWStatusMsg.arg1 = 3;
-                btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
-                btConnectionBWStatusMsg = Message.obtain();
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
-            }
-
-            try {
                 pairingStartTime = System.nanoTime();
                 socket = mmServerSocket.accept();
                 if (socket.isConnected()) {
@@ -97,7 +87,17 @@ class BluetoothConnectT extends Thread {
                 Log.e(TAG, "Socket's accept() method failed", e);
                 btConnectionStatusMsg.arg1 = -1;
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
-                break;
+            }
+
+            try {
+                BWSocket = bandwidthSocket.accept();
+                BWSocketGlobal = BWSocket;
+
+                btConnectionBWStatusMsg.arg1 = 3;
+                btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
+                btConnectionBWStatusMsg = Message.obtain();
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
             }
 
           /*  if (socket != null) {
