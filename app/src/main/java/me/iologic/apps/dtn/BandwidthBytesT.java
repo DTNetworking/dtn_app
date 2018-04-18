@@ -67,7 +67,7 @@ public class BandwidthBytesT extends Thread {
 
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
 
-                if (bandwidthInStream.available() > 0) {
+                if ((bandwidthInStream!=null) && (bandwidthInStream.available() > 0)) {
                     // Read from the InputStream.
                     numBytes = bandwidthInStream.read(bandwidthBuffer);
                     // Send the obtained bytes to the UI activity.
