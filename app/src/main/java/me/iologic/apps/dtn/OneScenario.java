@@ -475,9 +475,9 @@ public class OneScenario extends AppCompatActivity {
                     }
 
                     //list
-                    ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
+                    ContactTimeList device1 = new ContactTimeList(connectedDeviceName, currentDateTime, interConnectTimeTxt);
                     contactTimeList.add(device1);
-                    useFile.saveInterContactTime(Constants.FileNames.InterContactTime, btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
+                    useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
                     Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is connected!"), Toast.LENGTH_SHORT).show();
                 }
             }
