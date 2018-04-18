@@ -14,7 +14,7 @@ import java.util.UUID;
  * Created by vinee on 15-01-2018.
  */
 
-class BluetoothConnectT extends Thread {
+class BluetoothConnectSmmSocket extends Thread {
 
     private final BluetoothServerSocket mmServerSocket;
     private final BluetoothServerSocket mmACKServerSocket;
@@ -35,7 +35,7 @@ class BluetoothConnectT extends Thread {
     private static final UUID ACK_UUID = UUID.fromString("928bef3c-e408-44f6-b339-06358055da16");
     private static final UUID BW_UUID = UUID.fromString("ddbb9433-d6c4-4fc5-b6a9-d96bdbc9d928");
 
-    public BluetoothConnectT(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
+    public BluetoothConnectSmmSocket(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
 
         btConnectionStatus = getBtConnectionStatus;
         // Use a temporary object that is later assigned to mmServerSocket

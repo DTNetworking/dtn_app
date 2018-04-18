@@ -316,12 +316,6 @@ public class OneScenario extends AppCompatActivity {
         }
     }
 
-    public void showContactTimeList() {
-        alertDialogOpened = true;
-        AlertDialog.Builder showContactTimeList = new AlertDialog.Builder(OneScenario.this);
-        showContactTimeList.setTitle("Inter Contact Timings");
-    }
-
     public void showMsgTimeList() {
         alertDialogOpened = true;
         AlertDialog.Builder showList = new AlertDialog.Builder(OneScenario.this);
@@ -616,7 +610,9 @@ public class OneScenario extends AppCompatActivity {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
                     clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus);
-                    clientMessageSConnect.run();
+                    Thread startmmSocketConnection = new Thread(clientMessageSConnect);
+                    startmmSocketConnection.start();
+
                 }
 
             }
