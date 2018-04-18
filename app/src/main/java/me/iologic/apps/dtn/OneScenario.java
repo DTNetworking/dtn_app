@@ -37,8 +37,11 @@ import android.widget.Toast;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +65,7 @@ public class OneScenario extends AppCompatActivity {
     BluetoothSocket secondBandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
     ArrayList<ContactTimeList> contactTimeList = new ArrayList<>();
+    ArrayList<BluetoothDevice> btDeviceConnectedList = new ArrayList<BluetoothDevice>();
     String getGoodOldName;
 
     // 2nd Connection
@@ -132,6 +136,11 @@ public class OneScenario extends AppCompatActivity {
     long interConnectTime;
     String interConnectTimeTxt;
     String currentDateTime, connectedDeviceName;
+
+    long connection_two_StartTime, connection_two_EndTime, duration_two;
+    long interConnectTime_two;
+    String interConnectTimeTxt_two;
+    String currentDateTime_two, connectedDeviceName_two;
 
     StopWatch stopWatch;
 
@@ -423,8 +432,9 @@ public class OneScenario extends AppCompatActivity {
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
-            } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
+                btDeviceConnectedList.add(btDeviceConnectedGlobal);
+            } else if (btDeviceConnectedList.get(0).ACTION_ACL_DISCONNECTED.equals(action)) {
+                Log.e(Constants.TAG, "ONE DEVICE IS DISCONNECTED!");
                 connection1EndTime = System.nanoTime();
                 duration = connection1EndTime - connection1StartTime;
                 long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
@@ -437,10 +447,36 @@ public class OneScenario extends AppCompatActivity {
                 }
 
                 //list
-                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
+                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedList.get(0).getName(), currentDateTime, interConnectTimeTxt);
                 contactTimeList.add(device1);
-                useFile.saveInterContactTime(Constants.FileNames.InterContactTime, btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
-                Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is connected!"), Toast.LENGTH_SHORT).show();
+                try {
+                    useFile.saveInterContactTime(Constants.FileNames.InterContactTime, btDeviceConnectedList.get(0).getName(), currentDateTime, interConnectTimeTxt);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(getApplicationContext(), ("Device " + btDeviceConnectedList.get(0).getName() + " is disconnected!"), Toast.LENGTH_SHORT).show();
+            } else if (btDeviceConnectedList.get(1).ACTION_ACL_DISCONNECTED.equals(action)) {
+                Log.e(Constants.TAG, "SECOND DEVICE IS DISCONNECTED!");
+                connection_two_EndTime = System.nanoTime();
+                duration = connection_two_EndTime - connection_two_StartTime;
+                long durationInSeconds_two = TimeUnit.NANOSECONDS.toSeconds(duration);
+                if (durationInSeconds_two < 60) {
+                    interConnectTime_two = durationInSeconds_two;
+                    interConnectTimeTxt_two = interConnectTime_two + " seconds";
+                } else {
+                    interConnectTime_two = TimeUnit.SECONDS.toMinutes(durationInSeconds_two);
+                    interConnectTimeTxt_two = interConnectTime_two + " minutes";
+                }
+
+                //list
+                ContactTimeList device2 = new ContactTimeList(btDeviceConnectedList.get(1).getName(), currentDateTime_two, interConnectTimeTxt_two);
+                contactTimeList.add(device2);
+                try {
+                    useFile.saveInterContactTime(Constants.FileNames.InterContactTime, btDeviceConnectedList.get(1).getName(), currentDateTime_two, interConnectTimeTxt_two);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(getApplicationContext(), ("Device " + btDeviceConnectedList.get(1).getName() + " is disconnected!"), Toast.LENGTH_SHORT).show();
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
@@ -597,6 +633,8 @@ public class OneScenario extends AppCompatActivity {
                 if (msg.arg1 == 1) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
+                    currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+                    connection1StartTime = System.nanoTime();
                     stopIndicator();
                     isFirstPhoneConnected = true;
                     currentStatusConText.setText(R.string.server);
@@ -643,6 +681,8 @@ public class OneScenario extends AppCompatActivity {
                 else if (msg.arg1 == 8) {
 
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show();
+                    currentDateTime_two = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+                    connection_two_StartTime = System.nanoTime();
 
                     currentStatusText.startAnimation(animBlink);
 

@@ -195,26 +195,29 @@ public class FileServices {
     }
 
     // Save Inter Contact Time Details To File
-    public void saveInterContactTime(String ReceivedFileName, String ReceivedDeviceName, String ReceivedDateAndTime, String ReceivedDuration) {
+    public void saveInterContactTime(String ReceivedFileName, String ReceivedDeviceName, String ReceivedDateAndTime, String ReceivedDuration) throws IOException {
+
         String saveFileName = ReceivedFileName + ".txt";
         dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
 
-        FileOutputStream fOut = null;
-        try {
-            fOut = new FileOutputStream(dataFile, true);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        if (dataFile.exists()){
+            try
+            {
+                FileOutputStream fOut = new FileOutputStream(dataFile);
+                OutputStreamWriter osw = new OutputStreamWriter(fOut);
+                osw.append("\"Device connected to: \" + ReceivedDeviceName + \"\\r\\n\" + \"Connected at \" + ReceivedDateAndTime + \"\\r\\n\" + \"Duration \" + ReceivedDuration + \"\\r\\n\"");
+                osw.flush();
+                osw.close();
+                fOut.close();
+            } catch(Exception e)
+            {
+                e.printStackTrace();
+            }
 
-        OutputStreamWriter osw = new OutputStreamWriter(fOut);
-        try {
-            osw.write("Device connected to: " + ReceivedDeviceName + "\r\n" + "Connected at " + ReceivedDateAndTime + "\r\n" + "Duration " + ReceivedDuration + "\r\n");
-            osw.flush();
-            osw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
+        else{
+            dataFile.createNewFile();
+        }
 
     }
 
