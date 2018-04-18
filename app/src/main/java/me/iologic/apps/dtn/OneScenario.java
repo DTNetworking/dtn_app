@@ -460,23 +460,25 @@ public class OneScenario extends AppCompatActivity {
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
-                connection1EndTime = System.nanoTime();
-                duration = connection1EndTime - connection1StartTime;
-                long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
-                if (durationInSeconds < 60) {
-                    interConnectTime = durationInSeconds;
-                    interConnectTimeTxt = interConnectTime + " seconds";
-                } else {
-                    interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
-                    interConnectTimeTxt = interConnectTime + " minutes";
-                }
+                if (clientConnect.getClientSocket() == null) {
+                    Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
+                    connection1EndTime = System.nanoTime();
+                    duration = connection1EndTime - connection1StartTime;
+                    long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
+                    if (durationInSeconds < 60) {
+                        interConnectTime = durationInSeconds;
+                        interConnectTimeTxt = interConnectTime + " seconds";
+                    } else {
+                        interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
+                        interConnectTimeTxt = interConnectTime + " minutes";
+                    }
 
-                //list
-                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
-                contactTimeList.add(device1);
-                useFile.saveInterContactTime(Constants.FileNames.InterContactTime, btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
-                Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is connected!"), Toast.LENGTH_SHORT).show();
+                    //list
+                    ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
+                    contactTimeList.add(device1);
+                    useFile.saveInterContactTime(Constants.FileNames.InterContactTime, btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
+                    Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is connected!"), Toast.LENGTH_SHORT).show();
+                }
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
