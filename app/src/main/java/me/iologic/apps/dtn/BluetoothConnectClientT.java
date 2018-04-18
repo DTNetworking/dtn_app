@@ -134,7 +134,7 @@ class BluetoothConnectClientT extends Thread {
         btConnectionACKStatusMsg.arg1 = 2;
         btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
     }
-    
+
     public boolean checkIfmmSocketIsConnected() {
         // Log.i(Constants.TAG, "Checking: " + mmSocket.isConnected() + " " + isAlreadyConnected);
         if (mmSocket.isConnected() ^ isAlreadyConnected) {
