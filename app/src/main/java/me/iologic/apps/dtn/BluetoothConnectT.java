@@ -125,18 +125,25 @@ class BluetoothConnectT extends Thread {
         Thread firstBWConnectT = new Thread() {
 
             public void run() {
-                startBWSocket();
-                btConnectionBWStatusMsg = Message.obtain();
+                while (true) {
+                    startBWSocket();
+                    btConnectionBWStatusMsg = Message.obtain();
+                }
             }
+
         };
 
         //for 2nd connection
         Thread secondBWConnectT = new Thread() {
             public void run() {
-                startsecondBWSocket();
-                secondBtConnectionBWStatusMsg = Message.obtain();
+                while (true) {
+                    startsecondBWSocket();
+                    secondBtConnectionBWStatusMsg = Message.obtain();
+                }
             }
         };
+
+        ;
 
 
         Thread firstConnectT = new Thread() {
@@ -390,5 +397,6 @@ class BluetoothConnectT extends Thread {
         }
     }
 }
+
 
 
