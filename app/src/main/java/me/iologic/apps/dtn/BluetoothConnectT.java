@@ -197,6 +197,7 @@ class BluetoothConnectT extends Thread {
             btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
         } catch (IOException e) {
             Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
+            closefirstBWSocket();
         }
     }
 
@@ -208,6 +209,7 @@ class BluetoothConnectT extends Thread {
             secondBtConnectionStatus.sendMessage(secondBtConnectionBWStatusMsg);
         } catch (IOException e) {
             Log.e(Constants.TAG, "secondBWSocket's accept() method failed", e);
+            closesecondBWSocket();
         }
     }
 
@@ -220,6 +222,7 @@ class BluetoothConnectT extends Thread {
             btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
         } catch (IOException e) {
             Log.e(Constants.TAG, "ACKSocket's accept() method failed", e);
+            closefirstACKSocket();
         }
     }
 
@@ -232,6 +235,7 @@ class BluetoothConnectT extends Thread {
             secondBtConnectionStatus.sendMessage(secondBtConnectionACKStatusMsg);
         } catch (IOException e) {
             Log.e(Constants.TAG, "Second ACKSocket's accept() method failed", e);
+            closesecondACKSocket();
         }
     }
 
@@ -313,6 +317,7 @@ class BluetoothConnectT extends Thread {
             Log.e(TAG, "Second Socket's accept() method failed", e);
             secondBtConnectionStatusMsg.arg1 = -1;
             secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
+            closesecondConnectSocket();
         }
     }
 
@@ -327,6 +332,38 @@ class BluetoothConnectT extends Thread {
     public void closesecondConnectSocket() {
         try {
             secondClientSocket.close();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "closesecondConnectSocket disconnected");
+        }
+    }
+
+    public void closefirstACKSocket() {
+        try {
+            AckSocketGlobal.close();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "closefirstConnectSocket disconnected");
+        }
+    }
+
+    public void closesecondACKSocket() {
+        try {
+            secondAckSocketGlobal.close();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "closesecondConnectSocket disconnected");
+        }
+    }
+
+    public void closefirstBWSocket() {
+        try {
+            BWSocketGlobal.close();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "closefirstConnectSocket disconnected");
+        }
+    }
+
+    public void closesecondBWSocket() {
+        try {
+            secondBWSocketGlobal.close();
         } catch (IOException e) {
             Log.e(Constants.TAG, "closesecondConnectSocket disconnected");
         }
