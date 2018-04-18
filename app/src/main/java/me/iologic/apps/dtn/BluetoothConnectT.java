@@ -139,7 +139,7 @@ class BluetoothConnectT extends Thread {
                 secondBtConnectionStatus.sendMessage(secondBtConnectionBWStatusMsg);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "secondBWSocket's accept() method failed", e);
-            } 
+            }
 
             try {
                 pairingStartTime = System.nanoTime();
