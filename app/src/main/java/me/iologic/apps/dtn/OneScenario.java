@@ -461,7 +461,6 @@ public class OneScenario extends AppCompatActivity {
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                if (clientConnect == null) {
                     Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                     connection1EndTime = System.nanoTime();
                     duration = connection1EndTime - connection1StartTime;
@@ -479,7 +478,6 @@ public class OneScenario extends AppCompatActivity {
                     contactTimeList.add(device1);
                     useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
                     Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is connected!"), Toast.LENGTH_SHORT).show();
-                }
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
