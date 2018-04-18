@@ -7,4 +7,11 @@
         android:orderInCategory="100"
         android:title="@string/action_msgTime"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_intercontactTime"
+        android:icon="@drawable/ic_inter_contact_time"
+        android:orderInCategory="101"
+        android:title="Inter Contact Time"
+        app:showAsAction="always" />
 </menu>

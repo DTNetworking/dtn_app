@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="100">
+
+    <TextView
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Device Name"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/deviceName"
+        android:layout_weight="40"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="60">
+
+        <TextView
+            android:gravity="center"
+            android:text="@string/DateAndTime"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:id="@+id/dateAndTime"/>
+
+        <TextView
+            android:gravity="center"
+            android:text="@string/InterContactTime"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:id="@+id/interContactTime"/>
+
+    </LinearLayout>
+
+</LinearLayout>

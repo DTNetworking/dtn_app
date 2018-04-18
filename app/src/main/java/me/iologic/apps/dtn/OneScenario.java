@@ -40,6 +40,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class OneScenario extends AppCompatActivity {
 
@@ -60,6 +61,7 @@ public class OneScenario extends AppCompatActivity {
     BluetoothSocket secondACKSocketGlobal; // To store ACK socket
     BluetoothSocket secondBandSocketGlobal; // To store Bandwidth Socket
     ArrayList<BluetoothDevice> btDevicesFoundList = new ArrayList<BluetoothDevice>(); // Store list of bluetooth devices.
+    ArrayList<ContactTimeList> contactTimeList = new ArrayList<>();
     String getGoodOldName;
 
     // 2nd Connection
@@ -125,6 +127,11 @@ public class OneScenario extends AppCompatActivity {
 
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
+
+    long connection1StartTime, connection1EndTime, duration;
+    long interConnectTime;
+    String interConnectTimeTxt;
+    String currentDateTime, connectedDeviceName;
 
     StopWatch stopWatch;
 
@@ -261,9 +268,19 @@ public class OneScenario extends AppCompatActivity {
             case R.id.action_msgTime:
                 showMsgTimeList();
                 return true;
+            case R.id.action_intercontactTime:
+                Intent interContactTimeIntent = new Intent(this, ContactTimeListView.class);
+                interContactTimeIntent.putExtra("contactTimeListArray", contactTimeList);
+                startActivity(interContactTimeIntent);
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void showContactTimeList() {
+        alertDialogOpened = true;
+        AlertDialog.Builder showContactTimeList = new AlertDialog.Builder(OneScenario.this);
+        showContactTimeList.setTitle("Inter Contact Timings");
     }
 
     public void showMsgTimeList() {
@@ -406,6 +423,24 @@ public class OneScenario extends AppCompatActivity {
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
+            } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
+                Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
+                connection1EndTime = System.nanoTime();
+                duration = connection1EndTime - connection1StartTime;
+                long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
+                if (durationInSeconds < 60) {
+                    interConnectTime = durationInSeconds;
+                    interConnectTimeTxt = interConnectTime + " seconds";
+                } else {
+                    interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
+                    interConnectTimeTxt = interConnectTime + " minutes";
+                }
+
+                //list
+                ContactTimeList device1 = new ContactTimeList(btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
+                contactTimeList.add(device1);
+                useFile.saveInterContactTime(Constants.FileNames.InterContactTime, btDeviceConnectedGlobal.getName(), currentDateTime, interConnectTimeTxt);
+                Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is connected!"), Toast.LENGTH_SHORT).show();
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);

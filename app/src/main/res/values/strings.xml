@@ -25,4 +25,6 @@
     <string name="speed">Speed</string>
     <string name="MeterPerSecond">m/s</string>
     <string name="delay2">Delay 2</string>
+    <string name="DateAndTime">Date and Time</string>
+    <string name="InterContactTime">Inter Contact Time</string>
 </resources>
