@@ -90,39 +90,7 @@ class BluetoothConnectClientT extends Thread {
         btConnectionBWStatusMsg.arg1 = 100;
         btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
 
-        Thread firstClientConnectT = new Thread() {
-            public void run() {
-                //while (true) {
-                clientConnect();
-                btConnectionStatusMsg = Message.obtain();
-                //}
-            }
-        };
 
-        firstClientConnectT.start();
-
-        // ACK Part
-        try {
-            mmACKClientSocket.connect();
-        } catch (IOException e) {
-            btConnectionACKStatusMsg.arg1 = -2;
-            btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
-            Log.e(Constants.TAG, "I could not connect to ACK Socket on the server side");
-            try {
-                mmACKClientSocket.close();
-            } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
-
-            }
-
-            return;
-        }
-
-        btConnectionACKStatusMsg.arg1 = 2;
-        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
-    }
-
-    public void clientConnect() {
         try {
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
@@ -145,8 +113,28 @@ class BluetoothConnectClientT extends Thread {
 
             btConnectionStatus.sendMessage(btConnectionStatusMsg);
         }
-    }
 
+        // ACK Part
+        try {
+            mmACKClientSocket.connect();
+        } catch (IOException e) {
+            btConnectionACKStatusMsg.arg1 = -2;
+            btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+            Log.e(Constants.TAG, "I could not connect to ACK Socket on the server side");
+            try {
+                mmACKClientSocket.close();
+            } catch (IOException closeException) {
+                Log.e(TAG, "Could not close the client socket", closeException);
+
+            }
+
+            return;
+        }
+
+        btConnectionACKStatusMsg.arg1 = 2;
+        btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
+    }
+    
     public boolean checkIfmmSocketIsConnected() {
         // Log.i(Constants.TAG, "Checking: " + mmSocket.isConnected() + " " + isAlreadyConnected);
         if (mmSocket.isConnected() ^ isAlreadyConnected) {
