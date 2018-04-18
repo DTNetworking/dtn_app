@@ -87,6 +87,7 @@ class BluetoothConnectT extends Thread {
                 Log.e(TAG, "Socket's accept() method failed", e);
                 btConnectionStatusMsg.arg1 = -1;
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
+                break;
             }
 
             try {
