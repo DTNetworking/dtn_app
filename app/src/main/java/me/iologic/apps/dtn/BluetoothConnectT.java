@@ -121,79 +121,88 @@ class BluetoothConnectT extends Thread {
         secondAckSocketGlobal = null;
         secondBWSocketGlobal = null;
 
+        while(true){
+            startFirstConnectionSocket();
+            startsecondConnectionSocket();
+            startFirstACK();
+            startSecondACK();
+            startBWSocket();
+            startsecondBWSocket();
+        }
+
         // Keep listening until exception occurs or a socket is returned.
-        Thread firstBWConnectT = new Thread() {
-
-            public void run() {
-                while (true) {
-                    startBWSocket();
-                    btConnectionBWStatusMsg = Message.obtain();
-                }
-            }
-
-        };
-
-        //for 2nd connection
-        Thread secondBWConnectT = new Thread() {
-            public void run() {
-                while (true) {
-                    startsecondBWSocket();
-                    secondBtConnectionBWStatusMsg = Message.obtain();
-                }
-            }
-        };
-
-        ;
-
-
-        Thread firstConnectT = new Thread() {
-            @Override
-            public void run() {
-                while (true) {
-                    startFirstConnectionSocket();
-                    btConnectionStatusMsg = Message.obtain(); // Get new message object for every re-trial of connection.
-                }
-            }
-        };
-
-        //for 2nd connection
-        Thread secondConnectT = new Thread() {
-            @Override
-            public void run() {
-                while (true) {
-                    startsecondConnectionSocket();
-                    secondBtConnectionStatusMsg = Message.obtain();
-                }
-            }
-        };
-
-        firstConnectT.start();
-        secondConnectT.start();
-
-        // ACK Part
-        Thread firstACKT = new Thread() {
-            public void run() {
-                while (true) {
-                    startFirstACK();
-                    btConnectionACKStatusMsg = Message.obtain();
-                }
-            }
-        };
-
-        Thread secondACKT = new Thread() {
-            public void run() {
-                while (true) {
-                    startSecondACK();
-                    secondBtConnectionStatusMsg = Message.obtain();
-                }
-            }
-        };
-
-        firstACKT.start();
-        secondACKT.start();
-
-        firstBWConnectT.start();
-        secondBWConnectT.start();
+//        Thread firstBWConnectT = new Thread() {
+//
+//            public void run() {
+//                while (true) {
+//                    startBWSocket();
+//                    btConnectionBWStatusMsg = Message.obtain();
+//                }
+//            }
+//
+//        };
+//
+//        //for 2nd connection
+//        Thread secondBWConnectT = new Thread() {
+//            public void run() {
+//                while (true) {
+//                    startsecondBWSocket();
+//                    secondBtConnectionBWStatusMsg = Message.obtain();
+//                }
+//            }
+//        };
+//
+//        ;
+//
+//
+//        Thread firstConnectT = new Thread() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    startFirstConnectionSocket();
+//                    btConnectionStatusMsg = Message.obtain(); // Get new message object for every re-trial of connection.
+//                }
+//            }
+//        };
+//
+//        //for 2nd connection
+//        Thread secondConnectT = new Thread() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    startsecondConnectionSocket();
+//                    secondBtConnectionStatusMsg = Message.obtain();
+//                }
+//            }
+//        };
+//
+//        firstConnectT.start();
+//        secondConnectT.start();
+//
+//        // ACK Part
+//        Thread firstACKT = new Thread() {
+//            public void run() {
+//                while (true) {
+//                    startFirstACK();
+//                    btConnectionACKStatusMsg = Message.obtain();
+//                }
+//            }
+//        };
+//
+//        Thread secondACKT = new Thread() {
+//            public void run() {
+//                while (true) {
+//                    startSecondACK();
+//                    secondBtConnectionStatusMsg = Message.obtain();
+//                }
+//            }
+//        };
+//
+//        firstACKT.start();
+//        secondACKT.start();
+//
+//        firstBWConnectT.start();
+//        secondBWConnectT.start();
     }
 
     private void startBWSocket() {
@@ -204,7 +213,7 @@ class BluetoothConnectT extends Thread {
             btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
         } catch (IOException e) {
             Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
-            closefirstBWSocket();
+            //closefirstBWSocket();
         }
     }
 
@@ -216,7 +225,7 @@ class BluetoothConnectT extends Thread {
             secondBtConnectionStatus.sendMessage(secondBtConnectionBWStatusMsg);
         } catch (IOException e) {
             Log.e(Constants.TAG, "secondBWSocket's accept() method failed", e);
-            closesecondBWSocket();
+           // closesecondBWSocket();
         }
     }
 
@@ -229,7 +238,7 @@ class BluetoothConnectT extends Thread {
             btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
         } catch (IOException e) {
             Log.e(Constants.TAG, "ACKSocket's accept() method failed", e);
-            closefirstACKSocket();
+           // closefirstACKSocket();
         }
     }
 
@@ -242,7 +251,7 @@ class BluetoothConnectT extends Thread {
             secondBtConnectionStatus.sendMessage(secondBtConnectionACKStatusMsg);
         } catch (IOException e) {
             Log.e(Constants.TAG, "Second ACKSocket's accept() method failed", e);
-            closesecondACKSocket();
+           // closesecondACKSocket();
         }
     }
 
@@ -299,7 +308,7 @@ class BluetoothConnectT extends Thread {
             Log.e(TAG, "Socket's accept() method failed", e);
             btConnectionStatusMsg.arg1 = -1;
             btConnectionStatus.sendMessage(btConnectionStatusMsg);
-            closefirstConnectSocket();
+           // closefirstConnectSocket();
         }
     }
 
@@ -324,7 +333,7 @@ class BluetoothConnectT extends Thread {
             Log.e(TAG, "Second Socket's accept() method failed", e);
             secondBtConnectionStatusMsg.arg1 = -1;
             secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
-            closesecondConnectSocket();
+           // closesecondConnectSocket();
         }
     }
 
