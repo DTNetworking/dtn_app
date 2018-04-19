@@ -665,17 +665,16 @@ public class OneScenario extends AppCompatActivity {
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
                 String[] tempReceivedString = writeMessage.split("_");
-                Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
-                Log.i(Constants.TAG, "Message Received: " + writeMessage);
+               // Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
+               // Log.i(Constants.TAG, "Message Received: " + writeMessage);
                 if (messageReceived.getVisibility() != View.VISIBLE) {
                     messageReceived.setVisibility(View.VISIBLE);
                 }
                 messageReceived.startAnimation(animFadeIn);
-                byte[] message = trimByteArray(tempReceivedString[0].getBytes());
                 // Log.i(Constants.TAG, "Message size after trimming: " + message.length);
-                messageReceived.setText(new String(message));
-                String writeACK = Integer.toString(message.length);
-                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, new String(message));
+                messageReceived.setText(tempReceivedString[0]);
+                String writeACK = Integer.toString(tempReceivedString[0].length());
+                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
 
                 // }
                 GlobalReceivedMessage = writeMessage;
@@ -896,7 +895,7 @@ public class OneScenario extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    String messageToSend = EditMessageBox.getText().toString() + "E#";
+                    String messageToSend = EditMessageBox.getText().toString();
                     streamData.write(messageToSend.getBytes());
                     // Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
                     useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
@@ -982,21 +981,6 @@ public class OneScenario extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    private static byte[] trimByteArray(byte[] bytes) {
-        int i = bytes.length - 1;
-
-        while (bytes[i] == 0) {
-            --i;
-            if (bytes[i] == '#') {
-                break;
-            }
-
-            Log.i(Constants.TAG, "Byte Read: " + bytes[i]);
-        }
-
-        return Arrays.copyOf(bytes, i - 1);
     }
 
     public void getUUIDs() {
