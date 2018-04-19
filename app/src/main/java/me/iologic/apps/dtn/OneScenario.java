@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -42,6 +43,8 @@ import android.widget.Toast;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -456,6 +459,7 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Discovery Period Finished");
                 peerStatusText.startAnimation(animSlideOut);
                 peerStatusText.setVisibility(View.GONE);
+                getUUIDs(); // Check if UUIDs are discoverable
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
                 } else {
@@ -956,6 +960,24 @@ public class OneScenario extends AppCompatActivity {
         }
 
         return Arrays.copyOf(bytes, i + 1);
+    }
+
+    public void getUUIDs() {
+        try {
+            Method getUuidsMethod = BluetoothAdapter.class.getDeclaredMethod("getUuids", null);
+
+            ParcelUuid[] uuids = (ParcelUuid[]) getUuidsMethod.invoke(mBluetoothAdapter, null);
+
+            for (ParcelUuid uuid : uuids) {
+                Log.d(Constants.TAG, "UUID: " + uuid.getUuid().toString());
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
 
