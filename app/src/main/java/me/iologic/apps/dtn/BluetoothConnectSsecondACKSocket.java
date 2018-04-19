@@ -25,7 +25,7 @@ public class BluetoothConnectSsecondACKSocket extends Thread {
 
         try {
             // MY_UUID is the app's UUID string, also used by the client code. Allowing Insecure connections to avoid Pairing Key.
-            second_ACK_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(Constants.NAME, Constants.secondUUIDs.second_ACK_UUID);
+            second_ACK_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(Constants.NAME, Constants.UUIDs.second_ACK_UUID);
         } catch (IOException e) {
             Log.e(Constants.TAG, "Socket's listen() method failed", e);
         }
