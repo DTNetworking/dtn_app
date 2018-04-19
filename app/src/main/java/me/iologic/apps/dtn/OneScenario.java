@@ -72,7 +72,8 @@ public class OneScenario extends AppCompatActivity {
     BluetoothConnectCACKSocket clientACKConnect;
 
     BluetoothConnectSBWSocket serverBWConnect;
-    BluetoothConnectCBWSocket clientBWConnect;
+
+    //BluetoothConnectCBWSocket clientBWConnect;
 
     UUIDManager deviceUUIDs;
 
@@ -550,9 +551,9 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    BandSocketGlobal = clientBWConnect.getBWClientSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
+//                    BandSocketGlobal = clientBWConnect.getBWClientSocket();
+//                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+//                    bandData.start();
 
 
                 } else if (msg.arg1 == 200) {
@@ -1022,9 +1023,9 @@ public class OneScenario extends AppCompatActivity {
         if (serverBWConnect != null) {
             serverBWConnect.cancel();
         }
-        if (clientBWConnect != null) {
-            clientBWConnect.cancel();
-        }
+//        if (clientBWConnect != null) {
+//            clientBWConnect.cancel();
+//        }
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
