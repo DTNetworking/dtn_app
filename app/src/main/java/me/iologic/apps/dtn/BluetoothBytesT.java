@@ -75,7 +75,7 @@ class BluetoothBytesT extends Thread {
                     numBytes = mmInStream.read(mmBuffer);
                     // Send the obtained bytes to the UI activity.
                     GlobalNumBytesRead = numBytes;
-                    Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes);
+                    Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes + " " + mmBuffer.length);
                     // Log.i(Constants.TAG, "Reading sendBuffer: " + new String(sendBuffer));
                     Message readMsg = mHandler.obtainMessage(
                             Constants.MessageConstants.MESSAGE_READ, numBytes, -1,

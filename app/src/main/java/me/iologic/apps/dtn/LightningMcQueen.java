@@ -25,7 +25,7 @@ public class LightningMcQueen {
             double distance = calculationBydistance(newLat, newLon, oldLat, oldLon);
             double timeDifference = newTime - curTime;
             double speed = distance / (timeDifference / 1000.0);
-            Log.i(Constants.TAG, "Speed: " + speed);
+            // Log.i(Constants.TAG, "Speed: " + speed);
             curTime = newTime;
             oldLat = newLat;
             oldLon = newLon;

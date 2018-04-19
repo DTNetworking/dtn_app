@@ -146,6 +146,7 @@ public class OneScenario extends AppCompatActivity {
     TextView bytesReceivedText;
     TextView bytesSentText;
     AVLoadingIndicatorView aviView;
+    TextView charLimitTxtView;
 
     LinearLayout dataselLLayout;
 
@@ -202,6 +203,7 @@ public class OneScenario extends AppCompatActivity {
         bytesSentText = (TextView) findViewById(R.id.bytesSent);
         bytesReceivedText = (TextView) findViewById(R.id.bytesReceived);
         aviView = (AVLoadingIndicatorView) findViewById(R.id.avi);
+        charLimitTxtView = (TextView) findViewById(R.id.characterLimitTxt);
 
         dataselLLayout = (LinearLayout) findViewById(R.id.dataSelLinearLayout);
 
@@ -284,6 +286,8 @@ public class OneScenario extends AppCompatActivity {
 
         animFadeIn = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.fade_in);
+        animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.fade_out);
         animSlideOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out);
 
 
@@ -474,23 +478,23 @@ public class OneScenario extends AppCompatActivity {
                 deviceConnected = true;
                 Toast.makeText(getApplicationContext(), "Device is connected!", Toast.LENGTH_SHORT).show();
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                    Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
-                    connection1EndTime = System.nanoTime();
-                    duration = connection1EndTime - connection1StartTime;
-                    long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
-                    if (durationInSeconds < 60) {
-                        interConnectTime = durationInSeconds;
-                        interConnectTimeTxt = interConnectTime + " seconds";
-                    } else {
-                        interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
-                        interConnectTimeTxt = interConnectTime + " minutes";
-                    }
+                Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
+                connection1EndTime = System.nanoTime();
+                duration = connection1EndTime - connection1StartTime;
+                long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
+                if (durationInSeconds < 60) {
+                    interConnectTime = durationInSeconds;
+                    interConnectTimeTxt = interConnectTime + " seconds";
+                } else {
+                    interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
+                    interConnectTimeTxt = interConnectTime + " minutes";
+                }
 
-                    //list
-                    ContactTimeList device1 = new ContactTimeList(connectedDeviceName, currentDateTime, interConnectTimeTxt);
-                    contactTimeList.add(device1);
-                    useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
-                    Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is disconnected!"), Toast.LENGTH_SHORT).show();
+                //list
+                ContactTimeList device1 = new ContactTimeList(connectedDeviceName, currentDateTime, interConnectTimeTxt);
+                contactTimeList.add(device1);
+                useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
+                Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is disconnected!"), Toast.LENGTH_SHORT).show();
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
@@ -658,7 +662,6 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
-                String writeACK = String.valueOf(msg.arg1);
                 String writeMessage = new String(writeBuf);
                 // if(!isCheckingBandwidth) {
                 String[] tempReceivedString = writeMessage.split("_");
@@ -668,8 +671,12 @@ public class OneScenario extends AppCompatActivity {
                     messageReceived.setVisibility(View.VISIBLE);
                 }
                 messageReceived.startAnimation(animFadeIn);
-                messageReceived.setText(tempReceivedString[0]);
-                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
+                byte[] message = trimByteArray(tempReceivedString[0].getBytes());
+                // Log.i(Constants.TAG, "Message size after trimming: " + message.length);
+                messageReceived.setText(new String(message));
+                String writeACK = Integer.toString(message.length);
+                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, new String(message));
+
                 // }
                 GlobalReceivedMessage = writeMessage;
                 ACKData.write(writeACK.getBytes());
@@ -720,7 +727,7 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE)
 
             {
-                Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
+                // Log.i(Constants.TAG, "I am sending an ACK -> " + GlobalReceivedMessage);
                 Log.i(Constants.TAG, "---------------------");
             }
         }
@@ -821,6 +828,10 @@ public class OneScenario extends AppCompatActivity {
                     public void run() {
                         checkBandwidthText.setVisibility(View.VISIBLE);
                         checkBandwidthText.setTextColor(Color.MAGENTA);
+
+                        charLimitTxtView.startAnimation(animFadeOut);
+                        EditMessageBox.startAnimation(animFadeIn);
+                        EditMessageBox.setVisibility(View.VISIBLE);
                     }
                 });
                 bandData.checkBandwidth(useFile, tempFile);
@@ -884,8 +895,9 @@ public class OneScenario extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    streamData.writePackets((EditMessageBox.getText().toString()).getBytes());
-                    Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
+                    String messageToSend = EditMessageBox.getText().toString() + "E#";
+                    streamData.writePackets(messageToSend.getBytes());
+                    // Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
                     useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
                     streamData.flushOutStream();
                 } else {
@@ -971,13 +983,19 @@ public class OneScenario extends AppCompatActivity {
         }
     }
 
-    private static byte[] trimByteArray(byte[] bytes, int allPacketSizes) {
+    private static byte[] trimByteArray(byte[] bytes) {
         int i = bytes.length - 1;
-        while (i >= allPacketSizes && bytes[i] == 0) {
+
+        while (bytes[i] == 0) {
             --i;
+            if (bytes[i] == '#') {
+                break;
+            }
+
+            Log.i(Constants.TAG, "Byte Read: " + bytes[i]);
         }
 
-        return Arrays.copyOf(bytes, i + 1);
+        return Arrays.copyOf(bytes, i - 1);
     }
 
     public void getUUIDs() {
