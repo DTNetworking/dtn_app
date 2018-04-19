@@ -528,8 +528,13 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
 
                     BandSocketGlobal = serverBWConnect.getBWSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
+                    if (BandSocketGlobal != null) {
+                        bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                        bandData.start();
+                    } else {
+                        Log.e(Constants.TAG, "BandSocketGlobal is null");
+                    }
+
                 }
 
                 //for 2nd connection
@@ -590,23 +595,24 @@ public class OneScenario extends AppCompatActivity {
             }
         };
 
-        serverMessageSConnect = new BluetoothConnectSmmSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverMessageSConnect.start();
-
-        serverACKConnect = new BluetoothConnectSACKSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverACKConnect.start();
 
         serverBWConnect = new BluetoothConnectSBWSocket(mBluetoothAdapter, btServerConnectionStatus);
         serverBWConnect.start();
 
-        serverSecondMessageSConnect = new BluetoothConnectSsecondmmSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverSecondMessageSConnect.start();
+        serverSecondBWConnect = new BluetoothConnectSsecondBWSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverSecondBWConnect.start();
+
+        serverACKConnect = new BluetoothConnectSACKSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverACKConnect.start();
 
         serverSecondACKConnect = new BluetoothConnectSsecondACKSocket(mBluetoothAdapter, btServerConnectionStatus);
         serverSecondACKConnect.start();
 
-        serverSecondBWConnect = new BluetoothConnectSsecondBWSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverSecondBWConnect.start();
+        serverMessageSConnect = new BluetoothConnectSmmSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverMessageSConnect.start();
+
+        serverSecondMessageSConnect = new BluetoothConnectSsecondmmSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverSecondMessageSConnect.start();
     }
 
     private final Handler btMessageStatus = new Handler() {

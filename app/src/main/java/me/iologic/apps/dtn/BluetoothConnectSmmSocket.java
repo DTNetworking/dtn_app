@@ -3,6 +3,7 @@ package me.iologic.apps.dtn;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.os.CpuUsageInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -44,8 +45,7 @@ class BluetoothConnectSmmSocket extends Thread {
     }
 
     public void run() {
-        BluetoothSocket socket = null;
-        ServerSocket = null;
+        BluetoothSocket socket;
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
             try {
@@ -66,13 +66,19 @@ class BluetoothConnectSmmSocket extends Thread {
                 btConnectionStatusMsg.arg1 = -1;
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
             }
-
-            return;
         }
     }
 
     public BluetoothSocket getServerSocket() {
-        return ServerSocket;
+
+        if(ServerSocket!=null){
+            Log.i(Constants.TAG, "NOT NULL");
+            return ServerSocket;
+        } else {
+            Log.e(Constants.TAG, "IS NULL");
+        }
+
+        return null;
     }
 
     // Closes the connect socket and causes the thread to finish.

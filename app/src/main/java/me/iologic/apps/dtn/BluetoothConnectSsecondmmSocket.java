@@ -56,7 +56,7 @@ public class BluetoothConnectSsecondmmSocket extends Thread {
                 duration = (pairingEndTime - pairingStartTime);
 
                 ServerSocket = socket;
-                secondBtConnectionStatusMsg.arg1 = 1;
+                secondBtConnectionStatusMsg.arg1 = 8;
                 secondBtConnectionStatusMsg.arg2 = (int) (duration / 1000000);
                 secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
                 secondBtConnectionStatusMsg = Message.obtain();

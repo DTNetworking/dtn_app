@@ -36,8 +36,7 @@ public class BluetoothConnectSBWSocket extends Thread {
     }
 
     public void run() {
-        BluetoothSocket socket = null;
-        BluetoothSocket BWSocket = null;
+        BluetoothSocket BWSocket;
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
             try {
@@ -50,8 +49,6 @@ public class BluetoothConnectSBWSocket extends Thread {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
             }
-
-            return;
         }
     }
 

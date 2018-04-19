@@ -42,7 +42,7 @@ public class BluetoothConnectSsecondACKSocket extends Thread {
                 AckSocket = secondMMACKServerSocket.accept();
                 AckSocketGlobal = AckSocket;
 
-                secondBtConnectionACKStatusMsg.arg1 = 2;
+                secondBtConnectionACKStatusMsg.arg1 = 9;
                 secondBtConnectionStatus.sendMessage(secondBtConnectionACKStatusMsg);
                 secondBtConnectionACKStatusMsg = Message.obtain();
             } catch (IOException e) {

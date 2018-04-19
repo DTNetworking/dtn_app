@@ -90,6 +90,7 @@ public class Constants {
         public static final UUID mmSocket_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
         public static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050");
         public static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1");
+
         public static final UUID secondMMSocket_UUID = UUID.fromString("085a7788-8a7e-4bb6-95e9-7c967912bf3f");
         public static final UUID second_ACK_UUID = UUID.fromString("928bef3c-e408-44f6-b339-06358055da16");
         public static final UUID second_BW_UUID = UUID.fromString("ddbb9433-d6c4-4fc5-b6a9-d96bdbc9d928");

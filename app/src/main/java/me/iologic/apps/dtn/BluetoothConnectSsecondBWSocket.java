@@ -44,7 +44,7 @@ public class BluetoothConnectSsecondBWSocket extends Thread {
                 BWSocket = secondBandwidthSocket.accept();
                 BWSocketGlobal = BWSocket;
 
-                secondBtConnectionBWStatusMsg.arg1 = 3;
+                secondBtConnectionBWStatusMsg.arg1 = 10;
                 secondBtConnectionStatus.sendMessage(secondBtConnectionBWStatusMsg);
                 secondBtConnectionBWStatusMsg = Message.obtain();
             } catch (IOException e) {
