@@ -830,6 +830,7 @@ public class OneScenario extends AppCompatActivity {
                         checkBandwidthText.setTextColor(Color.MAGENTA);
 
                         charLimitTxtView.startAnimation(animFadeOut);
+                        charLimitTxtView.setVisibility(View.GONE);
                         EditMessageBox.startAnimation(animFadeIn);
                         EditMessageBox.setVisibility(View.VISIBLE);
                     }
