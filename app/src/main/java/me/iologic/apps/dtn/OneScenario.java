@@ -673,7 +673,7 @@ public class OneScenario extends AppCompatActivity {
                 messageReceived.startAnimation(animFadeIn);
                 // Log.i(Constants.TAG, "Message size after trimming: " + message.length);
                 messageReceived.setText(tempReceivedString[0]);
-                String writeACK = Integer.toString(tempReceivedString[0].length());
+                String writeACK = Integer.toString(msg.arg1);
                 useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
 
                 // }
