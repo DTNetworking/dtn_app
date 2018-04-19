@@ -43,12 +43,6 @@ public class BluetoothConnectCACKSocket extends Thread {
             btConnectionACKStatusMsg.arg1 = -2;
             btConnectionStatus.sendMessage(btConnectionACKStatusMsg);
             Log.e(Constants.TAG, "I could not connect to ACK Socket on the server side");
-            try {
-                mmACKClientSocket.close();
-            } catch (IOException closeException) {
-                Log.e(Constants.TAG, "Could not close the ACK client socket", closeException);
-
-            }
         }
 
         btConnectionACKStatusMsg = Message.obtain();
