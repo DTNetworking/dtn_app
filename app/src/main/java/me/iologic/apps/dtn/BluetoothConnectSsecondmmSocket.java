@@ -65,8 +65,6 @@ public class BluetoothConnectSsecondmmSocket extends Thread {
                 secondBtConnectionStatusMsg.arg1 = -1;
                 secondBtConnectionStatus.sendMessage(secondBtConnectionStatusMsg);
             }
-
-            return;
         }
     }
 
