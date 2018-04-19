@@ -95,6 +95,8 @@ class BluetoothBytesT extends Thread {
 //
 //        }
 
+        Log.i(Constants.TAG, "Reading Data");
+
             DataInputStream dIn = new DataInputStream(mmInStream);
             try {
                 int length = dIn.readInt();                    // read length of incoming message
