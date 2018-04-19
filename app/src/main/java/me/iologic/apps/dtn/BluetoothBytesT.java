@@ -7,6 +7,9 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -64,30 +67,44 @@ class BluetoothBytesT extends Thread {
     public void run() {
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
+//            try {
+//                mmBuffer = new byte[2];
+//                int numBytes; // bytes returned from read()
+//
+//                // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
+//
+//                if (mmInStream.available() > 0) {
+//                    // Read from the InputStream.
+//                    numBytes = mmInStream.read(mmBuffer);
+//                    // Send the obtained bytes to the UI activity.
+//                    GlobalNumBytesRead = numBytes;
+//                    Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes);
+//                    // Log.i(Constants.TAG, "Reading sendBuffer: " + new String(sendBuffer));
+//                    Message readMsg = mHandler.obtainMessage(
+//                            Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
+//                            mmBuffer);
+//                    readMsg.sendToTarget();
+//                } else {
+//
+//                    SystemClock.sleep(100);
+//                }
+//            } catch (IOException e) {
+//                Log.d(Constants.TAG, "Input stream was disconnected", e);
+//                break;
+//            }
+//
+//        }
+
+            DataInputStream dIn = new DataInputStream(mmInStream);
             try {
-                mmBuffer = new byte[300000];
-                int numBytes; // bytes returned from read()
-
-                // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
-
-                if (mmInStream.available() > 0) {
-                    // Read from the InputStream.
-                    numBytes = mmInStream.read(mmBuffer);
-                    // Send the obtained bytes to the UI activity.
-                    GlobalNumBytesRead = numBytes;
-                    Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes);
-                    // Log.i(Constants.TAG, "Reading sendBuffer: " + new String(sendBuffer));
-                    Message readMsg = mHandler.obtainMessage(
-                            Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
-                            mmBuffer);
-                    readMsg.sendToTarget();
-                } else {
-
-                    SystemClock.sleep(100);
+                int length = dIn.readInt();                    // read length of incoming message
+                if (length > 0) {
+                    byte[] message = new byte[length];
+                    dIn.readFully(message, 0, message.length); // read the message
+                    Log.i(Constants.TAG, message.length + "dww");
                 }
             } catch (IOException e) {
-                Log.d(Constants.TAG, "Input stream was disconnected", e);
-                break;
+                Log.e(Constants.testFileName, e.toString());
             }
         }
     }
@@ -187,7 +204,7 @@ class BluetoothBytesT extends Thread {
                 double packetLost = ((double) (EditWritten - receivedNumBytesInt) / (double) EditWritten) * 100;
                 Log.i(Constants.TAG, "Packet Lost Msg: " + EditWritten + " " + Integer.valueOf(receivedNumBytesInt));
                 return packetLost;
-            }catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 Log.i(Constants.TAG, "No bytes received.");
             }
         } else {
@@ -196,7 +213,7 @@ class BluetoothBytesT extends Thread {
             Log.i(Constants.TAG, "Packet Lost Msg: " + EditWritten + " " + Integer.valueOf(receivedNumBytes));
             return packetLost;
         }
-        return  -1;
+        return -1;
     }
 
 

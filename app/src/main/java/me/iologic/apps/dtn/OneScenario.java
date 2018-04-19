@@ -796,7 +796,7 @@ public class OneScenario extends AppCompatActivity {
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
                     String temp = EditMessageBox.getText() + "_";
-                    streamData.writePackets(temp.getBytes());
+                    streamData.write(temp.getBytes());
                     Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
                     streamData.flushOutStream();
                 } else {
@@ -812,11 +812,11 @@ public class OneScenario extends AppCompatActivity {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
-        byte[] sendBytes = ReceivedString.substring(0, 10).getBytes();
+        byte[] sendBytes = ReceivedString.substring(0, 501).getBytes();
 
         if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
             streamSecondData.write(sendBytes);
-            Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone: " + ReceivedString, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone ", Toast.LENGTH_SHORT).show();
             Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
             streamSecondData.flushOutStream();
         } else {
