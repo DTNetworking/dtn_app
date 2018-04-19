@@ -25,9 +25,9 @@ class BluetoothBytesT extends Thread {
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
+    DataOutputStream dOut; // Go Dynamic!!!
     private byte[] mmBuffer; // mmBuffer store for the stream
     private int GlobalNumBytesRead;
-    byte dummyByte;
 
     long sendingStartTime, sendingEndTime, duration, ACKStartTime;
 
@@ -96,51 +96,38 @@ class BluetoothBytesT extends Thread {
 
     // Call this from the main activity to send data to the remote device.
     public void write(byte[] bytes) {
-//        try {
-//
-//            mmBuffer = bytes;
-//
-//            String testMessage = new String(mmBuffer);
-//            Log.i(Constants.TAG, "Message Sending: " + testMessage);
-//
-//            stopW.start();
-//
-//            sendingStartTime = System.nanoTime();
-//            mmOutStream.write(mmBuffer);
-//            flushOutStream();
-//            sendingEndTime = System.nanoTime();
-//
-//            duration = sendingEndTime - sendingStartTime;
-//
-//            Log.i(Constants.TAG, "Time Calculated:" + sendingEndTime + " And " + sendingStartTime + " And " + duration);
-//
-//
-//            // Share the sent message with the UI activity.
-//            Message writtenMsg = mHandler.obtainMessage(
-//                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int) (duration), mmBuffer);
-//            writtenMsg.sendToTarget();
-//        } catch (IOException e) {
-//            Log.e(Constants.TAG, "Error occurred when sending data", e);
-//
-//            // Send a failure message back to the activity.
-//            Message writeErrorMsg =
-//                    mHandler.obtainMessage(Constants.MessageConstants.MESSAGE_TOAST);
-//            Bundle bundle = new Bundle();
-//            bundle.putString("status",
-//                    "Couldn't send data to the other device");
-//            writeErrorMsg.setData(bundle);
-//            mHandler.sendMessage(writeErrorMsg);
-//        }
-        DataOutputStream dOut = new DataOutputStream(mmOutStream);
+        stopW.start();
 
-        Log.e(Constants.TAG, "Started Writing");
+        dOut = new DataOutputStream(mmOutStream);
+
+        Log.e(Constants.TAG, "Started Writing to Socket. Go Dynamic!!!");
 
         try {
+            sendingStartTime = System.nanoTime();
+
             dOut.writeInt(bytes.length); // write length of the message
             dOut.write(bytes);           // write the message
-        }catch (IOException e){
+
+            flushOutStream();
+            sendingEndTime = System.nanoTime();
+            duration = sendingEndTime - sendingStartTime;
+
+            // Share the sent message with the UI activity.
+            Message writtenMsg = mHandler.obtainMessage(
+                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int) (duration), mmBuffer);
+            writtenMsg.sendToTarget();
+        } catch (IOException e) {
             Log.e(Constants.TAG, e.toString());
+            // Send a failure message back to the activity.
+            Message writeErrorMsg =
+                    mHandler.obtainMessage(Constants.MessageConstants.MESSAGE_TOAST);
+            Bundle bundle = new Bundle();
+            bundle.putString("status",
+                    "Couldn't send data to the other device");
+            writeErrorMsg.setData(bundle);
+            mHandler.sendMessage(writeErrorMsg);
         }
+
 
     }
 
@@ -221,14 +208,14 @@ class BluetoothBytesT extends Thread {
                 int receivedNumBytesInt = Integer.parseInt(receivedNumBytes.trim());
                 //Log.i(Constants.TAG, "Packet Lost Msg: " + Integer.valueOf(receivedNumBytesInt));
                 return receivedNumBytesInt;
-            }catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 Log.i(Constants.TAG, "No bytes received.");
             }
         } else {
             //Log.i(Constants.TAG, "Packet Lost Msg: " + Integer.valueOf(receivedNumBytes));
             return Integer.valueOf(receivedNumBytes);
         }
-        return  -1;
+        return -1;
     }
 
 
