@@ -513,6 +513,33 @@ public class OneScenario extends AppCompatActivity {
                     SocketGlobal = clientMessageSConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
+                    streamData.start();
+                    sendMsgBtn.setEnabled(true);
+
+
+                } else if (msg.arg1 == -1) {
+                    if (toastShown == false) {
+                        aviView.setIndicatorColor(Color.MAGENTA);
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+                        toast.show();
+
+                    }
+
+                } else if (msg.arg1 == 2) {
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    ACKSocketGlobal = clientACKConnect.getACKClientSocket();
+                    ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
+                    ACKData.start();
+                } else if (msg.arg1 == 100) {
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    BandSocketGlobal = clientBWConnect.getBWClientSocket();
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData.start();
+
                     final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -563,32 +590,6 @@ public class OneScenario extends AppCompatActivity {
 
                     };
 
-                    streamData.start();
-                    sendMsgBtn.setEnabled(true);
-
-
-                } else if (msg.arg1 == -1) {
-                    if (toastShown == false) {
-                        aviView.setIndicatorColor(Color.MAGENTA);
-                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
-                        toast.show();
-
-                    }
-
-                } else if (msg.arg1 == 2) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    ACKSocketGlobal = clientACKConnect.getACKClientSocket();
-                    ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
-                    ACKData.start();
-                } else if (msg.arg1 == 100) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    BandSocketGlobal = clientBWConnect.getBWClientSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start();
                 } else if (msg.arg1 == 200) {
                     // Toast.makeText(getApplicationContext(), "Yes I am disconnected", Toast.LENGTH_LONG).show();
                 }

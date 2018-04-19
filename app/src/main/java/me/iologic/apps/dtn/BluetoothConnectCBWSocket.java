@@ -49,6 +49,7 @@ public class BluetoothConnectCBWSocket extends Thread {
             }
         }
 
+        btConnectionBWStatusMsg = Message.obtain();
         btConnectionBWStatusMsg.arg1 = 100;
         btConnectionStatus.sendMessage(btConnectionBWStatusMsg);
     }
