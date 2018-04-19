@@ -897,7 +897,7 @@ public class OneScenario extends AppCompatActivity {
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
                     String messageToSend = EditMessageBox.getText().toString() + "E#";
-                    streamData.writePackets(messageToSend.getBytes());
+                    streamData.write(messageToSend.getBytes());
                     // Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
                     useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
                     streamData.flushOutStream();

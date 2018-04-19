@@ -7,6 +7,8 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -94,41 +96,52 @@ class BluetoothBytesT extends Thread {
 
     // Call this from the main activity to send data to the remote device.
     public void write(byte[] bytes) {
+//        try {
+//
+//            mmBuffer = bytes;
+//
+//            String testMessage = new String(mmBuffer);
+//            Log.i(Constants.TAG, "Message Sending: " + testMessage);
+//
+//            stopW.start();
+//
+//            sendingStartTime = System.nanoTime();
+//            mmOutStream.write(mmBuffer);
+//            flushOutStream();
+//            sendingEndTime = System.nanoTime();
+//
+//            duration = sendingEndTime - sendingStartTime;
+//
+//            Log.i(Constants.TAG, "Time Calculated:" + sendingEndTime + " And " + sendingStartTime + " And " + duration);
+//
+//
+//            // Share the sent message with the UI activity.
+//            Message writtenMsg = mHandler.obtainMessage(
+//                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int) (duration), mmBuffer);
+//            writtenMsg.sendToTarget();
+//        } catch (IOException e) {
+//            Log.e(Constants.TAG, "Error occurred when sending data", e);
+//
+//            // Send a failure message back to the activity.
+//            Message writeErrorMsg =
+//                    mHandler.obtainMessage(Constants.MessageConstants.MESSAGE_TOAST);
+//            Bundle bundle = new Bundle();
+//            bundle.putString("status",
+//                    "Couldn't send data to the other device");
+//            writeErrorMsg.setData(bundle);
+//            mHandler.sendMessage(writeErrorMsg);
+//        }
+        DataOutputStream dOut = new DataOutputStream(mmOutStream);
+
+        Log.e(Constants.TAG, "Started Writing");
+
         try {
-
-            mmBuffer = bytes;
-
-            String testMessage = new String(mmBuffer);
-            Log.i(Constants.TAG, "Message Sending: " + testMessage);
-
-            stopW.start();
-
-            sendingStartTime = System.nanoTime();
-            mmOutStream.write(mmBuffer);
-            flushOutStream();
-            sendingEndTime = System.nanoTime();
-
-            duration = sendingEndTime - sendingStartTime;
-
-            Log.i(Constants.TAG, "Time Calculated:" + sendingEndTime + " And " + sendingStartTime + " And " + duration);
-
-
-            // Share the sent message with the UI activity.
-            Message writtenMsg = mHandler.obtainMessage(
-                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int) (duration), mmBuffer);
-            writtenMsg.sendToTarget();
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Error occurred when sending data", e);
-
-            // Send a failure message back to the activity.
-            Message writeErrorMsg =
-                    mHandler.obtainMessage(Constants.MessageConstants.MESSAGE_TOAST);
-            Bundle bundle = new Bundle();
-            bundle.putString("status",
-                    "Couldn't send data to the other device");
-            writeErrorMsg.setData(bundle);
-            mHandler.sendMessage(writeErrorMsg);
+            dOut.writeInt(bytes.length); // write length of the message
+            dOut.write(bytes);           // write the message
+        }catch (IOException e){
+            Log.e(Constants.TAG, e.toString());
         }
+
     }
 
     public void writePackets(byte[] bytes) {
