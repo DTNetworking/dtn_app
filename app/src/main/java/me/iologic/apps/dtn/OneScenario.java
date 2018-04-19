@@ -74,6 +74,8 @@ public class OneScenario extends AppCompatActivity {
     BluetoothConnectSBWSocket serverBWConnect;
     BluetoothConnectCBWSocket clientBWConnect;
 
+    UUIDManager deviceUUIDs;
+
 
     BluetoothBytesT streamData;
     BandwidthBytesT bandData;
@@ -383,6 +385,8 @@ public class OneScenario extends AppCompatActivity {
 
         getGoodOldName = mBluetoothAdapter.getName(); // For replacing name when Activity Exits
 
+        deviceUUIDs = new UUIDManager(mBluetoothAdapter.getName());
+
         if (mBluetoothAdapter == null) {
             btStatusText.setText("Bluetooth Not Found!");
         } else if (!mBluetoothAdapter.isEnabled()) {
@@ -563,13 +567,13 @@ public class OneScenario extends AppCompatActivity {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
 
-                    clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus);
+                    clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
                     clientBWConnect.start();
 
-                    clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus);
+                    clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
                     clientMessageSConnect.start();
 
-                    clientACKConnect = new BluetoothConnectCACKSocket(btDevice, btClientConnectionStatus);
+                    clientACKConnect = new BluetoothConnectCACKSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
                     clientACKConnect.start();
 
                 }

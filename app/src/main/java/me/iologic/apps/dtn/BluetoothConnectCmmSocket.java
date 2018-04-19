@@ -20,7 +20,7 @@ public class BluetoothConnectCmmSocket extends Thread {
 
     long pairingStartTime, pairingEndTime, duration;
 
-    public BluetoothConnectCmmSocket(BluetoothDevice device, Handler getBtConnectionStatus) {
+    public BluetoothConnectCmmSocket(BluetoothDevice device, Handler getBtConnectionStatus, UUIDManager receivedDeviceUUID) {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
@@ -31,7 +31,7 @@ public class BluetoothConnectCmmSocket extends Thread {
         try {
             // Get a BluetoothSocket to connect with the given BluetoothDevice. Allowing Insecure connections to avoid Pairing Key.
             // MY_UUID is the app's UUID string, also used in the server code.
-            tmp = device.createInsecureRfcommSocketToServiceRecord(Constants.UUIDs.mmSocket_UUID);
+            tmp = device.createInsecureRfcommSocketToServiceRecord(receivedDeviceUUID.mmSocket_UUID);
         } catch (IOException e) {
             Log.e(Constants.TAG, "Socket's create() method failed", e);
         }

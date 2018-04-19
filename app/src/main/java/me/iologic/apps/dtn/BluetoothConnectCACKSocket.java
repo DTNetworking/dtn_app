@@ -16,7 +16,7 @@ public class BluetoothConnectCACKSocket extends Thread {
     Handler btConnectionStatus;
     Message btConnectionACKStatusMsg;
 
-    public BluetoothConnectCACKSocket(BluetoothDevice device, Handler getBtConnectionStatus) {
+    public BluetoothConnectCACKSocket(BluetoothDevice device, Handler getBtConnectionStatus, UUIDManager receivedDeviceUUID) {
         BluetoothSocket ACKtmp = null;
 
         mmDevice = device;
@@ -25,7 +25,7 @@ public class BluetoothConnectCACKSocket extends Thread {
         try {
             // Get a BluetoothSocket to connect with the given BluetoothDevice. Allowing Insecure connections to avoid Pairing Key.
             // ACK_UUID is the app's UUID string, also used in the server code.
-            ACKtmp = device.createInsecureRfcommSocketToServiceRecord(Constants.UUIDs.ACK_UUID);
+            ACKtmp = device.createInsecureRfcommSocketToServiceRecord(receivedDeviceUUID.ACK_UUID);
         } catch (IOException e) {
             Log.e(Constants.TAG, "ACKSocket's create() method failed", e);
         }
