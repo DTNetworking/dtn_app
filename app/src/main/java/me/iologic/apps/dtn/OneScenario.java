@@ -73,7 +73,7 @@ public class OneScenario extends AppCompatActivity {
 
     BluetoothConnectSBWSocket serverBWConnect;
 
-    //BluetoothConnectCBWSocket clientBWConnect;
+    BluetoothConnectCBWSocket clientBWConnect;
 
     UUIDManager deviceUUIDs;
 
@@ -474,7 +474,6 @@ public class OneScenario extends AppCompatActivity {
                 deviceConnected = true;
                 Toast.makeText(getApplicationContext(), "Device is connected!", Toast.LENGTH_SHORT).show();
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                if (clientMessageSConnect == null) {
                     Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                     connection1EndTime = System.nanoTime();
                     duration = connection1EndTime - connection1StartTime;
@@ -492,7 +491,6 @@ public class OneScenario extends AppCompatActivity {
                     contactTimeList.add(device1);
                     useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
                     Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is disconnected!"), Toast.LENGTH_SHORT).show();
-                }
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
@@ -523,13 +521,13 @@ public class OneScenario extends AppCompatActivity {
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
 
-//                    final Handler handler = new Handler();
-//                    handler.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            checkBandwidth();
-//                        }
-//                    }, 2000);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            checkBandwidth();
+                        }
+                    }, 2000);
 
 
                 } else if (msg.arg1 == -1) {
@@ -551,9 +549,9 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-//                    BandSocketGlobal = clientBWConnect.getBWClientSocket();
-//                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-//                    bandData.start();
+                    BandSocketGlobal = clientBWConnect.getBWClientSocket();
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData.start();
 
 
                 } else if (msg.arg1 == 200) {
@@ -570,8 +568,8 @@ public class OneScenario extends AppCompatActivity {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
 
-//                    clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
-//                    clientBWConnect.start();
+                    clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
+                    clientBWConnect.start();
 
                     clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
                     clientMessageSConnect.start();
@@ -805,57 +803,57 @@ public class OneScenario extends AppCompatActivity {
         }
     };
 
-//    public void checkBandwidth() {
-//        final Thread checkBandwidthT = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                // Check Bandwidth
-//                if (!useFile.checkFileExists(Constants.testFileName)) {
-//                    tempFile = useFile.createTemporaryFile(Constants.testFileName);
-//                    useFile.fillTempFile(tempFile);
-//                } else {
-//                    tempFile = useFile.returnFile(Constants.testFileName);
-//                }
-//
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        checkBandwidthText.setVisibility(View.VISIBLE);
-//                        checkBandwidthText.setTextColor(Color.MAGENTA);
-//                    }
-//                });
-//                bandData.checkBandwidth(useFile, tempFile);
-//                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
-//                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
-//                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
-//                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-//                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
-//            }
-//        });
-//
-//        checkBandwidthT.start();
-//
-//
-//        getDataHandler = new Handler() {
-//            @Override
-//            public void handleMessage(Message msg) {
-//                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-//                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-//                bandwidthText.setText(bandwidth);
-//                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
-//
-////                try {
-////                    checkBandwidthT.sleep(1000);
-////                    checkBandwidthT.run();
-////                } catch (InterruptedException SleepE) {
-////                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
-////                }
-//
-//            }
-//
-//        };
-//    }
+    public void checkBandwidth() {
+        final Thread checkBandwidthT = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // Check Bandwidth
+                if (!useFile.checkFileExists(Constants.testFileName)) {
+                    tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                    useFile.fillTempFile(tempFile);
+                } else {
+                    tempFile = useFile.returnFile(Constants.testFileName);
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkBandwidthText.setVisibility(View.VISIBLE);
+                        checkBandwidthText.setTextColor(Color.MAGENTA);
+                    }
+                });
+                bandData.checkBandwidth(useFile, tempFile);
+                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
+                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
+                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
+            }
+        });
+
+        checkBandwidthT.start();
+
+
+        getDataHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                bandwidthText.setText(bandwidth);
+                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+
+                try {
+                    checkBandwidthT.sleep(1000);
+                    checkBandwidthT.run();
+                } catch (InterruptedException SleepE) {
+                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+                }
+
+            }
+
+        };
+    }
 
     public void writeBandwidthLossData() {
         final Thread writeGlobalPacketLossT = new Thread(new Runnable() {
@@ -1023,9 +1021,9 @@ public class OneScenario extends AppCompatActivity {
         if (serverBWConnect != null) {
             serverBWConnect.cancel();
         }
-//        if (clientBWConnect != null) {
-//            clientBWConnect.cancel();
-//        }
+        if (clientBWConnect != null) {
+            clientBWConnect.cancel();
+        }
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(mReceiver);
