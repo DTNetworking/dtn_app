@@ -473,23 +473,25 @@ public class OneScenario extends AppCompatActivity {
                 deviceConnected = true;
                 Toast.makeText(getApplicationContext(), "Device is connected!", Toast.LENGTH_SHORT).show();
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
-                connection1EndTime = System.nanoTime();
-                duration = connection1EndTime - connection1StartTime;
-                long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
-                if (durationInSeconds < 60) {
-                    interConnectTime = durationInSeconds;
-                    interConnectTimeTxt = interConnectTime + " seconds";
-                } else {
-                    interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
-                    interConnectTimeTxt = interConnectTime + " minutes";
-                }
+                if (clientMessageSConnect == null) {
+                    Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
+                    connection1EndTime = System.nanoTime();
+                    duration = connection1EndTime - connection1StartTime;
+                    long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
+                    if (durationInSeconds < 60) {
+                        interConnectTime = durationInSeconds;
+                        interConnectTimeTxt = interConnectTime + " seconds";
+                    } else {
+                        interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
+                        interConnectTimeTxt = interConnectTime + " minutes";
+                    }
 
-                //list
-                ContactTimeList device1 = new ContactTimeList(connectedDeviceName, currentDateTime, interConnectTimeTxt);
-                contactTimeList.add(device1);
-                useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
-                Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is disconnected!"), Toast.LENGTH_SHORT).show();
+                    //list
+                    ContactTimeList device1 = new ContactTimeList(connectedDeviceName, currentDateTime, interConnectTimeTxt);
+                    contactTimeList.add(device1);
+                    useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
+                    Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is disconnected!"), Toast.LENGTH_SHORT).show();
+                }
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
@@ -524,7 +526,7 @@ public class OneScenario extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                           checkBandwidth();
+                            checkBandwidth();
                         }
                     }, 2000);
 
@@ -842,12 +844,12 @@ public class OneScenario extends AppCompatActivity {
                 bandwidthText.setText(bandwidth);
                 useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
 
-                try {
-                    checkBandwidthT.sleep(1000);
-                    checkBandwidthT.run();
-                } catch (InterruptedException SleepE) {
-                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
-                }
+//                try {
+//                    checkBandwidthT.sleep(1000);
+//                    checkBandwidthT.run();
+//                } catch (InterruptedException SleepE) {
+//                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+//                }
 
             }
 

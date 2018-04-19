@@ -19,13 +19,13 @@ public class UUIDManager {
     private void setUUIDs() {
         switch (deviceName) {
             case Constants.DeviceNames.originDevice:
-                mmSocket_UUID = Constants.UUIDs.originMMSocket_UUID;
-                ACK_UUID = Constants.UUIDs.origin_ACK_UUID;
-                BW_UUID = Constants.UUIDs.origin_BW_UUID;
-            case Constants.DeviceNames.destinationDevice:
                 mmSocket_UUID = Constants.UUIDs.mmSocket_UUID;
                 ACK_UUID = Constants.UUIDs.ACK_UUID;
                 BW_UUID = Constants.UUIDs.BW_UUID;
+            case Constants.DeviceNames.destinationDevice:
+                mmSocket_UUID = Constants.UUIDs.destination_MMSocket_UUID;
+                ACK_UUID = Constants.UUIDs.destination_ACK_UUID;
+                BW_UUID = Constants.UUIDs.destination_BW_UUID;
             default:
                 break;
         }
