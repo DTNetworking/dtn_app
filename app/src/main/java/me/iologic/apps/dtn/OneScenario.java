@@ -62,10 +62,14 @@ public class OneScenario extends AppCompatActivity {
     int noOfPeers = 0;
     String connectedDeviceName;
 
-
-    BluetoothConnectT serverConnect;
-    BluetoothConnectClientT clientConnect;
+    BluetoothConnectSmmSocket serverMessageSConnect;
     BluetoothConnectCmmSocket clientMessageSConnect;
+
+    BluetoothConnectSACKSocket serverACKConnect;
+    BluetoothConnectCACKSocket clientACKConnect;
+
+    BluetoothConnectSBWSocket serverBWConnect;
+    BluetoothConnectCBWSocket clientBWConnect;
 
 
     BluetoothBytesT streamData;
@@ -303,7 +307,7 @@ public class OneScenario extends AppCompatActivity {
             case R.id.action_connectionReconnect:
                 if (streamData != null) {
                     Toast.makeText(getApplicationContext(), Constants.EmulationMessages.CLIENTCONNECT_GETTING_DISCONNECTED, Toast.LENGTH_SHORT).show();
-                    clientConnect.closemmSocket();
+                    clientMessageSConnect.cancel();
                 } else {
                     Toast.makeText(getApplicationContext(), Constants.EmulationMessages.CLIENTCONNECT_NOT_CONNECTED, Toast.LENGTH_SHORT).show();
                 }
@@ -461,23 +465,23 @@ public class OneScenario extends AppCompatActivity {
                 deviceConnected = true;
                 Toast.makeText(getApplicationContext(), "Device is connected!", Toast.LENGTH_SHORT).show();
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
-                    Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
-                    connection1EndTime = System.nanoTime();
-                    duration = connection1EndTime - connection1StartTime;
-                    long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
-                    if (durationInSeconds < 60) {
-                        interConnectTime = durationInSeconds;
-                        interConnectTimeTxt = interConnectTime + " seconds";
-                    } else {
-                        interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
-                        interConnectTimeTxt = interConnectTime + " minutes";
-                    }
+                Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
+                connection1EndTime = System.nanoTime();
+                duration = connection1EndTime - connection1StartTime;
+                long durationInSeconds = TimeUnit.NANOSECONDS.toSeconds(duration);
+                if (durationInSeconds < 60) {
+                    interConnectTime = durationInSeconds;
+                    interConnectTimeTxt = interConnectTime + " seconds";
+                } else {
+                    interConnectTime = TimeUnit.SECONDS.toMinutes(durationInSeconds);
+                    interConnectTimeTxt = interConnectTime + " minutes";
+                }
 
-                    //list
-                    ContactTimeList device1 = new ContactTimeList(connectedDeviceName, currentDateTime, interConnectTimeTxt);
-                    contactTimeList.add(device1);
-                    useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
-                    Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is disconnected!"), Toast.LENGTH_SHORT).show();
+                //list
+                ContactTimeList device1 = new ContactTimeList(connectedDeviceName, currentDateTime, interConnectTimeTxt);
+                contactTimeList.add(device1);
+                useFile.saveInterContactTime(Constants.FileNames.InterContactTime, connectedDeviceName, currentDateTime, interConnectTimeTxt);
+                Toast.makeText(getApplicationContext(), ("Device " + connectedDeviceName + " is disconnected!"), Toast.LENGTH_SHORT).show();
             }
 
             peerStatusText.setText("No of Peers Found: " + noOfPeers);
@@ -503,10 +507,9 @@ public class OneScenario extends AppCompatActivity {
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     SocketGlobal = clientMessageSConnect.getClientSocket();
-                    //SocketGlobal = clientConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
-                /*    final Thread checkBandwidthT = new Thread(new Runnable() {
+                    final Thread checkBandwidthT = new Thread(new Runnable() {
                         @Override
                         public void run() {
 
@@ -532,29 +535,29 @@ public class OneScenario extends AppCompatActivity {
                             Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
                             Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
                         }
-                    }); */
+                    });
 
-//                    checkBandwidthT.start();
-//
-//
-//                    getDataHandler = new Handler() {
-//                        @Override
-//                        public void handleMessage(Message msg) {
-//                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-//                            String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-//                            bandwidthText.setText(bandwidth);
-//                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
-//
-//                            try {
-//                                checkBandwidthT.sleep(1000);
-//                                checkBandwidthT.run();
-//                            } catch (InterruptedException SleepE) {
-//                                Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
-//                            }
-//
-//                        }
-//
-//                    };
+                    checkBandwidthT.start();
+
+
+                    getDataHandler = new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                            String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                            bandwidthText.setText(bandwidth);
+                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+
+                            try {
+                                checkBandwidthT.sleep(1000);
+                                checkBandwidthT.run();
+                            } catch (InterruptedException SleepE) {
+                                Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+                            }
+
+                        }
+
+                    };
 
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
@@ -568,32 +571,18 @@ public class OneScenario extends AppCompatActivity {
 
                     }
 
-                    if (deviceConnected == false) {
-                        final Runnable r = new Runnable() {
-                            @Override
-                            public void run() {
-                                clientConnect.run(); // Keep Trying To Connect If It Fails.
-                            }
-                        };
-
-
-                        retryConnectionHandler.postDelayed(r, 5000); // 5000 = 5 Secs. Does it do any good?
-
-                    }
-
-
                 } else if (msg.arg1 == 2) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    ACKSocketGlobal = clientConnect.getACKClientSocket();
+                    ACKSocketGlobal = clientACKConnect.getACKClientSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
                 } else if (msg.arg1 == 100) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    BandSocketGlobal = clientConnect.getBWClientSocket();
+                    BandSocketGlobal = clientBWConnect.getBWClientSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     bandData.start();
                 } else if (msg.arg1 == 200) {
@@ -610,8 +599,13 @@ public class OneScenario extends AppCompatActivity {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
                     clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus);
-                    Thread startmmSocketConnection = new Thread(clientMessageSConnect);
-                    startmmSocketConnection.start();
+                    clientMessageSConnect.start();
+
+                    clientACKConnect = new BluetoothConnectCACKSocket(btDevice, btClientConnectionStatus);
+                    clientACKConnect.start();
+
+                    clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus);
+                    clientBWConnect.start();
 
                 }
 
@@ -645,7 +639,7 @@ public class OneScenario extends AppCompatActivity {
                     BWPacketLossText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
 
-                    SocketGlobal = serverConnect.getServerSocket();
+                    SocketGlobal = serverMessageSConnect.getServerSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
                     streamData.start();
                 } else if (msg.arg1 == -1) {
@@ -657,14 +651,14 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    ACKSocketGlobal = serverConnect.getACKSocket();
+                    ACKSocketGlobal = serverACKConnect.getACKSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
                 } else if (msg.arg1 == 3) {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    BandSocketGlobal = serverConnect.getBWSocket();
+                    BandSocketGlobal = serverBWConnect.getBWSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     bandData.start();
                 }
@@ -672,8 +666,14 @@ public class OneScenario extends AppCompatActivity {
         };
 
 
-        serverConnect = new BluetoothConnectT(mBluetoothAdapter, btServerConnectionStatus);
-        serverConnect.start();
+        serverMessageSConnect = new BluetoothConnectSmmSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverMessageSConnect.start();
+
+        serverACKConnect = new BluetoothConnectSACKSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverACKConnect.start();
+
+        serverBWConnect = new BluetoothConnectSBWSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverBWConnect.start();
     }
 
     private final Handler btMessageStatus = new Handler() {
@@ -966,11 +966,23 @@ public class OneScenario extends AppCompatActivity {
         if (alertDialogOpened == true) {
             alertDialog.dismiss();
         }
+        if (serverMessageSConnect != null) {
+            serverMessageSConnect.cancel();
+        }
         if (clientMessageSConnect != null) {
             clientMessageSConnect.cancel();
         }
-        if (serverConnect != null) {
-            serverConnect.cancel();
+        if (serverACKConnect != null) {
+            serverACKConnect.cancel();
+        }
+        if (clientACKConnect != null) {
+            clientACKConnect.cancel();
+        }
+        if (serverBWConnect != null) {
+            serverBWConnect.cancel();
+        }
+        if (clientBWConnect != null) {
+            clientBWConnect.cancel();
         }
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.

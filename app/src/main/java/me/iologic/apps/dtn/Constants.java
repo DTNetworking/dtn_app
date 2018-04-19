@@ -7,6 +7,8 @@ import java.util.UUID;
  */
 
 public class Constants {
+
+    public static final String NAME = "DTNApp";
     public static final String TAG = "DTNLogs";
     public static final String testFileName = "testFile";
 
@@ -83,5 +85,7 @@ public class Constants {
 
     public interface UUIDs {
         public static final UUID mmSocket_UUID = UUID.fromString("6e7bd336-5676-407e-a41c-0691e1964345"); // UUID is uniquely generated
+        public static final UUID ACK_UUID = UUID.fromString("b03901e4-710c-4509-9718-a3d15882d050");
+        public static final UUID BW_UUID = UUID.fromString("aa401ee7-3bb2-410c-9dda-2128726513a1");
     }
 }
