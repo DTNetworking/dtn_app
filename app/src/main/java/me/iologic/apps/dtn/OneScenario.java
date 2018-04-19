@@ -516,13 +516,13 @@ public class OneScenario extends AppCompatActivity {
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
 
-                   // final Handler handler = new Handler();
-                   // handler.postDelayed(new Runnable() {
-                   //     @Override
-                   //     public void run() {
-                           //checkBandwidth();
-                    //    }
-                   // }, 2000);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                           checkBandwidth();
+                        }
+                    }, 2000);
 
 
                 } else if (msg.arg1 == -1) {
@@ -563,8 +563,8 @@ public class OneScenario extends AppCompatActivity {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
 
-                  //  clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus);
-                    //clientBWConnect.start();
+                    clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus);
+                    clientBWConnect.start();
 
                     clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus);
                     clientMessageSConnect.start();
