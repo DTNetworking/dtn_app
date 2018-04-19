@@ -7,6 +7,8 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,15 +25,12 @@ class SecondBluetoothBytesT extends Thread {
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
-    private byte[] mmBuffer; // mmBuffer store for the stream
-    private int GlobalNumBytesRead;
-    byte dummyByte;
+    DataInputStream dIn;
+    DataOutputStream dOut; // Go Dynamic!!!
 
-    long sendingStartTime, sendingEndTime, duration, ACKStartTime;
+    long sendingStartTime, sendingEndTime, duration;
 
     private Handler mHandler;
-
-    long writingStartTime, readingEndTime, packetDuration;
 
     public SecondBluetoothBytesT(BluetoothSocket socket, Handler handler) {
         mmSocket = socket;
@@ -61,61 +60,49 @@ class SecondBluetoothBytesT extends Thread {
     public void run() {
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
+            Log.i(Constants.TAG, "Reading Data");
+
+            dIn = new DataInputStream(mmInStream);
             try {
-                mmBuffer = new byte[300000];
-                int numBytes; // bytes returned from read()
-
-                // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
-
-                if (mmInStream.available() > 0) {
-                    // Read from the InputStream.
-                    numBytes = mmInStream.read(mmBuffer);
-                    // Send the obtained bytes to the UI activity.
-                    GlobalNumBytesRead = numBytes;
-                    Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes);
-                    // Log.i(Constants.TAG, "Reading sendBuffer: " + new String(sendBuffer));
+                int length = dIn.readInt();                    // read length of incoming message
+                if (length > 0) {
+                    byte[] message = new byte[length];
+                    dIn.readFully(message, 0, message.length); // read the message
+                    Log.i(Constants.TAG, "Length Of Message: " + message.length + " bytes");
                     Message readMsg = mHandler.obtainMessage(
-                            Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
-                            mmBuffer);
+                            Constants.MessageConstants.MESSAGE_READ, length, -1,
+                            message);
                     readMsg.sendToTarget();
-                } else {
-
-                    SystemClock.sleep(100);
                 }
             } catch (IOException e) {
-                Log.d(Constants.TAG, "Input stream was disconnected", e);
-                break;
+                Log.e(Constants.testFileName, e.toString());
             }
         }
     }
 
+
     // Call this from the main activity to send data to the remote device.
     public void write(byte[] bytes) {
+        dOut = new DataOutputStream(mmOutStream);
+
+        Log.e(Constants.TAG, "Started Writing to Socket. Go Dynamic!!!");
+
         try {
-
-            mmBuffer = bytes;
-
-            String testMessage = new String(mmBuffer);
-            Log.i(Constants.TAG, "Message Sending: " + testMessage);
-
-
             sendingStartTime = System.nanoTime();
-            mmOutStream.write(mmBuffer);
+
+            dOut.writeInt(bytes.length); // write length of the message
+            dOut.write(bytes);           // write the message
+
             flushOutStream();
             sendingEndTime = System.nanoTime();
-
             duration = sendingEndTime - sendingStartTime;
-
-            Log.i(Constants.TAG, "Time Calculated:" + sendingEndTime + " And " + sendingStartTime + " And " + duration);
-
 
             // Share the sent message with the UI activity.
             Message writtenMsg = mHandler.obtainMessage(
-                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int) (duration), mmBuffer);
+                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int) (duration), bytes);
             writtenMsg.sendToTarget();
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Error occurred when sending data", e);
-
+            Log.e(Constants.TAG, e.toString());
             // Send a failure message back to the activity.
             Message writeErrorMsg =
                     mHandler.obtainMessage(Constants.MessageConstants.MESSAGE_TOAST);
@@ -127,53 +114,53 @@ class SecondBluetoothBytesT extends Thread {
         }
     }
 
-    public void writePackets(byte[] bytes) {
-        int i = 0;
-        int initi = 0;
-        int j = 0;
-        int m = 0;
-        int offset = 0;
-        byte[] packet = new byte[2];
-        String MessagePacket;
-
-        Log.i(Constants.TAG, "Bytes length from writePackets(): " + bytes.length);
-
-
-        for (j = initi; j < (Constants.Packet.PACKET_SIZE + offset); j++) {
-            try {
-                if (j == bytes.length) {
-                    try {
-                        MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
-                        mmOutStream.write(MessagePacket.getBytes());
-                    } catch (IOException WriteE) {
-                        Log.i(Constants.TAG, "Write Error: " + WriteE);
-                    }
-                    break;
-                }
-                packet[m] = bytes[j];
-                Log.i(Constants.TAG, "Byte Reading from writePackets(): " + new String(packet));
-                i++;
-                m++;
-                if ((i % 2) == 0 && (i != 0)) {
-                    initi = i;
-                    offset = offset + 2;
-                    m = 0;
-
-                    MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
-                    mmOutStream.write(MessagePacket.getBytes());
-                    packet = new byte[2]; // Erase old Data
-                }
-
-                Message readMsg = mHandler.obtainMessage(
-                        Constants.MessageConstants.MESSAGE_WRITE, -1, -1,
-                        mmBuffer);
-                readMsg.sendToTarget();
-
-            } catch (IOException WriteE) {
-                Log.i(Constants.TAG, "Write Error: " + WriteE);
-            }
-        }
-    }
+//    public void writePackets(byte[] bytes) {
+//        int i = 0;
+//        int initi = 0;
+//        int j = 0;
+//        int m = 0;
+//        int offset = 0;
+//        byte[] packet = new byte[2];
+//        String MessagePacket;
+//
+//        Log.i(Constants.TAG, "Bytes length from writePackets(): " + bytes.length);
+//
+//
+//        for (j = initi; j < (Constants.Packet.PACKET_SIZE + offset); j++) {
+//            try {
+//                if (j == bytes.length) {
+//                    try {
+//                        MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
+//                        mmOutStream.write(MessagePacket.getBytes());
+//                    } catch (IOException WriteE) {
+//                        Log.i(Constants.TAG, "Write Error: " + WriteE);
+//                    }
+//                    break;
+//                }
+//                packet[m] = bytes[j];
+//                Log.i(Constants.TAG, "Byte Reading from writePackets(): " + new String(packet));
+//                i++;
+//                m++;
+//                if ((i % 2) == 0 && (i != 0)) {
+//                    initi = i;
+//                    offset = offset + 2;
+//                    m = 0;
+//
+//                    MessagePacket = new String(packet); // Treating 2 bytes as a single data packet
+//                    mmOutStream.write(MessagePacket.getBytes());
+//                    packet = new byte[2]; // Erase old Data
+//                }
+//
+//                Message readMsg = mHandler.obtainMessage(
+//                        Constants.MessageConstants.MESSAGE_WRITE, -1, -1,
+//                        mmBuffer);
+//                readMsg.sendToTarget();
+//
+//            } catch (IOException WriteE) {
+//                Log.i(Constants.TAG, "Write Error: " + WriteE);
+//            }
+//        }
+//    }
 
     public double getPacketLoss(int EditWritten, String receivedNumBytes) {
         if (receivedNumBytes.length() > 1) {
