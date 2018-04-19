@@ -62,7 +62,7 @@ class SecondBluetoothBytesT extends Thread {
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
             try {
-                mmBuffer = new byte[1024];
+                mmBuffer = new byte[300000];
                 int numBytes; // bytes returned from read()
 
                 // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
