@@ -51,8 +51,14 @@ public class OneScenario extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter; // The Only Bluetooth Adapter Used.
     boolean connectAsClient = true;
     int noOfPeers = 0;
-    BluetoothConnectT serverConnect;
-    BluetoothConnectClientT clientConnect;
+
+    BluetoothConnectSmmSocket serverMessageSConnect;
+    BluetoothConnectSBWSocket serverBWConnect;
+    BluetoothConnectSACKSocket serverACKConnect;
+    BluetoothConnectSsecondmmSocket serverSecondMessageSConnect;
+    BluetoothConnectSsecondBWSocket serverSecondBWConnect;
+    BluetoothConnectSsecondACKSocket serverSecondACKConnect;
+
     BluetoothBytesT streamData;
     BandwidthBytesT bandData;
     BluetoothACKBytesT ACKData;
@@ -78,7 +84,6 @@ public class OneScenario extends AppCompatActivity {
     AlertDialog alertDialog;
     boolean alertDialogOpened;
 
-    Handler btClientConnectionStatus;
     Handler btServerConnectionStatus;
     Bundle bundle;
 
@@ -97,13 +102,6 @@ public class OneScenario extends AppCompatActivity {
     double GlobalMsgPacketLoss;
     double GlobalBWPacketLoss;
     boolean isFirstPhoneConnected;
-
-
-    private static String SERVER_CONNECTION_SUCCESSFUL;
-    private static String SERVER_CONNECTION_FAIL;
-
-    private static String CLIENT_CONNECTION_SUCCESSFUL;
-    private static String CLIENT_CONNECTION_FAIL;
 
     private static String NOT_YET_CONNECTED;
 
@@ -194,7 +192,6 @@ public class OneScenario extends AppCompatActivity {
                 R.anim.blink);
 
         btServerConnectionStatus = new Handler();
-        btClientConnectionStatus = new Handler();
         bundle = new Bundle();
 
         saveFileUUID = UUID.randomUUID().toString();
@@ -483,148 +480,6 @@ public class OneScenario extends AppCompatActivity {
         }
     };
 
- /*  public void connectDevice() {
-
-        String btDeviceName = "DTN-";
-
-        btClientConnectionStatus = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-            /*    if (msg.arg1 == 1) {
-                    Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
-                    toast.show();
-                    stopIndicator();
-                    currentStatusText.setText("CLIENT");
-                    peerConnectTime.setText((long) msg.arg2 + " msec");
-                    useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
-                    SocketGlobal = clientConnect.getClientSocket();
-                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
-
-                    final Thread checkBandwidthT = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            // Check Bandwidth
-                            if (!useFile.checkFileExists(Constants.testFileName)) {
-                                tempFile = useFile.createTemporaryFile(Constants.testFileName);
-                                useFile.fillTempFile(tempFile);
-                            } else {
-                                tempFile = useFile.returnFile(Constants.testFileName);
-                            }
-                            while (true) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        checkBandwidthText.setVisibility(View.VISIBLE);
-                                        checkBandwidthText.setTextColor(Color.MAGENTA);
-                                    }
-                                });
-                                bandData.checkBandwidth(useFile, tempFile);
-                                //  FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
-                                //  Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
-                                //    getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
-                                // Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                                //  Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
-                            }
-                        }
-                    });
-
-                    checkBandwidthT.start();
-
-
-                    // getDataHandler = new Handler() {
-                    //    @Override
-                    // public void handleMessage(Message msg) {
-                          /*  Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                            String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-                            bandwidthText.setText(bandwidth);
-                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth); */
-
-                          /*  try {
-                                checkBandwidthT.sleep(1000);
-                                checkBandwidthT.run();
-                            } catch (InterruptedException SleepE) {
-                                Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
-                            }
-
-                        } */
-
-
-    //      }
-    // };
-
-    // streamData.start();
-    //     sendMsgBtn.setEnabled(true);
-
-
-    //  }
-
-              /* if (msg.arg1 == -1) {
-                    if (toastShown == false) {
-                        aviView.setIndicatorColor(Color.MAGENTA);
-                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-
-                    if (deviceConnected == false) {
-                        final Runnable r = new Runnable() {
-                            @Override
-                            public void run() {
-                                clientConnect.run(); // Keep Trying To Connect If It Fails.
-                            }
-                        };
-
-
-                        retryConnectionHandler.postDelayed(r, 5000); // 5000 = 5 Secs. Does it do any good?
-
-                    }
-
-
-                } else if (msg.arg1 == 2) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    ACKSocketGlobal = clientConnect.getACKClientSocket();
-                    ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
-                    ACKData.start();
-               /* } else if (msg.arg1 == 100) {
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-
-                    BandSocketGlobal = clientConnect.getBWClientSocket();
-                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
-                    bandData.start(); */
-              /*  } else if (msg.arg1 == 101) {
-                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT).show();
-                } else if (msg.arg1 == 8) {
-                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_CLIENT_CONNECTION_SUCCESS, Toast.LENGTH_SHORT).show();
-                } else if (msg.arg1 == 9) {
-                    Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
-                }
-
-                toastShown = true;
-            }
-        };
-
-        for (BluetoothDevice btDevice : btDevicesFoundList) {
-            Log.i(Constants.TAG, "BtNullDevicefound " + btDevice.equals(null));
-            if (!(btDevice.equals(null) && !(btDevice.getName().equals("null")) && !(btDevice.getName().equals(null)))) {
-                if ((btDevice.getName().contains(btDeviceName))) {
-                    btDeviceConnectedGlobal = btDevice;
-                    clientConnect = new BluetoothConnectClientT(btDevice, mBluetoothAdapter, btClientConnectionStatus);
-                    clientConnect.start();
-                }
-
-            }
-            if (!(btDeviceConnectedGlobal == null)) {
-                CLIENT_CONNECTION_SUCCESSFUL = "Client Connected To:" + btDeviceConnectedGlobal.getName();
-            } else {
-                aviView.setIndicatorColor(Color.DKGRAY);
-                Log.e("DTN", "No Device Found With Name DTN");
-            }
-        }
-    } */
-
     private void serverConnection() {
 
         btServerConnectionStatus = new Handler() {
@@ -644,7 +499,7 @@ public class OneScenario extends AppCompatActivity {
 
                     // start fade out animation
                     currentStatusText.startAnimation(animCrossFadeOut);
-                    
+
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     bandwidthText.setVisibility(View.GONE);
@@ -652,7 +507,7 @@ public class OneScenario extends AppCompatActivity {
                     BWPacketLossText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
 
-                    SocketGlobal = serverConnect.getServerSocket();
+                    SocketGlobal = serverMessageSConnect.getServerSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
                     streamData.start();
 
@@ -664,7 +519,7 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    ACKSocketGlobal = serverConnect.getACKSocket();
+                    ACKSocketGlobal = serverACKConnect.getACKSocket();
                     ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
                     ACKData.start();
 
@@ -672,7 +527,7 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
 
-                    BandSocketGlobal = serverConnect.getBWSocket();
+                    BandSocketGlobal = serverBWConnect.getBWSocket();
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     bandData.start();
                 }
@@ -683,8 +538,6 @@ public class OneScenario extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show();
                     currentDateTime_two = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
                     connection_two_StartTime = System.nanoTime();
-
-                    currentStatusText.startAnimation(animBlink);
 
                     currentStatusSecConnectedText.setText(R.string.server);
 
@@ -712,7 +565,7 @@ public class OneScenario extends AppCompatActivity {
                     changeDividerColorT.start();
 
                     // 2nd connection
-                    secondSocketGlobal = serverConnect.getSecondServerSocket();
+                    secondSocketGlobal = serverSecondMessageSConnect.getServerSocket();
                     streamSecondData = new SecondBluetoothBytesT(secondSocketGlobal, btMessageStatus);
                     Log.i(Constants.TAG, "Second Connection Started!");
                     streamSecondData.start();
@@ -722,14 +575,14 @@ public class OneScenario extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_ACK_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
 
                     // 2nd Connection
-                    secondACKSocketGlobal = serverConnect.getSecondACKSocket();
+                    secondACKSocketGlobal = serverSecondACKConnect.getACKSocket();
                     secondACKData = new SecondBluetoothACKBytesT(secondACKSocketGlobal, btACKStatus);
                     secondACKData.start();
 
                 } else if (msg.arg1 == 10) {
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_BW_CONNECT_SERVER_SUCCESS, Toast.LENGTH_SHORT).show();
 
-                    secondBandSocketGlobal = serverConnect.getSecondBWSocket();
+                    secondBandSocketGlobal = serverSecondBWConnect.getBWSocket();
                     secondBandData = new SecondBandwidthBytesT(secondBandSocketGlobal, btBandStatus);
                     secondBandData.start();
 
@@ -737,9 +590,23 @@ public class OneScenario extends AppCompatActivity {
             }
         };
 
+        serverMessageSConnect = new BluetoothConnectSmmSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverMessageSConnect.start();
 
-        serverConnect = new BluetoothConnectT(mBluetoothAdapter, btServerConnectionStatus);
-        serverConnect.start();
+        serverACKConnect = new BluetoothConnectSACKSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverACKConnect.start();
+
+        serverBWConnect = new BluetoothConnectSBWSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverBWConnect.start();
+
+        serverSecondMessageSConnect = new BluetoothConnectSsecondmmSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverSecondMessageSConnect.start();
+
+        serverSecondACKConnect = new BluetoothConnectSsecondACKSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverSecondACKConnect.start();
+
+        serverSecondBWConnect = new BluetoothConnectSsecondBWSocket(mBluetoothAdapter, btServerConnectionStatus);
+        serverSecondBWConnect.start();
     }
 
     private final Handler btMessageStatus = new Handler() {
