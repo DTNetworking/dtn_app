@@ -25,6 +25,7 @@ class BluetoothBytesT extends Thread {
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
+    DataInputStream dIn;
     DataOutputStream dOut; // Go Dynamic!!!
     private byte[] mmBuffer; // mmBuffer store for the stream
     private int GlobalNumBytesRead;
@@ -66,30 +67,22 @@ class BluetoothBytesT extends Thread {
     public void run() {
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
+            Log.i(Constants.TAG, "Reading Data");
+
+            dIn = new DataInputStream(mmInStream);
             try {
-                mmBuffer = new byte[300000];
-                int numBytes; // bytes returned from read()
-
-                // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
-
-                if (mmInStream.available() > 0) {
-                    // Read from the InputStream.
-                    numBytes = mmInStream.read(mmBuffer);
-                    // Send the obtained bytes to the UI activity.
-                    GlobalNumBytesRead = numBytes;
-                    Log.i(Constants.TAG, "Number Of Message Bytes Received: " + numBytes + " " + mmBuffer.length);
-                    // Log.i(Constants.TAG, "Reading sendBuffer: " + new String(sendBuffer));
+                int length = dIn.readInt();                    // read length of incoming message
+                if (length > 0) {
+                    byte[] message = new byte[length];
+                    dIn.readFully(message, 0, message.length); // read the message
+                    Log.i(Constants.TAG, "Length Of Message: " + message.length + " bytes");
                     Message readMsg = mHandler.obtainMessage(
-                            Constants.MessageConstants.MESSAGE_READ, numBytes, -1,
+                            Constants.MessageConstants.MESSAGE_READ, length, -1,
                             mmBuffer);
                     readMsg.sendToTarget();
-                } else {
-
-                    SystemClock.sleep(100);
                 }
             } catch (IOException e) {
-                Log.d(Constants.TAG, "Input stream was disconnected", e);
-                break;
+                Log.e(Constants.testFileName, e.toString());
             }
         }
     }
