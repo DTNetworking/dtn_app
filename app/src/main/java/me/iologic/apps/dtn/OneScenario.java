@@ -516,6 +516,14 @@ public class OneScenario extends AppCompatActivity {
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
 
+                   // final Handler handler = new Handler();
+                   // handler.postDelayed(new Runnable() {
+                   //     @Override
+                   //     public void run() {
+                           //checkBandwidth();
+                    //    }
+                   // }, 2000);
+
 
                 } else if (msg.arg1 == -1) {
                     if (toastShown == false) {
@@ -540,55 +548,6 @@ public class OneScenario extends AppCompatActivity {
                     bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                     bandData.start();
 
-                    final Thread checkBandwidthT = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            // Check Bandwidth
-                            if (!useFile.checkFileExists(Constants.testFileName)) {
-                                tempFile = useFile.createTemporaryFile(Constants.testFileName);
-                                useFile.fillTempFile(tempFile);
-                            } else {
-                                tempFile = useFile.returnFile(Constants.testFileName);
-                            }
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    checkBandwidthText.setVisibility(View.VISIBLE);
-                                    checkBandwidthText.setTextColor(Color.MAGENTA);
-                                }
-                            });
-                            bandData.checkBandwidth(useFile, tempFile);
-                            FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
-                            Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
-                            getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
-                            Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                            Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
-                        }
-                    });
-
-                    checkBandwidthT.start();
-
-
-                    getDataHandler = new Handler() {
-                        @Override
-                        public void handleMessage(Message msg) {
-                            Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                            String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-                            bandwidthText.setText(bandwidth);
-                            useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
-
-                            try {
-                                checkBandwidthT.sleep(1000);
-                                checkBandwidthT.run();
-                            } catch (InterruptedException SleepE) {
-                                Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
-                            }
-
-                        }
-
-                    };
 
                 } else if (msg.arg1 == 200) {
                     // Toast.makeText(getApplicationContext(), "Yes I am disconnected", Toast.LENGTH_LONG).show();
@@ -603,14 +562,15 @@ public class OneScenario extends AppCompatActivity {
             if (!(btDevice.equals(null) && !(btDevice.getName().equals("null")) && !(btDevice.getName().equals(null)))) {
                 if ((btDevice.getName().contains(btDeviceName))) {
                     btDeviceConnectedGlobal = btDevice;
+
+                  //  clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus);
+                    //clientBWConnect.start();
+
                     clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus);
                     clientMessageSConnect.start();
 
                     clientACKConnect = new BluetoothConnectCACKSocket(btDevice, btClientConnectionStatus);
                     clientACKConnect.start();
-
-                    clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus);
-                    clientBWConnect.start();
 
                 }
 
@@ -837,6 +797,58 @@ public class OneScenario extends AppCompatActivity {
             }
         }
     };
+
+    public void checkBandwidth() {
+        final Thread checkBandwidthT = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // Check Bandwidth
+                if (!useFile.checkFileExists(Constants.testFileName)) {
+                    tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                    useFile.fillTempFile(tempFile);
+                } else {
+                    tempFile = useFile.returnFile(Constants.testFileName);
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkBandwidthText.setVisibility(View.VISIBLE);
+                        checkBandwidthText.setTextColor(Color.MAGENTA);
+                    }
+                });
+                bandData.checkBandwidth(useFile, tempFile);
+                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
+                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
+                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
+            }
+        });
+
+        checkBandwidthT.start();
+
+
+        getDataHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                bandwidthText.setText(bandwidth);
+                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+
+                try {
+                    checkBandwidthT.sleep(1000);
+                    checkBandwidthT.run();
+                } catch (InterruptedException SleepE) {
+                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+                }
+
+            }
+
+        };
+    }
 
     public void writeBandwidthLossData() {
         final Thread writeGlobalPacketLossT = new Thread(new Runnable() {

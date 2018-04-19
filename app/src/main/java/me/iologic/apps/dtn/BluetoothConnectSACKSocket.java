@@ -48,6 +48,8 @@ public class BluetoothConnectSACKSocket extends Thread {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "ACKSocket's accept() method failed", e);
             }
+
+            return;
         }
     }
 

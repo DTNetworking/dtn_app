@@ -50,6 +50,8 @@ public class BluetoothConnectSBWSocket extends Thread {
             } catch (IOException e) {
                 Log.e(Constants.TAG, "BWSocket's accept() method failed", e);
             }
+
+            return;
         }
     }
 

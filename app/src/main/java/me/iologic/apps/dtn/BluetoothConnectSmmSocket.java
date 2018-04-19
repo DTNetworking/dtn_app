@@ -65,6 +65,8 @@ class BluetoothConnectSmmSocket extends Thread {
                 btConnectionStatusMsg.arg1 = -1;
                 btConnectionStatus.sendMessage(btConnectionStatusMsg);
             }
+
+            return;
         }
     }
 
