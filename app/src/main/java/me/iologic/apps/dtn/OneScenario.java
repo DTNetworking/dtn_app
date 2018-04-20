@@ -629,9 +629,11 @@ public class OneScenario extends AppCompatActivity {
                 // byte[] writeACK = new byte[]{'R'};
                 // String writeACK = String.valueOf(msg.arg1);
                 String writeMessage = new String(writeBuf);
+                Log.i(Constants.TAG, "Message Received length: " + msg.arg1);
                 // if(!isCheckingBandwidth) {
                 //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
-                messageReceived.setText(writeMessage);
+                messageReceived.startAnimation(animCrossFadeIn);
+                messageReceived.setText("Data Received");
                 // }
                 GlobalReceivedMessage = writeMessage;
                 // ACKData.write(writeACK.getBytes());
@@ -639,7 +641,7 @@ public class OneScenario extends AppCompatActivity {
                 String showSpeed = currentspeed + " m/s";
                 useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
-                writeForSecondConnection(writeMessage);
+                writeForSecondConnection(writeBuf);
             }
         }
     };
@@ -808,14 +810,14 @@ public class OneScenario extends AppCompatActivity {
         });
     }
 
-    public void writeForSecondConnection(String ReceivedString) {
+    public void writeForSecondConnection(byte[] ReceivedData) {
 
         NOT_YET_CONNECTED = "I am not yet connected to any phone";
 
         if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
-            streamSecondData.write(ReceivedString.getBytes());
+            streamSecondData.write(ReceivedData);
             Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone ", Toast.LENGTH_SHORT).show();
-            Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
+            Log.i(Constants.TAG, "Message Sent To 3rd Phone: (Length Of Data being sent) " + ReceivedData.length);
             streamSecondData.flushOutStream();
         } else {
             Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
