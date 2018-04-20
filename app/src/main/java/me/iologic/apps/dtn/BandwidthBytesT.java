@@ -7,6 +7,8 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +24,8 @@ public class BandwidthBytesT extends Thread {
     private final BluetoothSocket bandwidthSocket;
     private final InputStream bandwidthInStream;
     private final OutputStream bandwidthOutStream;
-    private byte[] bandwidthBuffer; // bandwidthBuffer store BW bytes for the stream
+    DataInputStream dIn;
+    DataOutputStream dOut; // Go Dynamic!!!
     int counter;
 
     boolean isFirstTime;
@@ -61,56 +64,50 @@ public class BandwidthBytesT extends Thread {
     @Override
     public void run() {
         while (true) {
+            dIn = new DataInputStream(bandwidthInStream);
             try {
-                bandwidthBuffer = new byte[Constants.Packet.BW_PACKET_SIZE];
-                int numBytes; // bytes returned from read()
-
-                // Log.i(Constants.TAG, "BandwidthBytesT Check: " + bandwidthCheck);
-
-                if ((bandwidthInStream!=null) && (bandwidthInStream.available() > 0)) {
-                    // Read from the InputStream.
-                    numBytes = bandwidthInStream.read(bandwidthBuffer);
+                int length = dIn.readInt();                    // read length of incoming message
+                if (length > 0) {
+                    byte[] message = new byte[length];
+                    dIn.readFully(message, 0, message.length); // read the message
                     // Send the obtained bytes to the UI activity.
                     //   Log.i(Constants.TAG, "Number Of LightningMcQueen Bytes Received: " + numBytes);
                     Message readMsg = bandwidthHandler.obtainMessage(
-                            Constants.MessageConstants.BW_READ, numBytes, -1,
-                            bandwidthBuffer);
+                            Constants.MessageConstants.BW_READ, length, -1,
+                            message);
                     readMsg.sendToTarget();
-                } else {
-                    SystemClock.sleep(100);
                 }
             } catch (IOException e) {
                 Log.d(Constants.TAG, "Input stream was disconnected", e);
                 break;
             }
         }
+
     }
 
     public void write(byte[] bytes) {
         try {
-
-            bandwidthBuffer = bytes;
-            //   Log.i(Constants.TAG, "bandwidthBuffer size(): " + bandwidthBuffer.length);
-            String testMessage = new String(bandwidthBuffer);
-            //  Log.i(Constants.TAG, "BW Sending: " + testMessage);
-
+            dOut = new DataOutputStream(bandwidthOutStream);
             if (isFirstTime) {
                 isFirstTime = false;
                 // Share the sent message with the UI activity.
                 Message writtenBWStatus = bandwidthHandler.obtainMessage(
-                        Constants.MessageConstants.BW_START_WRITE, counter, -1, bandwidthBuffer);
+                        Constants.MessageConstants.BW_START_WRITE, counter, -1, bytes);
                 writtenBWStatus.sendToTarget();
 
             }
             sendingStartTime = System.nanoTime();
-            bandwidthOutStream.write(bandwidthBuffer);
+
+            dOut.writeInt(bytes.length); // write length of the message
+            dOut.write(bytes);           // write the message
             flushOutStream();
+
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
 
             // Share the sent message with the UI activity.
             Message writtenMsg = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_WRITE, counter, -1, bandwidthBuffer);
+                    Constants.MessageConstants.BW_WRITE, counter, -1, bytes);
             writtenMsg.sendToTarget();
 
         } catch (IOException e) {
@@ -129,7 +126,7 @@ public class BandwidthBytesT extends Thread {
 
     public void flushOutStream() {
         try {
-            bandwidthOutStream.flush();
+            dOut.flush();
         } catch (IOException e) {
             Log.e(Constants.TAG, "Could not flush out BW stream", e);
         }
@@ -144,7 +141,7 @@ public class BandwidthBytesT extends Thread {
         while (counter != (Constants.Packet.BW_COUNTER + 1)) {
             Message readMsg = bandwidthHandler.obtainMessage(
                     Constants.MessageConstants.BW_PACKET_LOSS_CHECK, counter, -1,
-                    bandwidthBuffer);
+                    null);
             readMsg.sendToTarget();
 
             sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
