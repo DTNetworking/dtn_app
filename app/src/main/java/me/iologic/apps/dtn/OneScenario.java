@@ -16,6 +16,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -43,6 +44,7 @@ import android.widget.Toast;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -90,6 +92,9 @@ public class OneScenario extends AppCompatActivity {
     String getGoodOldName;
     String currentDateTime;
     String saveFileUUID;
+
+    String fileTypeStatus; // To check type of file being received.
+    int sentDataSize;
 
     AlertDialog alertDialog;
     boolean alertDialogOpened;
@@ -267,6 +272,8 @@ public class OneScenario extends AppCompatActivity {
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         registerReceiver(mReceiver, filter);
 
+        fileTypeStatus = Constants.DataTypes.TEXT; // By default let it be "Text"
+
         stopWatch = new StopWatch(delayText);
 
         deviceConnected = false;
@@ -314,6 +321,7 @@ public class OneScenario extends AppCompatActivity {
             case R.id.action_showImage:
                 Intent intent = new Intent(this, ImageViewer.class);
                 startActivity(intent);
+                return true;
             case R.id.action_connectionReconnect:
                 if (streamData != null) {
                     Toast.makeText(getApplicationContext(), Constants.EmulationMessages.CLIENTCONNECT_GETTING_DISCONNECTED, Toast.LENGTH_SHORT).show();
@@ -321,10 +329,12 @@ public class OneScenario extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), Constants.EmulationMessages.CLIENTCONNECT_NOT_CONNECTED, Toast.LENGTH_SHORT).show();
                 }
+                return true;
             case R.id.action_intercontactTime:
                 Intent interContactTimeIntent = new Intent(this, ContactTimeListView.class);
                 interContactTimeIntent.putExtra("contactTimeListArray", contactTimeList);
                 startActivity(interContactTimeIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -476,7 +486,6 @@ public class OneScenario extends AppCompatActivity {
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
-                Toast.makeText(getApplicationContext(), "Device is connected!", Toast.LENGTH_SHORT).show();
             } else if (btDeviceConnectedGlobal.ACTION_ACL_DISCONNECTED.equals(action)) {
                 Log.e(Constants.TAG, "DEVICE IS DISCONNECTED!");
                 connection1EndTime = System.nanoTime();
@@ -532,7 +541,7 @@ public class OneScenario extends AppCompatActivity {
                         public void run() {
                             checkBandwidth();
                         }
-                    }, 100);
+                    }, 2000);
 
 
                 } else if (msg.arg1 == -1) {
@@ -656,6 +665,9 @@ public class OneScenario extends AppCompatActivity {
         public void handleMessage(Message msg) {
             if (msg.what == Constants.MessageConstants.MESSAGE_WRITE) {
                 btStatusText.setText("Message is sent");
+
+                sentDataSize = msg.arg1;
+
             } else if (msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
                 String statusMessage = bundle.getString("status");
                 btStatusText.setText(statusMessage);
@@ -664,23 +676,44 @@ public class OneScenario extends AppCompatActivity {
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
                 String writeMessage = new String(writeBuf);
-                // if(!isCheckingBandwidth) {
-                String[] tempReceivedString = writeMessage.split("_");
-               // Log.i(Constants.TAG, "Message Received in Bytes: " + writeBuf);
-               // Log.i(Constants.TAG, "Message Received: " + writeMessage);
-                if (messageReceived.getVisibility() != View.VISIBLE) {
-                    messageReceived.setVisibility(View.VISIBLE);
-                }
-                messageReceived.startAnimation(animFadeIn);
-                // Log.i(Constants.TAG, "Message size after trimming: " + message.length);
-                messageReceived.setText(tempReceivedString[0]);
-                String writeACK = Integer.toString(msg.arg1);
-                useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, tempReceivedString[0]);
 
-                // }
-                GlobalReceivedMessage = writeMessage;
-                ACKData.write(writeACK.getBytes());
-                // isCheckingBandwidth = false;
+                if (writeMessage.equals(Constants.DataTypes.TEXT)) {
+                    fileTypeStatus = Constants.DataTypes.TEXT;
+                } else if (writeMessage.equals(Constants.DataTypes.IMAGE)) {
+                    fileTypeStatus = Constants.DataTypes.IMAGE;
+                }
+
+                if (fileTypeStatus.equals(Constants.DataTypes.TEXT)) {
+                    if (!(writeMessage.equals(Constants.DataTypes.TEXT))) {
+                        if (messageReceived.getVisibility() != View.VISIBLE) {
+                            messageReceived.setVisibility(View.VISIBLE);
+                        }
+                        messageReceived.startAnimation(animFadeIn);
+                        // Log.i(Constants.TAG, "Message size after trimming: " + message.length);
+                        messageReceived.setText(writeMessage);
+                        useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, writeMessage);
+                    }
+                } else if (fileTypeStatus.equals(Constants.DataTypes.IMAGE)) {
+                    if (!(writeMessage.equals(Constants.DataTypes.IMAGE))) {
+                        Log.i(Constants.TAG, "Converting Bytes Into Images " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath());
+                        try {
+                            img.writeFileAsBytes(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath(), writeBuf);
+                        } catch (IOException e) {
+                            Log.e(Constants.TAG, "Could Not Save Image To Specified Place. " + e.toString());
+                        }
+                    }
+
+                }
+
+                if (!(writeMessage.equals(Constants.DataTypes.IMAGE) || writeMessage.equals(Constants.DataTypes.TEXT))) {
+                    // Send an ACK after data is received
+                    String writeACK = Integer.toString(msg.arg1);
+
+                    GlobalReceivedMessage = writeMessage;
+                    ACKData.write(writeACK.getBytes());
+                }
+
+                // Save speed of the device at that particular time when Message was received
                 String showSpeed = currentspeed + " m/s";
                 useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
@@ -709,7 +742,7 @@ public class OneScenario extends AppCompatActivity {
                     stopWatch.updateList();
                     stopWatch.reset();
                 }
-                GlobalMsgPacketLoss = streamData.getPacketLoss(EditMessageBox.getText().length(), new String(writeBuf)); // For 1st Scenario
+                GlobalMsgPacketLoss = streamData.getPacketLoss(sentDataSize, new String(writeBuf)); // For 1st Scenario
                 String showMsgLossPercent = df.format(GlobalMsgPacketLoss) + "%";
                 if (GlobalMsgPacketLoss == 0) {
                     MsgPacketLossText.setTextColor(Color.GRAY);
@@ -721,7 +754,7 @@ public class OneScenario extends AppCompatActivity {
 
                 // Show Sent & Received Bytes
                 bytesReceivedText.setText(Integer.toString(streamData.getMessageReceivedBytes("" + new String(writeBuf))));
-                bytesSentText.setText(Integer.toString(EditMessageBox.getText().length()));
+                bytesSentText.setText(Integer.toString(sentDataSize));
                 useFile.savePacketLossData(Constants.FileNames.MsgPacketLoss, GlobalMsgPacketLoss);
 
             } else if (msg.what == Constants.MessageConstants.ACK_WRITE)
@@ -898,10 +931,10 @@ public class OneScenario extends AppCompatActivity {
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
                     String messageToSend = EditMessageBox.getText().toString();
+                    streamData.write(Constants.DataTypes.TEXT.getBytes());
                     streamData.write(messageToSend.getBytes());
                     // Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
                     useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
-                    streamData.flushOutStream();
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();
@@ -967,17 +1000,10 @@ public class OneScenario extends AppCompatActivity {
                 // ImageUri = uri;
                 Log.i(Constants.TAG, "Uri: " + uri.toString());
                 byte[] ImgBytes = img.ImageToBytes(RealPathUtil.getRealPath(getApplicationContext(), uri)); // Converting Image To Bytes
-                Log.i(Constants.TAG, "ImgBytes: " + ImgBytes.length + " " + ImgBytes.toString());
+                Log.i(Constants.TAG, "ImgBytes: " + ImgBytes.length);
                 if (ImgBytes != null) {
+                    streamData.write(Constants.DataTypes.IMAGE.getBytes());
                     streamData.write(ImgBytes);
-                    // final Handler handler = new Handler();
-                    // handler.postDelayed(new Runnable() {
-                    //     @Override
-                    //      public void run() {
-                    streamData.write("#&1".getBytes()); // End of stream
-                    //      }
-                    //   }, 10);
-                    streamData.flushOutStream();
                 } else {
                     Toast.makeText(getApplicationContext(), "Image URI is null", Toast.LENGTH_SHORT).show();
                 }

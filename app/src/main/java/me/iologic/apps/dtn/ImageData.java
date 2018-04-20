@@ -18,6 +18,9 @@ import java.net.URISyntaxException;
 
 public class ImageData {
 
+    private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private long ImageSize;
+
     public byte[] ImageToBytes(String filePath) {
         File file = new File(filePath);
         Log.i(Constants.TAG, "File Paths: " + filePath);
@@ -52,9 +55,20 @@ public class ImageData {
      * use the writeFile method.
      */
     public static void writeFileAsBytes(String fullPath, byte[] bytes) throws IOException {
-        OutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(fullPath));
-        InputStream inputStream = new ByteArrayInputStream(bytes);
+        String fullImagePath = fullPath + "/img000.jpg";
+        String renameImagePath = fullPath + File.separator + randomFileNameGenerator(5) + ".jpg";
+        Log.i(Constants.TAG, "renameImagePath: " + renameImagePath + " fullImagePath: " + fullImagePath);
         int token = -1;
+
+        File file = new File(fullImagePath);
+        File newFile = new File(renameImagePath);
+
+        if (file.exists()) {
+            file.renameTo(newFile);
+        }
+
+        OutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(fullImagePath));
+        InputStream inputStream = new ByteArrayInputStream(bytes);
 
         while ((token = inputStream.read()) != -1) {
             bufferedOutputStream.write(token);
@@ -62,5 +76,14 @@ public class ImageData {
         bufferedOutputStream.flush();
         bufferedOutputStream.close();
         inputStream.close();
+    }
+
+    public static String randomFileNameGenerator(int count) {
+        StringBuilder builder = new StringBuilder();
+        while (count-- != 0) {
+            int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
+            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+        }
+        return builder.toString();
     }
 }

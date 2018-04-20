@@ -39,6 +39,11 @@ public class Constants {
         public static final int BW_COUNTER = BW_FILE_SIZE / BW_PACKET_SIZE;
     }
 
+    public interface DataTypes {
+        public static final String TEXT = "Text";
+        public static final String IMAGE = "Image";
+    }
+
     public interface Permissions {
         public static final int PERMISSION_REQUEST_CODE = 200;
         public static final int REQUEST_ENABLE_BT = 1;

@@ -104,7 +104,7 @@ class BluetoothBytesT extends Thread {
 
             // Share the sent message with the UI activity.
             Message writtenMsg = mHandler.obtainMessage(
-                    Constants.MessageConstants.MESSAGE_WRITE, -1, (int) (duration), bytes);
+                    Constants.MessageConstants.MESSAGE_WRITE, bytes.length, (int) (duration), bytes);
             writtenMsg.sendToTarget();
         } catch (IOException e) {
             Log.e(Constants.TAG, e.toString());
