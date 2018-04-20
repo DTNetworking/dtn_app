@@ -191,7 +191,7 @@ class BluetoothBytesT extends Thread {
 
     public void flushOutStream() {
         try {
-            mmOutStream.flush();
+            dOut.flush();
         } catch (IOException e) {
             Log.e(Constants.TAG, "Could not flush out stream", e);
         }

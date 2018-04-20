@@ -816,7 +816,7 @@ public class OneScenario extends AppCompatActivity {
             streamSecondData.write(ReceivedString.getBytes());
             Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone ", Toast.LENGTH_SHORT).show();
             Log.i(Constants.TAG, "Message Sent To 3rd Phone: " + ReceivedString);
-           // streamSecondData.flushOutStream();
+            streamSecondData.flushOutStream();
         } else {
             Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
             toast.show();
