@@ -105,4 +105,13 @@ public class Constants {
         public static final String destinationDevice = "DTN-5da9d6090804";
 
     }
+
+    public interface DeviceTypes {
+        public static final String SERVER = "SERVER";
+        public static final String CLIENT = "CLIENT";
+    }
+
+    public interface Miscellaneous {
+        public static final String NONE = "*";
+    }
 }

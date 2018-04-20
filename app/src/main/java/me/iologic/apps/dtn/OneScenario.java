@@ -93,6 +93,8 @@ public class OneScenario extends AppCompatActivity {
     String currentDateTime;
     String saveFileUUID;
 
+    String deviceType;
+
     String fileTypeStatus; // To check type of file being received.
     int sentDataSize;
 
@@ -298,8 +300,8 @@ public class OneScenario extends AppCompatActivity {
         animSlideOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out);
 
 
-        Dialog();
         startBluetooth();
+        DeviceType();
         sendMessage();
         sendImage();
     }
@@ -363,22 +365,12 @@ public class OneScenario extends AppCompatActivity {
         }
     }
 
-    public void Dialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Choose Server/Client")
-                .setMessage("Do you want to connect as Server or a Client?")
-                .setNegativeButton("Client", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // Do Nothing
-                    }
-                })
-                .setPositiveButton("Server", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        connectAsClient = false;
-                    }
-                }).create().show();
+    public void DeviceType() {
+        if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
+            connectAsClient = true;
+        } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
+            connectAsClient = true;
+        }
     }
 
     public void startIndicator() {
@@ -524,10 +516,11 @@ public class OneScenario extends AppCompatActivity {
                     stopIndicator();
                     currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
 
+                    deviceType = Constants.DeviceTypes.CLIENT;
                     connection1StartTime = System.nanoTime();
-                    currentStatusText.setText("CLIENT");
+                    currentStatusText.setText(Constants.DeviceTypes.CLIENT);
                     peerConnectTime.setText((long) msg.arg2 + " msec");
-                    useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
+                    useFile.savePairingData(Constants.FileNames.Pairing, Constants.DeviceTypes.CLIENT, msg.arg2);
                     SocketGlobal = clientMessageSConnect.getClientSocket();
                     streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
 
@@ -615,9 +608,10 @@ public class OneScenario extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
                     toast.show();
                     stopIndicator();
-                    currentStatusText.setText("SERVER");
+                    deviceType = Constants.DeviceTypes.SERVER;
+                    currentStatusText.setText(Constants.DeviceTypes.SERVER);
                     peerConnectTime.setText((long) msg.arg2 + " msec");
-                    useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
+                    useFile.savePairingData(Constants.FileNames.Pairing, Constants.DeviceTypes.SERVER, msg.arg2);
                     bandwidthText.setVisibility(View.GONE);
                     sendBWProgressBarView.setVisibility(View.GONE);
                     BWPacketLossText.setVisibility(View.GONE);
@@ -711,6 +705,12 @@ public class OneScenario extends AppCompatActivity {
 
                     GlobalReceivedMessage = writeMessage;
                     ACKData.write(writeACK.getBytes());
+                }
+
+                if (deviceType.equals(Constants.DeviceTypes.CLIENT)) {
+                    bytesReceivedText.setText(Integer.toString(msg.arg1));
+                    bytesSentText.setText(Constants.Miscellaneous.NONE);
+                    MsgPacketLossText.setText(Constants.Miscellaneous.NONE);
                 }
 
                 // Save speed of the device at that particular time when Message was received

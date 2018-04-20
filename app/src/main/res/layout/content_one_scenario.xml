@@ -27,7 +27,7 @@
     <TextView
         android:id="@+id/peerStatus"
         android:layout_width="wrap_content"
-        android:layout_height="131dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/comfortaa_bold"
