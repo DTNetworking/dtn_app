@@ -255,7 +255,7 @@ public class OneScenario extends AppCompatActivity {
 
         writeBandwidthLossData();
 
-        Dialog();
+        DeviceType();
         startBluetooth();
         sendMessage();
     }
@@ -312,22 +312,12 @@ public class OneScenario extends AppCompatActivity {
         }
     }
 
-    public void Dialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Choose Server/Client")
-                .setMessage("Do you want to connect as Server or a Client?")
-                .setNegativeButton("Client", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // Do Nothing
-                    }
-                })
-                .setPositiveButton("Server", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        connectAsClient = false;
-                    }
-                }).create().show();
+    public void DeviceType() {
+        if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.secondRouterDevice)) {
+            connectAsClient = false; // Here "false" means use ONLY ServerConnection
+        } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.thirdRouterDevice)) {
+            connectAsClient = true;
+        }
     }
 
     public void startIndicator() {

@@ -95,4 +95,21 @@ public class Constants {
         public static final UUID second_ACK_UUID = UUID.fromString("928bef3c-e408-44f6-b339-06358055da16");
         public static final UUID second_BW_UUID = UUID.fromString("ddbb9433-d6c4-4fc5-b6a9-d96bdbc9d928");
     }
+
+    public interface DeviceNames {
+        public static final String originDevice = "DTN-PLEGAR1762212642";
+        public static final String secondRouterDevice = "DTN-1641b121";
+        public static final String thirdRouterDevice = "DTN-51a33087";
+        public static final String destinationDevice = "DTN-5da9d6090804";
+
+    }
+
+    public interface DeviceTypes {
+        public static final String SERVER = "SERVER";
+        public static final String CLIENT = "CLIENT";
+    }
+
+    public interface Miscellaneous {
+        public static final String NONE = "*";
+    }
 }
