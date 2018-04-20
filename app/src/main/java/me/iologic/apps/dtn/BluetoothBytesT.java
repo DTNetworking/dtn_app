@@ -64,7 +64,7 @@ class BluetoothBytesT extends Thread {
     public void run() {
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
-            Log.i(Constants.TAG, "Reading Data");
+          //  Log.i(Constants.TAG, "Reading Data");
 
             dIn = new DataInputStream(mmInStream);
             try {

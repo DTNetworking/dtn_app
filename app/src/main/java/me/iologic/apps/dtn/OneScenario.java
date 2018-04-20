@@ -513,7 +513,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void connectDevice() {
 
-        String btDeviceName = "DTN-";
+        String btDeviceName = Constants.DeviceNames.secondRouterDevice;
 
         btClientConnectionStatus = new Handler() {
             @Override
