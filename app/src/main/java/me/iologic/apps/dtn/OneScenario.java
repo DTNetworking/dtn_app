@@ -504,7 +504,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void connectDevice() {
 
-        String btDeviceName = "DTN-1641b121";
+        String btDeviceName = "DTN-";
 
         btClientConnectionStatus = new Handler() {
             @Override
@@ -789,6 +789,7 @@ public class OneScenario extends AppCompatActivity {
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
                     sendBWProgressBarView.setVisibility(View.VISIBLE);
+                    sendBWProgressBarView.setMax(Constants.Packet.BW_COUNTER);
                     sendBWProgressBarT.start();
                 }
             } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {

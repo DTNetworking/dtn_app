@@ -34,7 +34,7 @@ public class Constants {
         public static final int PACKET_SIZE = 2; // 2 Bytes Per Packet.
         public static final int NO_OF_PACKETS = 25;
         public static final int MSG_PACKET_SIZE = 16; // 16 bytes. For testing packet loss in 1st Scenario.
-        public static final int BW_PACKET_SIZE = 1024 * 64; // 1 KB
+        public static final int BW_PACKET_SIZE = 1024 * 64; // 64 KB
         public static final int BW_FILE_SIZE = 1024 * 1024;
         public static final int BW_COUNTER = BW_FILE_SIZE / BW_PACKET_SIZE;
     }

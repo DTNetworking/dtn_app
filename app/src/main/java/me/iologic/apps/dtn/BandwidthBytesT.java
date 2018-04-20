@@ -70,6 +70,7 @@ public class BandwidthBytesT extends Thread {
                 if (length > 0) {
                     byte[] message = new byte[length];
                     dIn.readFully(message, 0, message.length); // read the message
+                    Log.i(Constants.TAG, "BW Data I am receiving: " + message.length);
                     // Send the obtained bytes to the UI activity.
                     //   Log.i(Constants.TAG, "Number Of LightningMcQueen Bytes Received: " + numBytes);
                     Message readMsg = bandwidthHandler.obtainMessage(
@@ -97,6 +98,8 @@ public class BandwidthBytesT extends Thread {
 
             }
             sendingStartTime = System.nanoTime();
+
+            Log.i(Constants.TAG, "BW Data I am sending: " + bytes.length);
 
             dOut.writeInt(bytes.length); // write length of the message
             dOut.write(bytes);           // write the message
@@ -136,7 +139,7 @@ public class BandwidthBytesT extends Thread {
         byte[] getData = fileService.readTempFile(tempFileRead);
         // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
 
-        byte[] sendData; // Breaking 1 MB file into 2 KB packets.
+        byte[] sendData; // Breaking 1 MB file into 64 KB packets.
         int startPacketIndex = 0;
         while (counter != (Constants.Packet.BW_COUNTER + 1)) {
             Message readMsg = bandwidthHandler.obtainMessage(
