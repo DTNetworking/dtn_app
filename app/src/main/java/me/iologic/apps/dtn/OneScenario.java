@@ -524,6 +524,7 @@ public class OneScenario extends AppCompatActivity {
 
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
+                    sendImgBtn.setEnabled(true);
 
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -531,7 +532,7 @@ public class OneScenario extends AppCompatActivity {
                         public void run() {
                             checkBandwidth();
                         }
-                    }, 2000);
+                    }, 100);
 
 
                 } else if (msg.arg1 == -1) {
