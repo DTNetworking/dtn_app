@@ -94,6 +94,11 @@ public class Constants {
         public static final UUID secondMMSocket_UUID = UUID.fromString("085a7788-8a7e-4bb6-95e9-7c967912bf3f");
         public static final UUID second_ACK_UUID = UUID.fromString("928bef3c-e408-44f6-b339-06358055da16");
         public static final UUID second_BW_UUID = UUID.fromString("ddbb9433-d6c4-4fc5-b6a9-d96bdbc9d928");
+
+        public static final UUID third_MMSocket_UUID = UUID.fromString("fa249bcd-e53c-4965-a9f9-d7ea5d6f0040");
+        public static final UUID third_ACK_Socket_UUID = UUID.fromString("d9c13848-d7be-48a1-ac11-5f0c082791c7");
+        public static final UUID third_BW_Socket_UUID = UUID.fromString("5c6ae5f9-cb04-4a71-9552-ffe426b02b99");
+
     }
 
     public interface DeviceNames {

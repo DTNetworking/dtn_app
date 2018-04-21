@@ -79,11 +79,19 @@ public class OneScenario extends AppCompatActivity {
     SecondBluetoothACKBytesT secondACKData;
     SecondBandwidthBytesT secondBandData;
 
+    //3rd Connection
+    BluetoothConnectCmmSocket clientMessageSConnect;
+    BluetoothConnectCACKSocket clientACKConnect;
+    BluetoothConnectCBWSocket clientBWConnect;
+
+    UUIDManager deviceUUIDs;
+
     String saveFileUUID;
 
     AlertDialog alertDialog;
     boolean alertDialogOpened;
 
+    Handler btClientConnectionStatus;
     Handler btServerConnectionStatus;
     Bundle bundle;
 
@@ -139,6 +147,10 @@ public class OneScenario extends AppCompatActivity {
     long interConnectTime_two;
     String interConnectTimeTxt_two;
     String currentDateTime_two, connectedDeviceName_two;
+
+    private static String CLIENT_CONNECTION_SUCCESSFUL;
+
+    String deviceType;
 
     StopWatch stopWatch;
 
@@ -338,6 +350,8 @@ public class OneScenario extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         getGoodOldName = mBluetoothAdapter.getName(); // For replacing name when Activity Exits
 
+        deviceUUIDs = new UUIDManager(mBluetoothAdapter.getName());
+
         if (mBluetoothAdapter == null) {
             btStatusText.setText("Bluetooth Not Found!");
         } else if (!mBluetoothAdapter.isEnabled()) {
@@ -414,8 +428,23 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Discovery Period Finished");
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
-                } else {
-                    // connectDevice();
+                } else if (connectAsClient == true) {
+                    final Thread Server = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            serverConnection(); // Let's start the Server
+                        }
+                    });
+
+                    final Thread Client = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            connectDevice();
+                        }
+                    });
+
+                    Client.run();
+                    Server.run();
                 }
             } else if (btDeviceConnectedGlobal.ACTION_ACL_CONNECTED.equals(action)) {
                 deviceConnected = true;
@@ -470,6 +499,99 @@ public class OneScenario extends AppCompatActivity {
         }
     };
 
+    public void connectDevice() {
+
+        String btDeviceName = Constants.DeviceNames.secondRouterDevice;
+
+        btClientConnectionStatus = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.arg1 == 1) {
+                    Toast toast = Toast.makeText(getApplicationContext(), CLIENT_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT);
+                    toast.show();
+                    stopIndicator();
+                    currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+
+                    deviceType = Constants.DeviceTypes.CLIENT;
+                    connection1StartTime = System.nanoTime();
+                    currentStatusText.setText(Constants.DeviceTypes.CLIENT);
+                    peerConnectTime.setText((long) msg.arg2 + " msec");
+                    useFile.savePairingData(Constants.FileNames.Pairing, Constants.DeviceTypes.CLIENT, msg.arg2);
+                    SocketGlobal = clientMessageSConnect.getClientSocket();
+                    streamData = new BluetoothBytesT(SocketGlobal, btMessageStatus, stopWatch);
+
+                    streamData.start();
+                    sendMsgBtn.setEnabled(true);
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            checkBandwidth();
+                        }
+                    }, 2000);
+
+
+                } else if (msg.arg1 == -1) {
+                    if (toastShown == false) {
+                        aviView.setIndicatorColor(Color.MAGENTA);
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.CLIENT_CONNECTION_FAIL, Toast.LENGTH_SHORT);
+                        toast.show();
+
+                    }
+
+                } else if (msg.arg1 == 2) {
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.ACK_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    ACKSocketGlobal = clientACKConnect.getACKClientSocket();
+                    ACKData = new BluetoothACKBytesT(ACKSocketGlobal, btACKStatus);
+                    ACKData.start();
+                } else if (msg.arg1 == 100) {
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.BW_CONNECT_CLIENT_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    BandSocketGlobal = clientBWConnect.getBWClientSocket();
+                    bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
+                    bandData.start();
+
+
+                } else if (msg.arg1 == 200) {
+                    // Toast.makeText(getApplicationContext(), "Yes I am disconnected", Toast.LENGTH_LONG).show();
+                }
+
+                toastShown = true;
+            }
+        };
+
+        for (BluetoothDevice btDevice : btDevicesFoundList) {
+            Log.i(Constants.TAG, "BtNullDevicefound " + btDevice.equals(null));
+            if (!(btDevice.equals(null) && !(btDevice.getName().equals("null")) && !(btDevice.getName().equals(null)))) {
+                if ((btDevice.getName().contains(btDeviceName))) {
+                    btDeviceConnectedGlobal = btDevice;
+
+                    clientBWConnect = new BluetoothConnectCBWSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
+                    clientBWConnect.start();
+
+                    clientMessageSConnect = new BluetoothConnectCmmSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
+                    clientMessageSConnect.start();
+
+                    clientACKConnect = new BluetoothConnectCACKSocket(btDevice, btClientConnectionStatus, deviceUUIDs);
+                    clientACKConnect.start();
+
+                }
+
+            }
+            if (!(btDeviceConnectedGlobal == null)) {
+                CLIENT_CONNECTION_SUCCESSFUL = "Client Connected To:" + btDeviceConnectedGlobal.getName();
+                connectedDeviceName = btDeviceConnectedGlobal.getName();
+            } else {
+                aviView.setIndicatorColor(Color.DKGRAY);
+                Log.e("DTN", "No Device Found With Name DTN");
+            }
+        }
+    }
+
     private void serverConnection() {
 
         btServerConnectionStatus = new Handler() {
@@ -518,7 +640,7 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
 
                     BandSocketGlobal = serverBWConnect.getBWSocket();
-                    if (BandSocketGlobal != null) {
+                    if ((BandSocketGlobal != null) & (bandData == null)) {
                         bandData = new BandwidthBytesT(BandSocketGlobal, btBandStatus);
                         bandData.start();
                     } else {
@@ -585,24 +707,35 @@ public class OneScenario extends AppCompatActivity {
             }
         };
 
+        if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.secondRouterDevice)) {
 
-        serverBWConnect = new BluetoothConnectSBWSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverBWConnect.start();
+            serverBWConnect = new BluetoothConnectSBWSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverBWConnect.start();
 
-        serverSecondBWConnect = new BluetoothConnectSsecondBWSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverSecondBWConnect.start();
+            serverSecondBWConnect = new BluetoothConnectSsecondBWSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverSecondBWConnect.start();
 
-        serverACKConnect = new BluetoothConnectSACKSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverACKConnect.start();
+            serverACKConnect = new BluetoothConnectSACKSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverACKConnect.start();
 
-        serverSecondACKConnect = new BluetoothConnectSsecondACKSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverSecondACKConnect.start();
+            serverSecondACKConnect = new BluetoothConnectSsecondACKSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverSecondACKConnect.start();
 
-        serverMessageSConnect = new BluetoothConnectSmmSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverMessageSConnect.start();
+            serverMessageSConnect = new BluetoothConnectSmmSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverMessageSConnect.start();
 
-        serverSecondMessageSConnect = new BluetoothConnectSsecondmmSocket(mBluetoothAdapter, btServerConnectionStatus);
-        serverSecondMessageSConnect.start();
+            serverSecondMessageSConnect = new BluetoothConnectSsecondmmSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverSecondMessageSConnect.start();
+        } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.thirdRouterDevice)) {
+            serverSecondACKConnect = new BluetoothConnectSsecondACKSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverSecondACKConnect.start();
+
+            serverMessageSConnect = new BluetoothConnectSmmSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverMessageSConnect.start();
+
+            serverSecondMessageSConnect = new BluetoothConnectSsecondmmSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverSecondMessageSConnect.start();
+        }
     }
 
     private final Handler btMessageStatus = new Handler() {
@@ -757,6 +890,61 @@ public class OneScenario extends AppCompatActivity {
             }
         }
     };
+
+    public void checkBandwidth() {
+        final Thread checkBandwidthT = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // Check Bandwidth
+                if (!useFile.checkFileExists(Constants.testFileName)) {
+                    tempFile = useFile.createTemporaryFile(Constants.testFileName);
+                    useFile.fillTempFile(tempFile);
+                } else {
+                    tempFile = useFile.returnFile(Constants.testFileName);
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkBandwidthText.setVisibility(View.VISIBLE);
+                        checkBandwidthText.setTextColor(Color.MAGENTA);
+
+                        EditMessageBox.startAnimation(animCrossFadeIn);
+                        EditMessageBox.setVisibility(View.VISIBLE);
+                    }
+                });
+                bandData.checkBandwidth(useFile, tempFile);
+                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
+                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
+                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
+            }
+        });
+
+        checkBandwidthT.start();
+
+
+        getDataHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+                bandwidthText.setText(bandwidth);
+                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+
+                try {
+                    checkBandwidthT.sleep(1000);
+                    checkBandwidthT.run();
+                } catch (InterruptedException SleepE) {
+                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+                }
+
+            }
+
+        };
+    }
 
     public void writeBandwidthLossData() {
         final Thread writeGlobalPacketLossT = new Thread(new Runnable() {

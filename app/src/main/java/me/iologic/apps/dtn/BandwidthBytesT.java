@@ -128,6 +128,29 @@ public class BandwidthBytesT extends Thread {
         }
     }
 
+    public void checkBandwidth(FileServices fileService, File tempFileRead) {
+        byte[] getData = fileService.readTempFile(tempFileRead);
+        // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
+
+        byte[] sendData; // Breaking 1 MB file into 64 KB packets.
+        int startPacketIndex = 0;
+        while (counter != (Constants.Packet.BW_COUNTER + 1)) {
+            Message readMsg = bandwidthHandler.obtainMessage(
+                    Constants.MessageConstants.BW_PACKET_LOSS_CHECK, counter, -1,
+                    null);
+            readMsg.sendToTarget();
+
+            sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
+            write(sendData);
+            counter++;
+            startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
+            // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
+        }
+        if (counter == (Constants.Packet.BW_COUNTER + 1)) {
+            counter = 1; // Reset Counter to 1
+        }
+    }
+
     public void flushOutStream() {
         try {
             dOut.flush();

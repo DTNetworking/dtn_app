@@ -16,7 +16,7 @@ public class BluetoothConnectSsecondACKSocket extends Thread {
     Handler secondBtConnectionStatus;
     Message secondBtConnectionACKStatusMsg;
 
-    public BluetoothConnectSsecondACKSocket(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
+    public BluetoothConnectSsecondACKSocket(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus, UUIDManager receivedDeviceUUID) {
 
         secondBtConnectionStatus = getBtConnectionStatus;
         // Use a temporary object that is later assigned to mmServerSocket
@@ -25,7 +25,7 @@ public class BluetoothConnectSsecondACKSocket extends Thread {
 
         try {
             // MY_UUID is the app's UUID string, also used by the client code. Allowing Insecure connections to avoid Pairing Key.
-            second_ACK_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(Constants.NAME, Constants.UUIDs.second_ACK_UUID);
+            second_ACK_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(Constants.NAME, receivedDeviceUUID.second_ACK_UUID);
         } catch (IOException e) {
             Log.e(Constants.TAG, "Socket's listen() method failed", e);
         }

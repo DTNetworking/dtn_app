@@ -18,14 +18,14 @@ public class BluetoothConnectSBWSocket extends Thread {
     Handler btConnectionStatus;
     Message btConnectionBWStatusMsg;
 
-    public BluetoothConnectSBWSocket(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus) {
+    public BluetoothConnectSBWSocket(BluetoothAdapter mBluetoothAdapter, Handler getBtConnectionStatus, UUIDManager receivedDeviceUUID) {
         btConnectionStatus = getBtConnectionStatus;
 
         BluetoothServerSocket BW_tmp = null;
 
         try {
             // BW_UUID is the app's UUID string, also used by the client code. Allowing Insecure connections to avoid Pairing Key.
-            BW_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(Constants.NAME, Constants.UUIDs.BW_UUID);
+            BW_tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(Constants.NAME, receivedDeviceUUID.BW_UUID);
         } catch (IOException e) {
             Log.e(Constants.TAG, "Socket's listen() method failed", e);
         }
