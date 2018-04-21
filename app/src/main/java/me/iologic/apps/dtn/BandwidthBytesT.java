@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+import android.util.TimeUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,7 +14,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Time;
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Abhishanth Padarthy on 30-01-2018.
@@ -26,7 +31,11 @@ public class BandwidthBytesT extends Thread {
     private final OutputStream bandwidthOutStream;
     DataInputStream dIn;
     DataOutputStream dOut; // Go Dynamic!!!
+    Timer t;
     int counter;
+    int sizeOfDataBeingSent;
+    int previousSize;
+    int amountOfDataSent;
 
     boolean isFirstTime;
 
@@ -58,6 +67,8 @@ public class BandwidthBytesT extends Thread {
         bandwidthHandler = handler;
         isFirstTime = true;
         counter = 1;
+
+        t = new Timer();
         // bandwidthBuffer = new byte[1024];
     }
 
@@ -87,6 +98,7 @@ public class BandwidthBytesT extends Thread {
     }
 
     public void write(byte[] bytes) {
+        previousSize = 0;
         try {
             dOut = new DataOutputStream(bandwidthOutStream);
             if (isFirstTime) {
@@ -96,22 +108,53 @@ public class BandwidthBytesT extends Thread {
                         Constants.MessageConstants.BW_START_WRITE, counter, -1, bytes);
                 writtenBWStatus.sendToTarget();
 
+                // Share the sent message with the UI activity.
+                Thread sendMessage = new Thread() {
+                    @Override
+                    public void run() {
+                        t.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                Log.i(Constants.TAG, "Data now sent: " + getBWWriteSize());
+                                // if ((sizeOfDataBeingSent != 0) & (sizeOfDataBeingSent <= Constants.Packet.BW_FILE_SIZE)) {
+                                //  Log.i(Constants.TAG, "I am repeating BW_WRITE");
+                                //    amountOfDataSent = sizeOfDataBeingSent - previousSize;
+                                // previousSize = sizeOfDataBeingSent;
+                                // Log.i(Constants.TAG, "Data now sent:" + sizeOfDataBeingSent);
+//                                    Message writtenMsg = bandwidthHandler.obtainMessage(
+//                                            Constants.MessageConstants.BW_WRITE, counter, -1, null);
+//                                    writtenMsg.sendToTarget();
+                                //} else {
+                                //t.cancel();
+                                //     return;
+                                //}
+                            }
+                        }, 0, Constants.Miscellaneous.BW_TIME_INTERVAL);
+                    }
+                };
+
+                if (!(sendMessage.isAlive())) {
+                    sendMessage.start();
+                }
+
             }
+
             sendingStartTime = System.nanoTime();
 
-            Log.i(Constants.TAG, "BW Data I am sending: " + bytes.length);
-
+            // for (byte b : bytes) {
             dOut.writeInt(bytes.length); // write length of the message
-            dOut.write(bytes);           // write the message
+            dOut.write(bytes);// write the message
+            // sizeOfDataBeingSent = dOut.size();
+            Log.i(Constants.TAG, "BW Data I am sending: " + sizeOfDataBeingSent);
             flushOutStream();
+            //  }
+
 
             sendingEndTime = System.nanoTime();
             duration = sendingEndTime - sendingStartTime;
 
-            // Share the sent message with the UI activity.
-            Message writtenMsg = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_WRITE, counter, -1, bytes);
-            writtenMsg.sendToTarget();
+            Log.i(Constants.TAG, "Duration it took to send 1MB file: " + duration);
+
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error occurred when sending BW", e);
@@ -139,23 +182,30 @@ public class BandwidthBytesT extends Thread {
         byte[] getData = fileService.readTempFile(tempFileRead);
         // Log.i(Constants.TAG, "checkBandwidth() getData Size: " + getData.length);
 
-        byte[] sendData; // Breaking 1 MB file into 64 KB packets.
-        int startPacketIndex = 0;
-        while (counter != (Constants.Packet.BW_COUNTER + 1)) {
-            Message readMsg = bandwidthHandler.obtainMessage(
-                    Constants.MessageConstants.BW_PACKET_LOSS_CHECK, counter, -1,
-                    null);
-            readMsg.sendToTarget();
+//        byte[] sendData; // Breaking 1 MB file into 64 KB packets.
+//        int startPacketIndex = 0;
+//        while (counter != (Constants.Packet.BW_COUNTER + 1)) {
+//            Message readMsg = bandwidthHandler.obtainMessage(
+//                    Constants.MessageConstants.BW_PACKET_LOSS_CHECK, counter, -1,
+//                    null);
+//            readMsg.sendToTarget();
+//
+//            sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
+//            write(sendData);
+//            counter++;
+//            startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
+//            // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
+//        }
+//        if (counter == (Constants.Packet.BW_COUNTER + 1)) {
+//            counter = 1; // Reset Counter to 1
+//        }
 
-            sendData = Arrays.copyOfRange(getData, startPacketIndex, (startPacketIndex + Constants.Packet.BW_PACKET_SIZE) - 1);
-            write(sendData);
-            counter++;
-            startPacketIndex += Constants.Packet.BW_PACKET_SIZE;
-            // Log.i(Constants.TAG, "BW Counter: " + counter + " Packet Index:" + startPacketIndex + " sendData size: " + sendData.length);
-        }
-        if (counter == (Constants.Packet.BW_COUNTER + 1)) {
-            counter = 1; // Reset Counter to 1
-        }
+        write(getData);
+    }
+
+    public int getBWWriteSize() {
+        //Log.i(Constants.TAG, "AmountOfDataBeingSent: " + amountOfDataSent);
+        return dOut.size();
     }
 
     public double getTotalBandwidthDuration() {
@@ -166,7 +216,7 @@ public class BandwidthBytesT extends Thread {
             Log.i(Constants.TAG, "Sending duration as: " + duration);
             return duration;
         } */
-        return ((double) duration / 1000000000.0);
+        return ((double) Constants.Miscellaneous.BW_TIME_INTERVAL / 1000.0);
     }
 
     public void cancel() {

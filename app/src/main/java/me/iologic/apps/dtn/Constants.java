@@ -113,5 +113,8 @@ public class Constants {
 
     public interface Miscellaneous {
         public static final String NONE = "*";
+        public static final int MAX_BANDWIDTH = 500; //To set max 500 KBps
+        public static final String BW_FileSize = "1 MB";
+        public static final int BW_TIME_INTERVAL = 1;
     }
 }
