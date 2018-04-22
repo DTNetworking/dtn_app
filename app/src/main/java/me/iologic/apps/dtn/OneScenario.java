@@ -267,8 +267,8 @@ public class OneScenario extends AppCompatActivity {
 
         writeBandwidthLossData();
 
-        DeviceType();
         startBluetooth();
+        DeviceType();
         sendMessage();
     }
 
