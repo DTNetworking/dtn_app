@@ -31,6 +31,8 @@
     <string name="MeterPerSecond">m/s</string>
     <string name="DateAndTime">Date and Time</string>
     <string name="InterContactTime">Inter Contact Time</string>
+    <string name="MinimumBWSpeed">0</string>
+    <string name="MaximumBWSpeed">300</string>
 
     <string name="title_activity_image_viewer">ImageViewer</string>
     <string name="dummy_button">Refresh</string>

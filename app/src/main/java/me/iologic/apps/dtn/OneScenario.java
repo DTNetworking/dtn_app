@@ -41,6 +41,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sunfusheng.marqueeview.MarqueeView;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
@@ -54,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -156,6 +158,7 @@ public class OneScenario extends AppCompatActivity {
     TextView charLimitTxtView;
 
     LinearLayout dataselLLayout;
+    LinearLayout BWProgressLLayout;
 
     boolean toastShown = false; // Client Re-Connection
     long ACKEndTime;
@@ -213,6 +216,7 @@ public class OneScenario extends AppCompatActivity {
         charLimitTxtView = (TextView) findViewById(R.id.characterLimitTxt);
 
         dataselLLayout = (LinearLayout) findViewById(R.id.dataSelLinearLayout);
+        BWProgressLLayout = (LinearLayout) findViewById(R.id.BWProgressLL);
 
         checkBandwidthText.setVisibility(View.GONE);
         BWPacketLossText.setVisibility(View.GONE);
@@ -306,6 +310,7 @@ public class OneScenario extends AppCompatActivity {
         sendImage();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -367,7 +372,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void DeviceType() {
         if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
-            connectAsClient = false;
+            connectAsClient = true;
         } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
             connectAsClient = true;
         }
@@ -505,7 +510,13 @@ public class OneScenario extends AppCompatActivity {
 
     public void connectDevice() {
 
-        String btDeviceName = Constants.DeviceNames.originDevice;
+        String btDeviceName = Constants.DeviceNames.thirdRouterDevice;
+
+        if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
+            btDeviceName = Constants.DeviceNames.secondRouterDevice;
+        } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
+            btDeviceName = Constants.DeviceNames.thirdRouterDevice;
+        }
 
         btClientConnectionStatus = new Handler() {
             @Override
@@ -518,6 +529,7 @@ public class OneScenario extends AppCompatActivity {
 
                     deviceType = Constants.DeviceTypes.CLIENT;
                     connection1StartTime = System.nanoTime();
+                    currentStatusText.startAnimation(animFadeIn);
                     currentStatusText.setText(Constants.DeviceTypes.CLIENT);
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, Constants.DeviceTypes.CLIENT, msg.arg2);
@@ -609,11 +621,12 @@ public class OneScenario extends AppCompatActivity {
                     toast.show();
                     stopIndicator();
                     deviceType = Constants.DeviceTypes.SERVER;
+                    currentStatusText.startAnimation(animFadeIn);
                     currentStatusText.setText(Constants.DeviceTypes.SERVER);
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, Constants.DeviceTypes.SERVER, msg.arg2);
                     bandwidthText.setVisibility(View.GONE);
-                    sendBWProgressBarView.setVisibility(View.GONE);
+                    BWProgressLLayout.setVisibility(View.GONE);
                     BWPacketLossText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
 
@@ -779,10 +792,10 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.parseColor("#566680"));
-                FileSentBandwidth = ((double) bandData.getBWWriteSize() / bandData.getTotalBandwidthDuration());
+                FileSentBandwidth = (useFile.getBWFileSize() / bandData.getTotalBandwidthDuration());
                 // Log.i(Constants.TAG, "Bandwidth Duration: " + bandData.getTotalBandwidthDuration());
                 // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                String bandwidth = String.format("%.2f", ((FileSentBandwidth * 1000.0) / 1024.0)) + " KBps";
+                String bandwidth = String.format("%.2f", ((FileSentBandwidth) / 1024.0)) + " KBps";
                 globalBandwidth = bandwidth;
                 bandwidthText.setText(bandwidth);
                 getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
@@ -811,7 +824,8 @@ public class OneScenario extends AppCompatActivity {
                         progressBarHandler = new Handler() {
                             @Override
                             public void handleMessage(Message msg) {
-                                sendBWProgressBarView.setProgress((int) FileSentBandwidth);
+                                Log.i(Constants.TAG, "FileSentBandwidth: " + (int) FileSentBandwidth);
+                                sendBWProgressBarView.setProgress((int) (FileSentBandwidth / 1024));
                             }
                         };
                         Looper.loop();
@@ -822,7 +836,7 @@ public class OneScenario extends AppCompatActivity {
                     BWStart = false;
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
-                    sendBWProgressBarView.setVisibility(View.VISIBLE);
+                    BWProgressLLayout.setVisibility(View.VISIBLE);
                     sendBWProgressBarView.setMax(Constants.Miscellaneous.MAX_BANDWIDTH);
                     sendBWProgressBarT.start();
                 }
