@@ -730,8 +730,8 @@ public class OneScenario extends AppCompatActivity {
             serverSecondACKConnect = new BluetoothConnectSsecondACKSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
             serverSecondACKConnect.start();
 
-            serverMessageSConnect = new BluetoothConnectSmmSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
-            serverMessageSConnect.start();
+            serverSecondBWConnect = new BluetoothConnectSsecondBWSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
+            serverSecondBWConnect.start();
 
             serverSecondMessageSConnect = new BluetoothConnectSsecondmmSocket(mBluetoothAdapter, btServerConnectionStatus, deviceUUIDs);
             serverSecondMessageSConnect.start();
