@@ -145,18 +145,58 @@
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/holo_purple" />
 
-            <ProgressBar
-                android:id="@+id/sendBWProgressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="200dp"
+            <LinearLayout
+                android:id="@+id/BWProgressLL"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:max="16"
-                android:progressBackgroundTint="#005166"
-                android:progressTint="#4DFF00"
-                android:visibility="gone" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="16dp"
+                    android:text="@string/MinimumBWSpeed" />
+
+                <ProgressBar
+                    android:id="@+id/sendBWProgressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:progressBackgroundTint="#005166"
+                    android:progressTint="#4DFF00" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:text="@string/MaximumBWSpeed" />
+            </LinearLayout>
 
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:gravity="center"
+            android:id="@+id/rxBytesLL">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rxBytes" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rxBytes"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bytes"/>
         </LinearLayout>
 
         <TextView
@@ -169,10 +209,10 @@
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/delay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/delay"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -219,39 +259,37 @@
                 android:id="@+id/currentStatusConnected"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:layout_alignEnd="@+id/currentStatus"
+                android:layout_alignParentTop="true"
                 android:textSize="20sp" />
 
             <View
                 android:id="@+id/divider"
                 android:layout_width="2dip"
                 android:layout_height="24dip"
-                android:background="#e62c33"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_toRightOf="@+id/currentStatusConnected" />
+                android:layout_toRightOf="@+id/currentStatusConnected"
+                android:background="#e62c33" />
 
             <TextView
                 android:id="@+id/currentStatusForSecondCon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/divider"
                 android:text="@string/currentStatus"
-                android:textSize="20sp"
-                android:layout_toRightOf="@+id/divider"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/currentStatusForSecondConnected"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/divider"
                 android:text="@string/currentStatus"
                 android:textSize="20sp"
-                android:visibility="gone"
-                android:layout_toRightOf="@+id/divider"/>
-
-
+                android:visibility="gone" />
 
 
         </RelativeLayout>

@@ -61,7 +61,7 @@ public class FileServices {
     public void fillTempFile(File ReceivedTempFileObj) {
         try {
             RandomAccessFile f = new RandomAccessFile(ReceivedTempFileObj, "rw");
-            f.setLength(1024 * 1024);
+            f.setLength(1024 * 64);
         } catch (IOException FileError) {
             Log.i(Constants.TAG, "Could Not Read File");
         }
@@ -89,7 +89,7 @@ public class FileServices {
         return readData;
     }
 
-    public long getFileSize() {
+    public long getBWFileSize() {
         return readData.length;
     }
 

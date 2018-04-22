@@ -35,6 +35,11 @@ public class Constants {
         public static final int BW_COUNTER = BW_FILE_SIZE / BW_PACKET_SIZE;
     }
 
+    public interface DataTypes {
+        public static final String TEXT = "Text";
+        public static final String IMAGE = "Image";
+    }
+
     public interface Permissions {
         public static final int PERMISSION_REQUEST_CODE = 200;
         public static final int REQUEST_ENABLE_BT = 1;
@@ -116,5 +121,8 @@ public class Constants {
 
     public interface Miscellaneous {
         public static final String NONE = "*";
+        public static final int MAX_BANDWIDTH = 300; //To set max 300 KBps
+        public static final String BW_FileSize = "64 KB";
+        public static final int BW_TIME_INTERVAL = 200;
     }
 }

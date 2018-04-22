@@ -30,6 +30,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -124,6 +125,7 @@ public class OneScenario extends AppCompatActivity {
     TextView bandwidthText;
     TextView delayText;
     TextView checkBandwidthText;
+    TextView rxBytesText;
     EditText EditMessageBox;
     Button sendMsgBtn;
     TextView MsgPacketLossText;
@@ -158,6 +160,9 @@ public class OneScenario extends AppCompatActivity {
 
     int packetReceivedCount;
 
+    LinearLayout rxBytesLLayout;
+    LinearLayout BWProgressLLayout;
+
     LightningMcQueen speed;
     double currentspeed;
     Indicators btFindIndicator;
@@ -188,6 +193,10 @@ public class OneScenario extends AppCompatActivity {
         speedText = (TextView) findViewById(R.id.speed);
         aviView = (AVLoadingIndicatorView) findViewById(R.id.avi);
         divView = (View) findViewById(R.id.divider);
+        rxBytesLLayout = (LinearLayout) findViewById(R.id.rxBytesLL);
+        rxBytesText = (TextView) findViewById(R.id.rxBytes);
+
+        BWProgressLLayout = (LinearLayout) findViewById(R.id.BWProgressLL);
 
         checkBandwidthText.setVisibility(View.GONE);
         BWPacketLossText.setVisibility(View.GONE);
@@ -262,6 +271,9 @@ public class OneScenario extends AppCompatActivity {
 
         df = new DecimalFormat("#.00");
         packetReceivedCount = 0;
+        rxBytesText.setText(" " + packetReceivedCount + " ");
+
+        rxBytesLLayout.setVisibility(View.GONE);
 
         btFindIndicator = new Indicators();
 
@@ -604,6 +616,10 @@ public class OneScenario extends AppCompatActivity {
                     connection1StartTime = System.nanoTime();
                     stopIndicator();
                     isFirstPhoneConnected = true;
+
+                    rxBytesLLayout.startAnimation(animCrossFadeIn);
+                    rxBytesLLayout.setVisibility(View.VISIBLE);
+
                     currentStatusConText.setText(R.string.server);
                     currentStatusConText.setVisibility(View.VISIBLE);
                     // start fade in animation
@@ -615,7 +631,7 @@ public class OneScenario extends AppCompatActivity {
                     peerConnectTime.setText((long) msg.arg2 + " msec");
                     useFile.savePairingData(Constants.FileNames.Pairing, "CLIENT", msg.arg2);
                     bandwidthText.setVisibility(View.GONE);
-                    sendBWProgressBarView.setVisibility(View.GONE);
+                    BWProgressLLayout.setVisibility(View.GONE);
                     BWPacketLossText.setVisibility(View.GONE);
                     sendMsgBtn.setEnabled(true);
 
@@ -654,6 +670,7 @@ public class OneScenario extends AppCompatActivity {
 
                     Toast.makeText(getApplicationContext(), Constants.MessageConstants.SECOND_SERVER_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show();
                     currentDateTime_two = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+                    rxBytesLLayout.setVisibility(View.VISIBLE);
                     connection_two_StartTime = System.nanoTime();
 
                     currentStatusSecConnectedText.setText(R.string.server);
@@ -753,8 +770,11 @@ public class OneScenario extends AppCompatActivity {
                 // String writeACK = String.valueOf(msg.arg1);
                 String writeMessage = new String(writeBuf);
                 Log.i(Constants.TAG, "Message Received length: " + msg.arg1);
-                // if(!isCheckingBandwidth) {
-                //  Log.i(Constants.TAG, "Message Received: " + writeMessage);
+                if (!((writeMessage.equals(Constants.DataTypes.TEXT)) || (writeMessage.equals(Constants.DataTypes.IMAGE)))) {
+                    packetReceivedCount += msg.arg1;
+                }
+                rxBytesText.setText(" " + packetReceivedCount + " ");
+                writeForSecondConnection(writeBuf);
                 messageReceived.startAnimation(animCrossFadeIn);
                 messageReceived.setText("Data Received");
                 // }
@@ -764,7 +784,6 @@ public class OneScenario extends AppCompatActivity {
                 String showSpeed = currentspeed + " m/s";
                 useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
                 Log.i(Constants.TAG, "Am I inside Message Received Handler? " + true);
-                writeForSecondConnection(writeBuf);
             }
         }
     };
@@ -827,7 +846,7 @@ public class OneScenario extends AppCompatActivity {
             } else if (msg.what == Constants.MessageConstants.BW_WRITE) {
                 // Do Nothing
                 checkBandwidthText.setTextColor(Color.parseColor("#566680"));
-                FileSentBandwidth = ((double) Constants.Packet.BW_PACKET_SIZE / bandData.getTotalBandwidthDuration());
+                FileSentBandwidth = ((double) useFile.getBWFileSize() / bandData.getTotalBandwidthDuration());
                 // Log.i(Constants.TAG, "Bandwidth Duration: " + bandData.getTotalBandwidthDuration());
                 // Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
                 String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
@@ -835,7 +854,7 @@ public class OneScenario extends AppCompatActivity {
                 bandwidthText.setText(bandwidth);
                 getDataHandler.sendEmptyMessage((int) FileSentBandwidth); // Send anything
                 progressBarHandler.sendEmptyMessage(msg.arg1);
-                checkBandwidthText.setText("No. Of Bandwidth Packets Sent: " + msg.arg1);
+                checkBandwidthText.setText("Sending " + Constants.Miscellaneous.BW_FileSize + " of Data");
             } else if (msg.what == Constants.MessageConstants.BW_START_WRITE) {
                 final Thread writeBandwidthToFileT = new Thread(new Runnable() {
                     @Override
@@ -859,7 +878,7 @@ public class OneScenario extends AppCompatActivity {
                         progressBarHandler = new Handler() {
                             @Override
                             public void handleMessage(Message msg) {
-                                sendBWProgressBarView.setProgress(msg.what);
+                                sendBWProgressBarView.setProgress((int) (FileSentBandwidth / 1024));
                             }
                         };
                         Looper.loop();
@@ -870,7 +889,8 @@ public class OneScenario extends AppCompatActivity {
                     BWStart = false;
                     checkBandwidthText.setText(R.string.checkingBandwidth);
                     writeBandwidthToFileT.start();
-                    sendBWProgressBarView.setVisibility(View.VISIBLE);
+                    BWProgressLLayout.setVisibility(View.VISIBLE);
+                    sendBWProgressBarView.setMax(Constants.Miscellaneous.MAX_BANDWIDTH);
                     sendBWProgressBarT.start();
                 }
             } else if (msg.what == Constants.MessageConstants.BW_PACKET_LOSS_CHECK) {
@@ -915,35 +935,35 @@ public class OneScenario extends AppCompatActivity {
                     }
                 });
                 bandData.checkBandwidth(useFile, tempFile);
-                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
-                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
-                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
-                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
-                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
+//                FileSentBandwidth = (useFile.getFileSize() / bandData.getTotalBandwidthDuration());
+//                Log.i(Constants.TAG, "From the thread after calculation:" + FileSentBandwidth);
+//                getDataHandler.sendEmptyMessage((int) FileSentBandwidth);
+//                Log.i(Constants.TAG, "Check FileSentBandwidth From Thread:" + FileSentBandwidth);
+//                Log.i(Constants.TAG, (String) (useFile.getFileSize() + " Time: " + bandData.getTotalBandwidthDuration()));
             }
         });
 
         checkBandwidthT.start();
 
 
-        getDataHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
-                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
-                bandwidthText.setText(bandwidth);
-                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
-
-                try {
-                    checkBandwidthT.sleep(1000);
-                    checkBandwidthT.run();
-                } catch (InterruptedException SleepE) {
-                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
-                }
-
-            }
-
-        };
+//        getDataHandler = new Handler() {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                Log.i(Constants.TAG, "Check FileSentBandwidth:" + FileSentBandwidth);
+//                String bandwidth = String.format("%.2f", (FileSentBandwidth / 1024.0)) + " KBps";
+//                bandwidthText.setText(bandwidth);
+//                useFile.saveBWData(Constants.FileNames.Bandwidth, bandwidth);
+//
+//                try {
+//                    checkBandwidthT.sleep(1000);
+//                    checkBandwidthT.run();
+//                } catch (InterruptedException SleepE) {
+//                    Log.i(Constants.TAG, "checkBandwidthT is not able to sleep");
+//                }
+//
+//            }
+//
+//        };
     }
 
     public void writeBandwidthLossData() {
@@ -994,8 +1014,11 @@ public class OneScenario extends AppCompatActivity {
 
         if (!(SocketGlobal == null) && !(secondSocketGlobal == null)) {
             streamSecondData.write(ReceivedData);
-            Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone ", Toast.LENGTH_SHORT).show();
-            Log.i(Constants.TAG, "Message Sent To 3rd Phone: (Length Of Data being sent) " + ReceivedData.length);
+            if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.secondRouterDevice)) {
+                Toast.makeText(getApplicationContext(), "Message Sent To 3rd Phone ", Toast.LENGTH_SHORT).show();
+            } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.thirdRouterDevice)) {
+                Toast.makeText(getApplicationContext(), "Message Sent To 4th Phone ", Toast.LENGTH_SHORT).show();
+            }
             streamSecondData.flushOutStream();
         } else {
             Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
