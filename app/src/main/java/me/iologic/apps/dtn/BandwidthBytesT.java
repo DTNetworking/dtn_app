@@ -274,7 +274,7 @@ public class BandwidthBytesT extends Thread {
 //            writeAsByte(c);
 //        }
 
-        for (int i = 0; i < 10; i++) {
+        while(true){
             write(getData);
         }
     }

@@ -372,7 +372,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void DeviceType() {
         if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
-            connectAsClient = true;
+            connectAsClient = false;
         } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
             connectAsClient = true;
         }
@@ -515,7 +515,7 @@ public class OneScenario extends AppCompatActivity {
         if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
             btDeviceName = Constants.DeviceNames.secondRouterDevice;
         } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
-            btDeviceName = Constants.DeviceNames.thirdRouterDevice;
+            btDeviceName = Constants.DeviceNames.originDevice;
         }
 
         btClientConnectionStatus = new Handler() {
@@ -674,6 +674,11 @@ public class OneScenario extends AppCompatActivity {
                 btStatusText.setText("Message is sent");
 
                 sentDataSize = msg.arg1;
+
+                // Save speed of the device at that particular time when Message was received
+                String showSpeed = currentspeed + " m/s";
+                useFile.saveSpeedData(Constants.FileNames.Speed, showSpeed);
+                Log.i(Constants.TAG, "Am I inside Message Writing Handler? " + true);
 
             } else if (msg.what == Constants.MessageConstants.MESSAGE_TOAST) {
                 String statusMessage = bundle.getString("status");
