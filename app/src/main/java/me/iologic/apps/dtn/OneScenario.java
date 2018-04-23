@@ -372,9 +372,9 @@ public class OneScenario extends AppCompatActivity {
 
     public void DeviceType() {
         if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
-            connectAsClient = false;
+            connectAsClient = true;
         } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
-            connectAsClient = false;
+            connectAsClient = true;
         }
     }
 
