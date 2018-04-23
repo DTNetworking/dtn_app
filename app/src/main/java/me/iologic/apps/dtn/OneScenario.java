@@ -372,9 +372,9 @@ public class OneScenario extends AppCompatActivity {
 
     public void DeviceType() {
         if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
-            connectAsClient = true;
+            connectAsClient = false;
         } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
-            connectAsClient = true;
+            connectAsClient = false;
         }
     }
 
@@ -461,22 +461,21 @@ public class OneScenario extends AppCompatActivity {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if ((device != null) & (device.getName() != null) & (device.getName() != "null") & !(btDevicesFoundList.contains(device.getName()))) {
+                if ((device != null) && (device.getName() != null) && (device.getName() != "null")) {
                     btDevicesFoundList.add(device);
-
-                    String deviceName = device.getName();
-                    String deviceHardwareAddress = device.getAddress(); // MAC address
-                    String discBDevice = "Found Device: " + deviceName;
-                    noOfPeers++;
-                    Toast toast = Toast.makeText(getApplicationContext(), discBDevice, Toast.LENGTH_SHORT);
-                    toast.show();
-                    Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
                 }
+                String deviceName = device.getName();
+                String deviceHardwareAddress = device.getAddress(); // MAC address
+                String discBDevice = "Found Device: " + deviceName;
+                noOfPeers++;
+                Toast toast = Toast.makeText(getApplicationContext(), discBDevice, Toast.LENGTH_SHORT);
+                toast.show();
+                Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStatusText.setText("Discovery Period Finished");
                 peerStatusText.startAnimation(animSlideOut);
                 peerStatusText.setVisibility(View.GONE);
-                getUUIDs(); // Check if UUIDs are discoverable
+                // getUUIDs(); // Check if UUIDs are discoverable
                 if (connectAsClient == false) {
                     serverConnection(); // Let's start the Server
                 } else {
