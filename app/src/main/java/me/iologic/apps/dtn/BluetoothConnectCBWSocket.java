@@ -24,7 +24,7 @@ public class BluetoothConnectCBWSocket extends Thread {
 
         try {
             // Get a BluetoothSocket to connect with the given BluetoothDevice. Allowing Insecure connections to avoid Pairing Key.
-            // ACK_UUID is the app's UUID string, also used in the server code.
+            // BW_UUID is the app's UUID string, also used in the server code.
             BWtmp = device.createInsecureRfcommSocketToServiceRecord(receivedDeviceUUID.BW_UUID);
         } catch (IOException e) {
             Log.e(Constants.TAG, "ACKSocket's create() method failed", e);
