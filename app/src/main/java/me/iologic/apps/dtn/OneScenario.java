@@ -372,7 +372,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void DeviceType() {
         if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
-            connectAsClient = false;
+            connectAsClient = true;
         } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
             connectAsClient = true;
         }
@@ -461,16 +461,17 @@ public class OneScenario extends AppCompatActivity {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if ((device != null) && (device.getName() != null) && (device.getName() != "null")) {
+                if ((device != null) & (device.getName() != null) & (device.getName() != "null") & !(btDevicesFoundList.contains(device.getName()))) {
                     btDevicesFoundList.add(device);
+
+                    String deviceName = device.getName();
+                    String deviceHardwareAddress = device.getAddress(); // MAC address
+                    String discBDevice = "Found Device: " + deviceName;
+                    noOfPeers++;
+                    Toast toast = Toast.makeText(getApplicationContext(), discBDevice, Toast.LENGTH_SHORT);
+                    toast.show();
+                    Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
                 }
-                String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-                String discBDevice = "Found Device: " + deviceName;
-                noOfPeers++;
-                Toast toast = Toast.makeText(getApplicationContext(), discBDevice, Toast.LENGTH_SHORT);
-                toast.show();
-                Log.i(Constants.TAG, "ACTION_FOUND is called! " + noOfPeers);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStatusText.setText("Discovery Period Finished");
                 peerStatusText.startAnimation(animSlideOut);
@@ -515,7 +516,7 @@ public class OneScenario extends AppCompatActivity {
         if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.originDevice)) {
             btDeviceName = Constants.DeviceNames.secondRouterDevice;
         } else if (mBluetoothAdapter.getName().equals(Constants.DeviceNames.destinationDevice)) {
-            btDeviceName = Constants.DeviceNames.originDevice;
+            btDeviceName = Constants.DeviceNames.thirdRouterDevice;
         }
 
         btClientConnectionStatus = new Handler() {
