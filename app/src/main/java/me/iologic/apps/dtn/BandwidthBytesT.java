@@ -150,7 +150,7 @@ public class BandwidthBytesT extends Thread {
 //            counter = 1; // Reset Counter to 1
 //        }
 
-        while(true){
+        for(int i=0; i<30; i++){
             write(getData);
         }
     }
