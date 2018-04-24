@@ -23,7 +23,7 @@
     <string name="checkingBandwidth">Checking Bandwidth Now</string>
     <string name="throughput">Throughput</string>\
     <string name="enterMessage">Enter Your Message Here</string>
-    <string name="characterLimitWarning">Maximum 500 characters per message</string>
+    <string name="characterLimitWarning">You can send unlimited characters per message</string>
     <string name="send">Send</string>
     <string name="MsgPacketLoss">Message Packet Loss</string>
     <string name="BWPacketLoss">Bandwidth Packet Loss</string>
