@@ -61,51 +61,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openOneScenario(View view) {
-        if ((permissionToReadWriteStorageAccepted) && (permissionToAccessLocationAccepted) && (permissionToRecordAccepted)) {
             Intent intent = new Intent(this, OneScenario.class);
             startActivity(intent);
-        } else {
-            Toast.makeText(getApplicationContext(), "Please accept all permissions to continue. Restart the application.", Toast.LENGTH_SHORT);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0) {
-            switch (requestCode) {
-                case Constants.Permissions.REQUEST_RECORD_AUDIO_PERMISSION:
-                    permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    Log.i(Constants.TAG, "permissionToRecordAccepted: " + grantResults[0]);
-                    break;
-                case Constants.Permissions.REQUEST_LOCATION_PERMISSION:
-                    permissionToAccessLocationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    Log.i(Constants.TAG, "permissionToAccessLocationAccepted: " + grantResults[0]);
-                    break;
-                case Constants.Permissions.REQUEST_READ_WRITE_STORAGE:
-                    permissionToReadWriteStorageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    Log.i(Constants.TAG, "permissionToReadWriteStorageAccepted: " + grantResults[0]);
-                    break;
-            }
-
-            if (!permissionToRecordAccepted) {
-                Toast.makeText(getApplicationContext(), "Permission of Audio Recording is not accepted by the user", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "Permission of Audio Recording is accepted by the user", Toast.LENGTH_SHORT).show();
-            }
-
-            if (!permissionToAccessLocationAccepted) {
-                Toast.makeText(getApplicationContext(), "Permission of Location is not accepted by the user", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "Permission of Location is accepted by the user", Toast.LENGTH_SHORT).show();
-            }
-
-            if (!permissionToReadWriteStorageAccepted) {
-                Toast.makeText(getApplicationContext(), "Permission of Read/Write Storage is not accepted by the user", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "Permission of Read/Write Storage is accepted by the user", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
    /* public void sendMessage(View view){
