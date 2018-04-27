@@ -107,9 +107,11 @@ public class OneScenario extends AppCompatActivity {
     Handler btServerConnectionStatus;
     Bundle bundle;
 
+    // Class Objects
     FileServices useFile;
     File tempFile;
     ImageData img;
+    AudioManager audio;
 
     double FileSentBandwidth;
     Handler getDataHandler;
@@ -148,6 +150,7 @@ public class OneScenario extends AppCompatActivity {
     EditText EditMessageBox;
     ImageButton sendMsgBtn;
     ImageButton sendImgBtn;
+    ImageButton sendAudioBtn;
     TextView MsgPacketLossText;
     TextView BWPacketLossText;
     ProgressBar sendBWProgressBarView;
@@ -200,6 +203,7 @@ public class OneScenario extends AppCompatActivity {
         EditMessageBox = (EditText) findViewById(R.id.messageBox);
         sendMsgBtn = (ImageButton) findViewById(R.id.sendMsg);
         sendImgBtn = (ImageButton) findViewById(R.id.sendImg);
+        sendAudioBtn = (ImageButton) findViewById(R.id.sendAudio);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         interContactTimeTxTView = (TextView) findViewById(R.id.interContactTime);
@@ -225,6 +229,7 @@ public class OneScenario extends AppCompatActivity {
         messageReceived.setSelected(true); // For Horizontal Scrolling
         sendMsgBtn.setEnabled(false);
         sendImgBtn.setEnabled(false);
+        sendAudioBtn.setEnabled(false);
 
         btServerConnectionStatus = new Handler();
         btClientConnectionStatus = new Handler();
@@ -539,6 +544,7 @@ public class OneScenario extends AppCompatActivity {
                     streamData.start();
                     sendMsgBtn.setEnabled(true);
                     sendImgBtn.setEnabled(true);
+                    sendAudioBtn.setEnabled(true);
 
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {

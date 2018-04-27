@@ -45,9 +45,10 @@ public class Constants {
     }
 
     public interface Permissions {
-        public static final int PERMISSION_REQUEST_CODE = 200;
-        public static final int REQUEST_ENABLE_BT = 1;
-        public static final int READ_REQUEST_CODE = 42;
+        int READ_REQUEST_CODE = 42;
+        int REQUEST_RECORD_AUDIO_PERMISSION = 300;
+        int REQUEST_LOCATION_PERMISSION = 200;
+        int REQUEST_READ_WRITE_STORAGE = 500;
     }
 
     // Defines several constants used when transmitting messages between the
@@ -116,5 +117,6 @@ public class Constants {
         public static final int MAX_BANDWIDTH = 300; //To set max 300 KBps
         public static final String BW_FileSize = "64 KB";
         public static final int BW_TIME_INTERVAL = 200;
+        public String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     }
 }

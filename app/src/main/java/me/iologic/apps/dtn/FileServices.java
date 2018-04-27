@@ -93,14 +93,6 @@ public class FileServices {
         return readData.length;
     }
 
-    static String createString(long size) {
-        StringBuilder o = new StringBuilder();
-        for (int i = 0; i < size; i++) {
-            o.append("*");
-        }
-        return o.toString();
-    }
-
     public void savePacketLossData(String ReceivedFileName, double ReceivedPacketLoss) {
         String saveFileName = ReceivedFileName + "--" + dataUUID + ".txt";
         dataFile = new File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), saveFileName);
