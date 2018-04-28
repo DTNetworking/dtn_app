@@ -31,8 +31,14 @@
     <string name="MeterPerSecond">m/s</string>
     <string name="DateAndTime">Date and Time</string>
     <string name="InterContactTime">Inter Contact Time</string>
+    <string name="ListenToAudio">Listen To Audio</string>
     <string name="MinimumBWSpeed">0</string>
     <string name="MaximumBWSpeed">300</string>
+
+    <string name="AudioStartTime">00:00</string>
+    <string name="AudioCurrentStatus">Select The Play Button To Play \n\t\tThe Received Audio File</string>
+    <string name="closeAudioPopup">X</string>
+    <string name="customDesignText">Custom Audio Player Design By Vineeth Penugonda</string>
 
     <string name="title_activity_image_viewer">ImageViewer</string>
     <string name="dummy_button">Refresh</string>

@@ -1,6 +1,7 @@
 package me.iologic.apps.dtn;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -331,6 +332,11 @@ public class OneScenario extends AppCompatActivity {
             case R.id.action_showImage:
                 Intent intent = new Intent(this, ImageViewer.class);
                 startActivity(intent);
+                return true;
+            case R.id.action_listenToAudio:
+                Intent AudioPlayerIntent = new Intent(this, AudioPlayer.class);
+                //AudioPlayerIntent.putExtra("contactTimeListArray", contactTimeList);
+                startActivity(AudioPlayerIntent);
                 return true;
             case R.id.action_connectionReconnect:
                 if (streamData != null) {
@@ -717,7 +723,7 @@ public class OneScenario extends AppCompatActivity {
                 } else if (fileTypeStatus.equals(Constants.DataTypes.IMAGE)) {
                     btStatusText.setText("Received Image");
                     if (!(writeMessage.equals(Constants.DataTypes.IMAGE))) {
-                       // Log.i(Constants.TAG, "Converting Bytes Into Images " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath());
+                        // Log.i(Constants.TAG, "Converting Bytes Into Images " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath());
                         try {
                             img.writeFileAsBytes(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath(), writeBuf);
                         } catch (IOException e) {
@@ -727,9 +733,9 @@ public class OneScenario extends AppCompatActivity {
 
                 } else if (fileTypeStatus.equals(Constants.DataTypes.AUDIO)) {
                     btStatusText.setText("Received Audio");
-                    try{
+                    try {
                         audio.writeFileAsBytes(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath(), writeBuf);
-                    } catch (IOException e){
+                    } catch (IOException e) {
                         Log.e(Constants.TAG, "Could Not Save Audio File To Specified Place. " + e.toString());
                     }
                 }

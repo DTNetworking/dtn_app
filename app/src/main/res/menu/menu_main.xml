@@ -16,15 +16,22 @@
         android:title="@string/showImage"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_listenToAudio"
+        android:icon="@drawable/ic_listen_to_audio"
+        android:orderInCategory="102"
+        android:title="@string/ListenToAudio"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/action_msgTime"
         android:icon="@drawable/ic_time_white"
-        android:orderInCategory="102"
+        android:orderInCategory="103"
         android:title="@string/action_msgTime"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_intercontactTime"
         android:icon="@drawable/ic_inter_contact_time"
-        android:orderInCategory="103"
+        android:orderInCategory="104"
         android:title="Inter Contact Time"
         app:showAsAction="always" />
+
 </menu>

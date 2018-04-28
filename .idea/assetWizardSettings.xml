@@ -34,7 +34,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_mic_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/usr/local/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_pause_circle_filled_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -55,8 +55,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="imageAsset" value="C:\media\vineethp\ShareTheData\Downloads\FDM\micro_texture_black_over_surface2.jpg" />
-                                      <entry key="outputName" value="ic_audio_recording" />
+                                      <entry key="imageAsset" value="$USER_HOME$/C:\media\vineethp\ShareTheData\Downloads\FDM\micro_texture_black_over_surface2.jpg" />
+                                      <entry key="outputName" value="ic_pause_audio" />
+                                      <entry key="theme" value="HOLO_DARK" />
                                     </map>
                                   </option>
                                 </PersistentState>

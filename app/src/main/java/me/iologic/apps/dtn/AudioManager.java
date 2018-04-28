@@ -42,7 +42,7 @@ public class AudioManager {
         }
     }
 
-    private void onPlay(boolean start) {
+    public void onPlay(boolean start) {
         if (start) {
             startPlaying();
         } else {
@@ -76,12 +76,20 @@ public class AudioManager {
     private void startPlaying() {
         mPlayer = new MediaPlayer();
         try {
-            mPlayer.setDataSource(generateAudioFileName());
+            mPlayer.setDataSource(getDefaultAudioFile());
             mPlayer.prepare();
             mPlayer.start();
         } catch (IOException e) {
             Log.e(Constants.TAG, "prepare() failed");
         }
+    }
+
+    public void pausePlaying(){
+        mPlayer.pause();
+    }
+
+    public int getAudioFileLength() {
+        return mPlayer.getDuration();
     }
 
     private void stopPlaying() {
@@ -146,12 +154,18 @@ public class AudioManager {
         inputStream.close();
     }
 
-    private String generateAudioFileName(){
-        mFileName = Environment.DIRECTORY_MUSIC + File.separator + randomFileNameGenerator(5) + ".3gp";
+    private String generateAudioFileName() {
+        mFileName = Environment.DIRECTORY_MUSIC + File.pathSeparator + randomFileNameGenerator(5) + ".3gp";
         return mFileName;
     }
 
-    public static String randomFileNameGenerator(int count) {
+    private String getDefaultAudioFile() {
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        File file = new File(path, "audio000.3gp");
+        return file.toString();
+    }
+
+    private static String randomFileNameGenerator(int count) {
         StringBuilder builder = new StringBuilder();
         while (count-- != 0) {
             int character = (int) (Math.random() * Constants.Miscellaneous.ALPHA_NUMERIC_STRING.length());
