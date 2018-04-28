@@ -1043,7 +1043,7 @@ public class OneScenario extends AppCompatActivity {
             intent.setType("image/jpeg");
             code = Constants.Permissions.READ_IMAGE_REQUEST_CODE;
         } else if (type.equals(Constants.DataTypes.AUDIO)) {
-            intent.setType("audio/3gp");
+            intent.setType("audio/mp3");
             code = Constants.Permissions.READ_AUDIO_REQUEST_CODE;
         }
 

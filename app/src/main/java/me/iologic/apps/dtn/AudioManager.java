@@ -22,6 +22,7 @@ public class AudioManager {
     private MediaPlayer mPlayer;
     private static String mFileName;
     private Context ctx;
+    private int audioPlayedLength;
 
     public AudioManager(Context receviedCTX)
 
@@ -84,8 +85,23 @@ public class AudioManager {
         }
     }
 
-    public void pausePlaying(){
-        mPlayer.pause();
+    public void pausePlaying() {
+        if (mPlayer.isPlaying()) {
+            mPlayer.pause();
+            audioPlayedLength = mPlayer.getCurrentPosition();
+        }
+    }
+
+
+    public void resumePlaying() {
+        if (!mPlayer.isPlaying()) {
+            mPlayer.seekTo(audioPlayedLength);
+            mPlayer.start();
+        }
+    }
+
+    public MediaPlayer getmAudioPlayer() {
+        return mPlayer;
     }
 
     public int getAudioFileLength() {
@@ -96,6 +112,8 @@ public class AudioManager {
         mPlayer.release();
         mPlayer = null;
     }
+
+
 
     public byte[] AudioToBytes(String filePath) {
         File file = new File(filePath);
@@ -131,8 +149,8 @@ public class AudioManager {
      * use the writeFile method.
      */
     public static void writeFileAsBytes(String fullPath, byte[] bytes) throws IOException {
-        String fullAudioPath = fullPath + "/audio000.3gp";
-        String renameAudioPath = fullPath + File.separator + randomFileNameGenerator(5) + ".3gp";
+        String fullAudioPath = fullPath + "/audio000.mp3";
+        String renameAudioPath = fullPath + File.separator + randomFileNameGenerator(5) + ".mp3";
         Log.i(Constants.TAG, "renameAudioPath: " + renameAudioPath + " fullAudioPath: " + fullAudioPath);
         int token = -1;
 
@@ -155,13 +173,13 @@ public class AudioManager {
     }
 
     private String generateAudioFileName() {
-        mFileName = Environment.DIRECTORY_MUSIC + File.pathSeparator + randomFileNameGenerator(5) + ".3gp";
+        mFileName = Environment.DIRECTORY_MUSIC + File.pathSeparator + randomFileNameGenerator(5) + ".mp3";
         return mFileName;
     }
 
     private String getDefaultAudioFile() {
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-        File file = new File(path, "audio000.3gp");
+        File file = new File(path, "audio000.mp3");
         return file.toString();
     }
 
