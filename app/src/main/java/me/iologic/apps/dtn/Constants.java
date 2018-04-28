@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public class Constants {
 
-    String NAME = "DTNApp";
-    String TAG = "DTNLogs";
-    String testFileName = "testFile";
+    public static final String NAME = "DTNApp";
+    public static final String TAG = "DTNLogs";
+    public static final String testFileName = "testFile";
 
 
     public interface Earth {
@@ -46,7 +46,8 @@ public class Constants {
     }
 
     public interface Permissions {
-        int READ_REQUEST_CODE = 42;
+        int READ_IMAGE_REQUEST_CODE = 42;
+        int READ_AUDIO_REQUEST_CODE = 43;
         int REQUEST_RECORD_AUDIO_PERMISSION = 300;
         int REQUEST_LOCATION_PERMISSION = 200;
         int REQUEST_READ_WRITE_STORAGE = 500;

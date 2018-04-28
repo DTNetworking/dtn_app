@@ -59,8 +59,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static me.iologic.apps.dtn.Constants.Permissions.READ_REQUEST_CODE;
-
 public class OneScenario extends AppCompatActivity {
 
 
@@ -979,7 +977,7 @@ public class OneScenario extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    performFileSearch();
+                    performFileSearch(Constants.DataTypes.IMAGE);
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();
@@ -990,23 +988,25 @@ public class OneScenario extends AppCompatActivity {
     }
 
     public void sendAudio() {
-        sendAudioBtn.setOnClickListener(new View.OnClickListener() {
+
+        sendMsgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void OnClick(View view) {
+            public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    String audioToSend = EditMessageBox.getText().toString();
-                    streamData.write(Constants.DataTypes.AUDIO.getBytes());
-                    streamData.write(audio.AudioToBytes(Environment.DIRECTORY_MUSIC));
-                    // Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
+                    performFileSearch(Constants.DataTypes.AUDIO);
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();
                 }
             }
+
         });
     }
 
-    public void performFileSearch() {
+
+    public void performFileSearch(String type) {
+
+        int code = 1;
 
         // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
         // browser.
@@ -1020,9 +1020,15 @@ public class OneScenario extends AppCompatActivity {
         // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
         // To search for all documents available via installed storage providers,
         // it would be "*/*".
-        intent.setType("image/*");
+        if (type.equals(Constants.DataTypes.IMAGE)) {
+            intent.setType("image/jpeg");
+            code = Constants.Permissions.READ_IMAGE_REQUEST_CODE;
+        } else if (type.equals(Constants.DataTypes.AUDIO)) {
+            intent.setType("audio/3gp");
+            code = Constants.Permissions.READ_AUDIO_REQUEST_CODE;
+        }
 
-        startActivityForResult(intent, READ_REQUEST_CODE);
+        startActivityForResult(intent, code);
     }
 
     @Override
@@ -1033,7 +1039,7 @@ public class OneScenario extends AppCompatActivity {
         // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
         // response to some other intent, and the code below shouldn't run at all.
 
-        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == Constants.Permissions.READ_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // The document selected by the user won't be returned in the intent.
             // Instead, a URI to that document will be contained in the return intent
             // provided to this method as a parameter.
@@ -1042,7 +1048,7 @@ public class OneScenario extends AppCompatActivity {
             if (resultData != null) {
                 uri = resultData.getData();
                 // ImageUri = uri;
-                Log.i(Constants.TAG, "Uri: " + uri.toString());
+                Log.i(Constants.TAG, "ImageUri: " + uri.toString());
                 byte[] ImgBytes = img.ImageToBytes(RealPathUtil.getRealPath(getApplicationContext(), uri)); // Converting Image To Bytes
                 Log.i(Constants.TAG, "ImgBytes: " + ImgBytes.length);
                 if (ImgBytes != null) {
@@ -1050,6 +1056,24 @@ public class OneScenario extends AppCompatActivity {
                     streamData.write(ImgBytes);
                 } else {
                     Toast.makeText(getApplicationContext(), "Image URI is null", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else if (requestCode == Constants.Permissions.READ_AUDIO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // The document selected by the user won't be returned in the intent.
+            // Instead, a URI to that document will be contained in the return intent
+            // provided to this method as a parameter.
+            // Pull that URI using resultData.getData().
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                Log.i(Constants.TAG, "AudioUri: " + uri.toString());
+                byte[] AudioBytes = audio.AudioToBytes(RealPathUtil.getRealPath(getApplicationContext(), uri)); // Converting Audio To Bytes
+                Log.i(Constants.TAG, "AudioBytes: " + AudioBytes.length);
+                if (AudioBytes != null) {
+                    streamData.write(Constants.DataTypes.AUDIO.getBytes());
+                    streamData.write(AudioBytes);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Audio URI is null", Toast.LENGTH_SHORT).show();
                 }
             }
         }

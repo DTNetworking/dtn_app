@@ -32,6 +32,8 @@ public class AudioManager {
         ctx = receviedCTX;
     }
 
+    //Future APIs
+
     private void onRecord(boolean start) {
         if (start) {
             startRecording();
