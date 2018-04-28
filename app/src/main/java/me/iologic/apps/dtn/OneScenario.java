@@ -688,15 +688,19 @@ public class OneScenario extends AppCompatActivity {
                 String statusMessage = bundle.getString("status");
                 btStatusText.setText(statusMessage);
             } else if ((msg.what == Constants.MessageConstants.MESSAGE_READ)) {
-                btStatusText.setText("Message received");
                 byte[] writeBuf = (byte[]) msg.obj;
                 // byte[] writeACK = new byte[]{'R'};
                 String writeMessage = new String(writeBuf);
 
                 if (writeMessage.equals(Constants.DataTypes.TEXT)) {
                     fileTypeStatus = Constants.DataTypes.TEXT;
+                    btStatusText.setText("Receiving Message...");
                 } else if (writeMessage.equals(Constants.DataTypes.IMAGE)) {
                     fileTypeStatus = Constants.DataTypes.IMAGE;
+                    btStatusText.setText("Receiving Image...");
+                } else if (writeMessage.equals(Constants.DataTypes.AUDIO)) {
+                    fileTypeStatus = Constants.DataTypes.AUDIO;
+                    btStatusText.setText("Receving Audio...");
                 }
 
                 if (fileTypeStatus.equals(Constants.DataTypes.TEXT)) {
@@ -704,14 +708,16 @@ public class OneScenario extends AppCompatActivity {
                         if (messageReceived.getVisibility() != View.VISIBLE) {
                             messageReceived.setVisibility(View.VISIBLE);
                         }
+                        btStatusText.setText("Received Message");
                         messageReceived.startAnimation(animFadeIn);
                         // Log.i(Constants.TAG, "Message size after trimming: " + message.length);
                         messageReceived.setText(writeMessage);
                         useFile.saveReceivedMessage(Constants.FileNames.ReceivedMessage, writeMessage);
                     }
                 } else if (fileTypeStatus.equals(Constants.DataTypes.IMAGE)) {
+                    btStatusText.setText("Received Image");
                     if (!(writeMessage.equals(Constants.DataTypes.IMAGE))) {
-                        Log.i(Constants.TAG, "Converting Bytes Into Images " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath());
+                       // Log.i(Constants.TAG, "Converting Bytes Into Images " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath());
                         try {
                             img.writeFileAsBytes(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath(), writeBuf);
                         } catch (IOException e) {
@@ -719,6 +725,13 @@ public class OneScenario extends AppCompatActivity {
                         }
                     }
 
+                } else if (fileTypeStatus.equals(Constants.DataTypes.AUDIO)) {
+                    btStatusText.setText("Received Audio");
+                    try{
+                        audio.writeFileAsBytes(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath(), writeBuf);
+                    } catch (IOException e){
+                        Log.e(Constants.TAG, "Could Not Save Audio File To Specified Place. " + e.toString());
+                    }
                 }
 
                 if (!(writeMessage.equals(Constants.DataTypes.IMAGE) || writeMessage.equals(Constants.DataTypes.TEXT))) {
