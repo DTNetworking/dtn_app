@@ -42,6 +42,7 @@ public class Constants {
     public interface DataTypes {
         public static final String TEXT = "Text";
         public static final String IMAGE = "Image";
+        String AUDIO = "Audio";
     }
 
     public interface Permissions {
@@ -82,6 +83,9 @@ public class Constants {
 
         public static final String SERVER_CONNECTION_SUCCESSFUL = "Server is successfully connected!";
         public static final String SERVER_CONNECTION_FAIL = "Server failed to connect";
+
+        String NOT_YET_CONNECTED = "I am not yet connected to any phone";
+        String MESSAGE_IS_EMPTY = "Message is empty. Enter a message!";
     }
 
     public interface EmulationMessages {

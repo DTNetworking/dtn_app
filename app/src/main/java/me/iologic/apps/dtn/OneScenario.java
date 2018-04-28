@@ -950,19 +950,22 @@ public class OneScenario extends AppCompatActivity {
 
     public void sendMessage() {
 
-        NOT_YET_CONNECTED = "I am not yet connected to any phone";
-
         sendMsgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
-                    String messageToSend = EditMessageBox.getText().toString();
-                    streamData.write(Constants.DataTypes.TEXT.getBytes());
-                    streamData.write(messageToSend.getBytes());
-                    // Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
-                    useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
+                    if (EditMessageBox.getText().toString().length() != 0) {
+                        String messageToSend = EditMessageBox.getText().toString();
+                        streamData.write(Constants.DataTypes.TEXT.getBytes());
+                        streamData.write(messageToSend.getBytes());
+                        // Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
+                        useFile.saveMessage(Constants.FileNames.SentMessage, EditMessageBox.getText().toString());
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.MESSAGE_IS_EMPTY, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                 } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();
                 }
             }
@@ -972,19 +975,34 @@ public class OneScenario extends AppCompatActivity {
 
     public void sendImage() {
 
-        NOT_YET_CONNECTED = "I am not yet connected to any phone";
-
         sendImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {
                     performFileSearch();
                 } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
                     toast.show();
                 }
             }
 
+        });
+    }
+
+    public void sendAudio() {
+        sendAudioBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void OnClick(View view) {
+                if (!(SocketGlobal == null)) {
+                    String audioToSend = EditMessageBox.getText().toString();
+                    streamData.write(Constants.DataTypes.AUDIO.getBytes());
+                    streamData.write(audio.AudioToBytes(Environment.DIRECTORY_MUSIC));
+                    // Log.i(Constants.TAG, "Message Sent: " + EditMessageBox.getText());
+                } else {
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
         });
     }
 

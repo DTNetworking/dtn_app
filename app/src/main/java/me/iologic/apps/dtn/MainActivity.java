@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         AskForLocation();
-        AskForRWStorage();
-        AskForAudioRecordingPermission();
+        //   AskForRWStorage();
+        //  AskForAudioRecordingPermission();
         setBtDiscovery();
     }
 
@@ -48,9 +48,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void AskForAudioRecordingPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, Constants.Permissions.REQUEST_RECORD_AUDIO_PERMISSION);
-        }
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.RECORD_AUDIO}, Constants.Permissions.REQUEST_RECORD_AUDIO_PERMISSION);
+
     }
 
     public void setBtDiscovery() {
@@ -61,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openOneScenario(View view) {
-            Intent intent = new Intent(this, OneScenario.class);
-            startActivity(intent);
+        Intent intent = new Intent(this, OneScenario.class);
+        startActivity(intent);
     }
 
    /* public void sendMessage(View view){
