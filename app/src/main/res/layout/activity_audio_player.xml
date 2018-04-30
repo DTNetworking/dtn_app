@@ -10,6 +10,7 @@
     tools:context=".AudioPlayer">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="36dp"
@@ -38,11 +39,11 @@
         android:layout_marginBottom="72dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:background="@color/bluedark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_play_audio"
-        android:background="@color/bluedark"/>
+        app:srcCompat="@drawable/ic_play_audio" />
 
     <TextView
         android:id="@+id/audioCurrentStatus"
@@ -52,6 +53,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:alpha="0.5"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:text="@string/AudioCurrentStatus"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/audioSeekBar"
@@ -110,6 +115,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/playAudio"
         app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textoverlay"
+        android:layout_width="wrap_content"
+        android:layout_height="53dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:alpha="0.1"
+        android:fontFamily="@font/logostile"
+        android:text="@string/AudioPlayerOverlay"
+        android:textSize="50sp"
+        app:layout_constraintBottom_toBottomOf="@+id/customDesignText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.375" />
 
 
 </android.support.constraint.ConstraintLayout>

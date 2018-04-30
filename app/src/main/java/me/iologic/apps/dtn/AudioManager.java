@@ -108,11 +108,23 @@ public class AudioManager {
         return mPlayer.getDuration();
     }
 
+    public int getPlayerCurrentPosition() {
+        return mPlayer.getCurrentPosition();
+
+    }
+
+    public void SeekToCurrentPosition(int currentSeekTime){
+        mPlayer.seekTo(currentSeekTime);
+    }
+
+    public MediaPlayer.TrackInfo[] getAudioTrackDetails() {
+        return mPlayer.getTrackInfo();
+    }
+
     private void stopPlaying() {
         mPlayer.release();
         mPlayer = null;
     }
-
 
 
     public byte[] AudioToBytes(String filePath) {
