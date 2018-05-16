@@ -82,7 +82,6 @@
                     android:ems="10"
                     android:hint="@string/enterMessage"
                     android:inputType="textPersonName"
-                    android:maxLength="500"
                     android:visibility="gone" />
             </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 
@@ -98,29 +97,51 @@
 
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/sendMsg"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/ic_send_message" />
+            android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/sendImg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/ic_image_select" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/sendAudio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/ic_audio_recording" />
+                <ImageButton
+                    android:id="@+id/sendMsg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_send_message" />
+
+                <ImageButton
+                    android:id="@+id/sendImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_image_select" />
+
+                <ImageButton
+                    android:id="@+id/sendAudio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_audio_recording" />
+
+                <ImageButton
+                    android:id="@+id/sendVideo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_video" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

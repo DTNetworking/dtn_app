@@ -20,7 +20,7 @@
         android:icon="@drawable/ic_listen_to_audio"
         android:orderInCategory="102"
         android:title="@string/ListenToAudio"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_msgTime"
         android:icon="@drawable/ic_time_white"

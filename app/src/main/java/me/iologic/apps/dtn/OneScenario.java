@@ -706,7 +706,10 @@ public class OneScenario extends AppCompatActivity {
                     btStatusText.setText("Receiving Image...");
                 } else if (writeMessage.equals(Constants.DataTypes.AUDIO)) {
                     fileTypeStatus = Constants.DataTypes.AUDIO;
-                    btStatusText.setText("Receving Audio...");
+                    btStatusText.setText("Receiving Audio...");
+                } else if (writeMessage.equals(Constants.DataTypes.VIDEO)) {
+                    fileTypeStatus = Constants.DataTypes.VIDEO;
+                    btStatusText.setText("Receiving Video...");
                 }
 
                 if (fileTypeStatus.equals(Constants.DataTypes.TEXT)) {
@@ -1008,7 +1011,7 @@ public class OneScenario extends AppCompatActivity {
 
     public void sendAudio() {
 
-        sendMsgBtn.setOnClickListener(new View.OnClickListener() {
+        sendAudioBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!(SocketGlobal == null)) {

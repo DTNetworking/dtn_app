@@ -43,6 +43,7 @@ public class Constants {
         String TEXT = "Text";
         String IMAGE = "Image";
         String AUDIO = "Audio";
+        String VIDEO = "Video";
     }
 
     public interface Permissions {
