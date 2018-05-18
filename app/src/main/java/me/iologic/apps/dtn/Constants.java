@@ -49,6 +49,7 @@ public class Constants {
     public interface Permissions {
         int READ_IMAGE_REQUEST_CODE = 42;
         int READ_AUDIO_REQUEST_CODE = 43;
+        int READ_VIDEO_REQUEST_CODE = 44;
         int REQUEST_RECORD_AUDIO_PERMISSION = 300;
         int REQUEST_LOCATION_PERMISSION = 200;
         int REQUEST_READ_WRITE_STORAGE = 500;

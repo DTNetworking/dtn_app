@@ -111,6 +111,7 @@ public class OneScenario extends AppCompatActivity {
     File tempFile;
     ImageData img;
     AudioManager audio;
+    VideoManager video;
 
     double FileSentBandwidth;
     Handler getDataHandler;
@@ -150,6 +151,7 @@ public class OneScenario extends AppCompatActivity {
     ImageButton sendMsgBtn;
     ImageButton sendImgBtn;
     ImageButton sendAudioBtn;
+    ImageButton sendVideoBtn;
     TextView MsgPacketLossText;
     TextView BWPacketLossText;
     ProgressBar sendBWProgressBarView;
@@ -203,6 +205,7 @@ public class OneScenario extends AppCompatActivity {
         sendMsgBtn = (ImageButton) findViewById(R.id.sendMsg);
         sendImgBtn = (ImageButton) findViewById(R.id.sendImg);
         sendAudioBtn = (ImageButton) findViewById(R.id.sendAudio);
+        sendVideoBtn = (ImageButton) findViewById(R.id.sendVideo);
         currentStatusText = (TextView) findViewById(R.id.currentStatus);
         peerConnectTime = (TextView) findViewById(R.id.pairingTime);
         interContactTimeTxTView = (TextView) findViewById(R.id.interContactTime);
@@ -229,6 +232,7 @@ public class OneScenario extends AppCompatActivity {
         sendMsgBtn.setEnabled(false);
         sendImgBtn.setEnabled(false);
         sendAudioBtn.setEnabled(false);
+        sendVideoBtn.setEnabled(true);
 
         btServerConnectionStatus = new Handler();
         btClientConnectionStatus = new Handler();
@@ -312,6 +316,8 @@ public class OneScenario extends AppCompatActivity {
         DeviceType();
         sendMessage();
         sendImage();
+        sendAudio();
+        sendVideo();
     }
 
 
@@ -549,6 +555,7 @@ public class OneScenario extends AppCompatActivity {
                     sendMsgBtn.setEnabled(true);
                     sendImgBtn.setEnabled(true);
                     sendAudioBtn.setEnabled(true);
+                    sendAudioBtn.setEnabled(true);
 
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -740,6 +747,13 @@ public class OneScenario extends AppCompatActivity {
                         audio.writeFileAsBytes(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath(), writeBuf);
                     } catch (IOException e) {
                         Log.e(Constants.TAG, "Could Not Save Audio File To Specified Place. " + e.toString());
+                    }
+                } else if (fileTypeStatus.equals(Constants.DataTypes.VIDEO)) {
+                    btStatusText.setText("Received Video");
+                    try {
+                        video.writeFileAsBytes(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getPath(), writeBuf);
+                    } catch (IOException e) {
+                        Log.e(Constants.TAG, "Could Not Save Video To Specified Place. " + e.toString());
                     }
                 }
 
@@ -1025,6 +1039,21 @@ public class OneScenario extends AppCompatActivity {
         });
     }
 
+    public void sendVideo() {
+
+        sendVideoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!(SocketGlobal == null)) {
+                    performFileSearch(Constants.DataTypes.VIDEO);
+                } else {
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.MessageConstants.NOT_YET_CONNECTED, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
+    }
+
 
     public void performFileSearch(String type) {
 
@@ -1048,6 +1077,9 @@ public class OneScenario extends AppCompatActivity {
         } else if (type.equals(Constants.DataTypes.AUDIO)) {
             intent.setType("audio/mp3");
             code = Constants.Permissions.READ_AUDIO_REQUEST_CODE;
+        } else if (type.equals(Constants.DataTypes.VIDEO)) {
+            intent.setType("video/mp4");
+            code = Constants.Permissions.READ_VIDEO_REQUEST_CODE;
         }
 
         startActivityForResult(intent, code);
@@ -1098,7 +1130,23 @@ public class OneScenario extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Audio URI is null", Toast.LENGTH_SHORT).show();
                 }
             }
+        } else if (requestCode == Constants.Permissions.READ_VIDEO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                // ImageUri = uri;
+                Log.i(Constants.TAG, "VideoUri: " + uri.toString());
+                byte[] VideoBytes = video.VideoToBytes(RealPathUtil.getRealPath(getApplicationContext(), uri)); // Converting Video To Bytes.
+                Log.i(Constants.TAG, "VideoBytes: " + VideoBytes.length);
+                if (VideoBytes != null) {
+                    streamData.write(Constants.DataTypes.VIDEO.getBytes());
+                    streamData.write(VideoBytes);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Video URI is null", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
+
     }
 
     public void getUUIDs() {
