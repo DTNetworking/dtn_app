@@ -65,29 +65,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+
+        <RelativeLayout
+            android:id="@+id/RLTData"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
 
-                <EditText
-                    android:id="@+id/messageBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="@string/enterMessage"
-                    android:inputType="textPersonName"
-                    android:visibility="gone" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            <EditText
+                android:id="@+id/messageBox"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_textview"
+                android:ems="10"
+                android:hint="@string/enterMessage"
+                android:inputType="textPersonName"
+                android:maxLines="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="120dp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/characterLimitTxt"
-                android:layout_width="240dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/ubuntu_light_italic"
                 android:marqueeRepeatLimit="marquee_forever"
@@ -95,56 +100,67 @@
                 android:text="@string/characterLimitWarning"
                 android:textColor="@color/colorAccent" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
             <LinearLayout
+                android:id="@+id/dataBtnLL"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:layout_alignRight="@id/messageBox"
+                android:visibility="gone">
 
                 <ImageButton
                     android:id="@+id/sendMsg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignRight="@id/messageBox"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:background="@color/white"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_send_message" />
 
                 <ImageButton
                     android:id="@+id/sendImg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignRight="@id/sendMsg"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
+                    android:layout_marginHorizontal="5dp"
+                    android:adjustViewBounds="true"
+                    android:background="@color/white"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_image_select" />
 
                 <ImageButton
                     android:id="@+id/sendAudio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignRight="@id/sendImg"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
+                    android:layout_marginHorizontal="5dp"
+                    android:adjustViewBounds="true"
+                    android:background="@color/white"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_audio_recording" />
 
                 <ImageButton
                     android:id="@+id/sendVideo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignRight="@id/sendAudio"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="10dp"
+                    android:adjustViewBounds="true"
+                    android:background="@color/white"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_video" />
 
             </LinearLayout>
 
-        </LinearLayout>
+
+        </RelativeLayout>
 
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/linearLayout2"

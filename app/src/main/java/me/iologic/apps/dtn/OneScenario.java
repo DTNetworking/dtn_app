@@ -162,6 +162,7 @@ public class OneScenario extends AppCompatActivity {
     TextView charLimitTxtView;
 
     LinearLayout dataselLLayout;
+    LinearLayout dataBtnLayout;
     LinearLayout BWProgressLLayout;
 
     boolean toastShown = false; // Client Re-Connection
@@ -222,6 +223,7 @@ public class OneScenario extends AppCompatActivity {
         charLimitTxtView = (TextView) findViewById(R.id.characterLimitTxt);
 
         dataselLLayout = (LinearLayout) findViewById(R.id.dataSelLinearLayout);
+        dataBtnLayout = (LinearLayout) findViewById(R.id.dataBtnLL);
         BWProgressLLayout = (LinearLayout) findViewById(R.id.BWProgressLL);
 
         checkBandwidthText.setVisibility(View.GONE);
@@ -927,6 +929,8 @@ public class OneScenario extends AppCompatActivity {
                         charLimitTxtView.setVisibility(View.GONE);
                         EditMessageBox.startAnimation(animFadeIn);
                         EditMessageBox.setVisibility(View.VISIBLE);
+                        dataBtnLayout.startAnimation(animFadeIn);
+                        dataBtnLayout.setVisibility(View.VISIBLE);
                     }
                 });
                 bandData.checkBandwidth(useFile, tempFile);
