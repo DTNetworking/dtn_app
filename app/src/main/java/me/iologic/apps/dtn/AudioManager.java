@@ -122,8 +122,10 @@ public class AudioManager {
     }
 
     private void stopPlaying() {
-        mPlayer.release();
-        mPlayer = null;
+        if(mPlayer!=null) {
+            mPlayer.release();
+            mPlayer = null;
+        }
     }
 
 
