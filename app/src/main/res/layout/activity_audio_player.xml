@@ -43,7 +43,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_play_audio" />
+        app:srcCompat="@drawable/ic_play_audio"
+        android:contentDescription="@string/playAudioTxt" />
 
     <TextView
         android:id="@+id/audioCurrentStatus"

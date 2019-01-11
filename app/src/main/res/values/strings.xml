@@ -40,6 +40,7 @@
     <string name="closeAudioPopup">X</string>
     <string name="customDesignText">Custom Audio Player Design By Vineeth Penugonda</string>
     <string name="AudioPlayerOverlay">DTN AUDIO</string>
+    <string name="playAudioTxt">Play Audio</string>
 
     <string name="title_activity_image_viewer">ImageViewer</string>
     <string name="dummy_button">Refresh</string>
