@@ -2,8 +2,10 @@ DTN Android Application
 =====================================
 "DTN App" serves the purpose of sending messages and data using a phone's in-built technologies like Bluetooth.
 
-## Get the Application Working
-Change device names in Constants.java.
+# Get the Application Working
+
+## Changing the device names
+Change device names in Constants.java. Format of device name: `DTN-<Device's Serial Number>`.
 
             public interface DeviceNames {
                     String originDevice = "DTN-PLEGAR1762212642";
@@ -31,15 +33,18 @@ You can change the UUIDs in Constants.java.
 UUIDs can be generated [here](https://www.uuidgenerator.net/).
 
 ## Explanation
-For our demonstration we used 4 different phones. Before flashing the application to the first phone which had a device name `DTN-PLEGAR1762212642` we ensured the UUIDs in Constants.java are correct. The other
-two devices acted as `Routers`. The `Routers` forwarded the data to the `destination device`.
+### Setting the UUIDs to send and receive data
+For our demonstration we used 4 different phones. Before flashing the application to the first phone which had a device name `DTN-PLEGAR1762212642` we ensured the UUIDs in Constants.java are correct. The other two devices acted as `Routers`. The `Routers` forwarded the data to the `destination device`.
+
 We set the value of `destination_MMSocket_UUID`, `destination_BW_UUID` matching the second's phone `mmSocket_UUID`, `BW_UUID`. The same process should be used before flashing the application to the second phone. And again, we set the value of `destination_MMSocket_UUID`, `destination_BW_UUID` matching the third's phone `mmSocket_UUID`, `BW_UUID`.
 
 This process continues until you are done flashing the 4th phone.
 
-### Setting the UUIDs to receive ACK messages
+### Setting the UUIDs to send and receive ACK messages
 The fourth phone's `destination_MMSocket_UUID`, `destination_ACK_UUID`, `destination_BW_UUID` should be matching the third's phone `mmSocket_UUID`, `ACK_UUID`, `BW_UUID` in order to send the ACK message.
+
 `destination_ACK_UUID` of the third phone should match that of the `ACK_UUID` of the second phone. The second phone's `destination_ACK_UUID` should match that of the `ACK_UUID` of the first phone.
+
 The first phone's UUID can be any UUID because the first phone does not send any ACK message.
 
 The ACK message delivery works in a **reverse process**.
