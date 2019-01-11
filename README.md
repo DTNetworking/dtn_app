@@ -32,15 +32,15 @@ You can change the UUIDs in Constants.java.
 
 UUIDs can be generated [here](https://www.uuidgenerator.net/).
 
-## Explanation
-### Setting the UUIDs to send and receive data
+### Explanation
+#### Setting the UUIDs to send and receive data
 For our demonstration we used 4 different phones. Before flashing the application to the first phone which had a device name `DTN-PLEGAR1762212642` we ensured the UUIDs in Constants.java are correct. The other two devices acted as `Routers`. The `Routers` forwarded the data to the `destination device`.
 
 We set the value of `destination_MMSocket_UUID`, `destination_BW_UUID` matching the second's phone `mmSocket_UUID`, `BW_UUID`. The same process should be used before flashing the application to the second phone. And again, we set the value of `destination_MMSocket_UUID`, `destination_BW_UUID` matching the third's phone `mmSocket_UUID`, `BW_UUID`.
 
 This process continues until you are done flashing the 4th phone.
 
-### Setting the UUIDs to send and receive ACK messages
+#### Setting the UUIDs to send and receive ACK messages
 The fourth phone's `destination_MMSocket_UUID`, `destination_ACK_UUID`, `destination_BW_UUID` should be matching the third's phone `mmSocket_UUID`, `ACK_UUID`, `BW_UUID` in order to send the ACK message.
 
 `destination_ACK_UUID` of the third phone should match that of the `ACK_UUID` of the second phone. The second phone's `destination_ACK_UUID` should match that of the `ACK_UUID` of the first phone.
